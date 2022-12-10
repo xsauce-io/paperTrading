@@ -3,6 +3,7 @@ from telegram.ext import *
 from prettytable import PrettyTable
 import requests
 import json
+import re
 import configparser
 import requests
 from datetime import datetime
@@ -38,6 +39,7 @@ def main():
     dispatcher.add_handler(CommandHandler('website', website))
     dispatcher.add_handler(CommandHandler('xci', xci_price))
     dispatcher.add_handler(CommandHandler('poll', poll))
+    dispatcher.add_handler(CommandHandler('trade', trade))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(PollAnswerHandler(send2db, pass_user_data=True))
 
@@ -86,49 +88,54 @@ def set_xci_price(update, context):
                 update.message.reply_text("Baseline Set!")
 
         except Exception as error:
+            print('Cause {}'.format(error))
             update.message.reply_text("Not Authorized!")
 
 
 def xci_price(update, context):
-    skus = ["555088-063",
-            "DO9392-700",
-            "DD1391-400",
-            "GW3355",
-            "DC9533-800",
-            "BB550WT1",
-            "GX2487",
-            "GW1229",
-            "DH9792-100",
-            "DH7863-100"]
+    sender = update.message.from_user.username
+    if sender == "zmill28" or "el_malchemist":
+        try:
+            skus = ["555088-063",
+                    "DO9392-700",
+                    "DD1391-400",
+                    "GW3355",
+                    "DC9533-800",
+                    "BB550WT1",
+                    "GX2487",
+                    "GW1229",
+                    "DH9792-100",
+                    "DH7863-100"]
 
-    resData = []
+            resData = []
 
-    for sku in skus:
-        url = API + sku
-        response = requests.get(url)
-        resData.append(response.json()['results'][0]['estimatedMarketValue'])
+            for sku in skus:
+                url = API + sku
+                response = requests.get(url)
+                resData.append(response.json()[
+                    'results'][0]['estimatedMarketValue'])
+                culture = 0
+                culture += resData[0] * .125
+                culture += resData[1] * .14
+                culture += resData[2] * .150
+                culture += resData[3] * .075
+                culture += resData[4] * .011
+                culture += resData[5] * .18
+                culture += resData[6] * .08
+                culture += resData[7] * .185
+                culture += resData[8] * .017
+                culture += resData[9] * .037
 
-    culture = 0
-    culture += resData[0] * .125
-    culture += resData[1] * .14
-    culture += resData[2] * .150
-    culture += resData[3] * .075
-    culture += resData[4] * .011
-    culture += resData[5] * .18
-    culture += resData[6] * .08
-    culture += resData[7] * .185
-    culture += resData[8] * .017
-    culture += resData[9] * .037
+                update.message.reply_text(
+                    "Xsauce Culture Index is ${}".format(round(culture, 2)))
 
-    update.message.reply_text(
-        "Xsauce Culture Index is ${}".format(round(culture, 2)))
-    try:
-        db = cluster[DATABASE_NAME]
-        stats = db[COLLECTION_NAME2]
-        stats.update_one({"price": {"$exists": True}},
-                         {"$set": {"price": culture}})
-    except Exception as error:
-        print('Cause {}'.format(error))
+                db = cluster[DATABASE_NAME]
+                stats = db[COLLECTION_NAME2]
+                stats.update_one({"price": {"$exists": True}},
+                                 {"$set": {"price": culture}})
+        except Exception as error:
+            print('Cause {}'.format(error))
+            update.message.reply_text("Not Authorized!")
 
 
 def send2db(update, context):
@@ -241,6 +248,13 @@ def instructions(update, context):
     update.message.reply_text("These will be the instructions {}".format(id))
 
 
+def trade(update, context):
+    x = re.split("\s", update.message.text)
+    # if x[1] == "short":
+    # the first input after /trade should be "long" or "short" the second is how much they want to put down on that position
+    
+
+
 def close(update, context):
     sender = update.message.from_user.username
     try:
@@ -277,10 +291,9 @@ def help(update, context):
     update.message.reply_text(
         """
   /play -> Welcome to the channel! Use this command to get $10,000 dollars to start up!
-  /active -> Show your current index holdings
+  /close
+  /portfolio -> Show your current index holdings
   /help -> Shows this message
-  /pnl -> See your profit and loss for your trades
-  /balance -> See your remaining balance 
   /instructions -> See how to play daily bread
   /website -> Learn about Xsauce and cultural assets
   """
