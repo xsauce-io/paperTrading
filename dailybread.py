@@ -39,7 +39,7 @@ def main():
     dispatcher.add_handler(CommandHandler('website', website))
     dispatcher.add_handler(CommandHandler('xci', xci_price))
     dispatcher.add_handler(CommandHandler('poll', poll))
-    dispatcher.add_handler(CommandHandler('trade', trade))
+    dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(PollAnswerHandler(send2db, pass_user_data=True))
 
@@ -199,7 +199,7 @@ def play(update, context):
             update.message.reply_text("Nice try! No such thing as free")
         else:
             participants.insert_one(
-                {"username": sender, "funds": 10000, "selection": [], "position": {"Long": {"shares": 0, "buyIn": 0}, "Short": {"shares": 0, "buyIn": 0}}, "trades": 0})
+                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": 0}, "Short": {"shares": 0, "buyIn": 0}}, "trades": {"total": 0, "tradeDetails": []}})
             update.message.reply_text(
                 "Welcome {},\n This is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
     except Exception as error:
@@ -235,7 +235,7 @@ def portfolio(update, context):
                            round(res['position']['Long']['shares'], 3),
                            round(Long + Short, 3),
                            pnl,
-                           res['trades']),
+                           res['trades']['total']),
             parse_mode='Markdown'
         )
 
@@ -248,11 +248,42 @@ def instructions(update, context):
     update.message.reply_text("These will be the instructions {}".format(id))
 
 
-def trade(update, context):
+def open(update, context):
+    sender = update.message.from_user.username
     x = re.split("\s", update.message.text)
-    # if x[1] == "short":
-    # the first input after /trade should be "long" or "short" the second is how much they want to put down on that position
-    
+    wager = (x[2])
+    try:
+        wager = float(x[2])
+    except ValueError as error:
+        update.message.reply_text('Please enter a number')
+    try:
+        db = cluster[DATABASE_NAME]
+        participants = db[COLLECTION_NAME1]
+        stats = db[COLLECTION_NAME2]
+        res = stats.find()[0]
+        currIndexPrice = res['price']
+        balance = participants.find({"username": sender})[0]
+        funds = balance['funds']
+        trades = balance['trades']['tradeDetails']
+        if wager > funds:
+            update.message.reply_text('Not enough funds')
+            raise ValueError('More than you have in your account')
+
+        purchase = wager / currIndexPrice
+
+        if x[1] == "short":
+            trades.append({"direction": x[1], "amount": wager})
+            participants.update_one({"username": sender}, {"$set": {
+                "position": {"Short": {"shares": purchase, "buyIn": currIndexPrice}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": balance['position']['Long']['buyIn']}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            update.message.reply_text('Short position has been opened!')
+        if x[1] == "long":
+            trades.append({"direction": x[1], "amount": wager})
+            participants.update_one({"username": sender}, {"$set": {
+                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": balance['position']['Short']['buyIn']}, "Long": {"shares": purchase, "buyIn": currIndexPrice}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            update.message.reply_text('Long position has been opened!')
+
+    except ValueError as error:
+        print('Cause {}'.format(error))
 
 
 def close(update, context):
