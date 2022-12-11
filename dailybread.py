@@ -1,3 +1,4 @@
+import math
 from telegram import ParseMode
 from telegram.ext import *
 from prettytable import PrettyTable
@@ -49,7 +50,7 @@ def main():
 
 def set_xci_price(update, context):
     sender = update.message.from_user.username
-    if sender == "zmill28" or "el_malchemist":
+    if sender == "zmill28" or sender == "el_malchemist":
         try:
             skus = ["555088-063",
                     "DO9392-700",
@@ -94,7 +95,7 @@ def set_xci_price(update, context):
 
 def xci_price(update, context):
     sender = update.message.from_user.username
-    if sender == "zmill28" or "el_malchemist":
+    if sender == "zmill28" or sender == "el_malchemist":
         try:
             skus = ["555088-063",
                     "DO9392-700",
@@ -199,7 +200,7 @@ def play(update, context):
             update.message.reply_text("Nice try! No such thing as free")
         else:
             participants.insert_one(
-                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": 0}, "Short": {"shares": 0, "buyIn": 0}}, "trades": {"total": 0, "tradeDetails": []}})
+                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})
             update.message.reply_text(
                 "Welcome {},\n This is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
     except Exception as error:
@@ -215,17 +216,27 @@ def portfolio(update, context):
         res2 = stats.find()[0]
         currIndexPrice = res2['price']
         res = participants.find({"username": username})[0]
+        avg_buy_price_long = 0
+        avg_buy_price_short = 0
+        if res['position']['Long']['buyIn']['amount_spent'] > 0:
+            avg_buy_price_long = res['position']['Long']['buyIn']['amount_spent'] / \
+                res['position']['Long']['buyIn']['purchased']
+        if res['position']['Short']['buyIn']['amount_spent'] > 0:
+            avg_buy_price_short = res['position']['Short']['buyIn']['amount_spent'] / \
+                res['position']['Short']['buyIn']['purchased']
         Long = res['position']["Long"]['shares'] * currIndexPrice + \
-            (currIndexPrice - res['position']["Long"]
-             ['buyIn']) * res['position']['Long']['shares']
+            (currIndexPrice - avg_buy_price_long) * \
+            res['position']['Long']['shares']
         Short = res['position']["Short"]['shares'] * currIndexPrice + \
-            (res['position']["Short"]['buyIn'] - currIndexPrice) * \
+            (avg_buy_price_short - currIndexPrice) * \
             res['position']["Short"]['shares']
-        pnl = (res['funds'] + Long + Short) - 10000
-
+        pnl = round((res['funds'] + (Long + Short)) - 10000, 3)
+        if math.isclose(pnl, 0.00):
+            pnl = 0
         message = "*Balance:* ${}\n" \
             "*Holdings(of XCI)*: {} Short / {} Long\n" \
             "*Total(Unsettled)*: ${}\n" \
+            "*Avg Buy Price*:{} Short / {} Long\n" \
             "*PNL*: ${}\n" \
             "*Total Trades*: {}"
 
@@ -233,7 +244,9 @@ def portfolio(update, context):
             message.format(round(res['funds'], 3),
                            round(res['position']['Short']['shares'], 3),
                            round(res['position']['Long']['shares'], 3),
-                           round(Long + Short, 3),
+                           round(Long + Short, 2),
+                           round(avg_buy_price_short, 3),
+                           round(avg_buy_price_long, 3),
                            pnl,
                            res['trades']['total']),
             parse_mode='Markdown'
@@ -266,56 +279,83 @@ def open(update, context):
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
         if wager > funds:
-            update.message.reply_text('Not enough funds')
             raise ValueError('More than you have in your account')
-
-        purchase = wager / currIndexPrice
+        purchased = wager / currIndexPrice
 
         if x[1] == "short":
             trades.append({"direction": x[1], "amount": wager})
             participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": purchase, "buyIn": currIndexPrice}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": balance['position']['Long']['buyIn']}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+                "position": {"Short": {"shares": balance['position']['Short']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Short']
+                                                                                                               ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Short']
+                                                                                                               ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Short position has been opened!')
         if x[1] == "long":
             trades.append({"direction": x[1], "amount": wager})
             participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": balance['position']['Short']['buyIn']}, "Long": {"shares": purchase, "buyIn": currIndexPrice}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Long']
+                                                                                                                                                                                                                                                                                                                             ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Long']
+                                                                                                                                                                                                                                                                                                                             ['buyIn']['amount_spent'] + wager}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Long position has been opened!')
 
-    except ValueError as error:
+    except Exception and ValueError as error:
         print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
 
 
 def close(update, context):
     sender = update.message.from_user.username
+    x = re.split("\s", update.message.text)
+    reduction = (x[2])
+    try:
+        if x[2] == "max":
+            reduction = "max"
+        else:
+            reduction = float(x[2])
+    except ValueError as error:
+        return update.message.reply_text('Please enter a number')
     try:
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res = stats.find()[0]
         currIndexPrice = res['price']
-        username = sender
-        balance = participants.find({"username": username})[0]
-        position = balance['position']
+        balance = participants.find({"username": sender})[0]
+        funds = balance['funds']
+        trades = balance['trades']['tradeDetails']
 
-        newBalance = 0
-        if position == 0:
-            newBalance = balance['funds']
-        else:
-            Long = (position["Long"]['shares'] * currIndexPrice) + \
-                (currIndexPrice - position["Long"]
-                 ['buyIn']) * position["Long"]['shares']
+        if x[1] == "short":
+            avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
+                balance['position']['Short']['buyIn']['purchased']
+            if reduction == "max":
+                reduction = balance['position']['Short']['shares'] - 1e-09
+            wager = avg_buy_price * reduction
+            cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
+                (reduction * currIndexPrice)
+            print(cash_out)
+            if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
+                raise ValueError('More than you have in your account')
+            trades.append({"direction": x[1], "amount": reduction})
+            participants.update_one({"username": sender}, {"$set": {
+                "position": {"Short": {"shares": balance['position']['Short']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Short']['buyIn']['amount_spent'] - wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            update.message.reply_text('Short position has been closed!')
+        if x[1] == "long":
+            avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
+                balance['position']['Long']['buyIn']['purchased']
+            if reduction == "max":
+                reduction = balance['position']['Long']['shares'] - 1e-09
+            wager = avg_buy_price * reduction
+            cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
+                (reduction * currIndexPrice)
+            if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
+                raise ValueError('More than you have in your account')
+            trades.append({"direction": x[1], "amount": reduction})
+            participants.update_one({"username": sender}, {"$set": {
+                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            update.message.reply_text('Long position has been closed!')
 
-            Short = (position["Short"]['shares'] * currIndexPrice) + (
-                position["Short"]["buyIn"] - currIndexPrice) * position["Short"]['shares']
-            newBalance = balance['funds'] + Long + Short
-        participants.update_one({"username": username}, {
-            "$set": {"position": {"Long": {"shares": 0, "buyIn": 0}, "Short": {"shares": 0, "buyIn": 0}}, "funds": newBalance}})
-        update.message.reply_text('All positions closed')
-
-    except Exception as error:
+    except Exception and ValueError as error:
         print('Cause {}'.format(error))
-        update.message.reply_text('An error has occured')
+        update.message.reply_text('{}'.format(error))
 
 
 def help(update, context):
@@ -333,7 +373,7 @@ def help(update, context):
 
 def poll(update, context):
     sender = update.message.from_user.username
-    if sender == "zmill28" or "el_malchemist":
+    if sender == "zmill28" or sender == "el_malchemist":
         db = cluster[DATABASE_NAME]
         stats = db[COLLECTION_NAME2]
         res = stats.find()[0]
