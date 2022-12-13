@@ -224,10 +224,10 @@ def portfolio(update, context):
         if res['position']['Short']['buyIn']['amount_spent'] > 0:
             avg_buy_price_short = res['position']['Short']['buyIn']['amount_spent'] / \
                 res['position']['Short']['buyIn']['purchased']
-        Long = res['position']["Long"]['shares'] * currIndexPrice + \
+        Long = res['position']["Long"]['shares'] * avg_buy_price_long + \
             (currIndexPrice - avg_buy_price_long) * \
             res['position']['Long']['shares']
-        Short = res['position']["Short"]['shares'] * currIndexPrice + \
+        Short = res['position']["Short"]['shares'] * avg_buy_price_short + \
             (avg_buy_price_short - currIndexPrice) * \
             res['position']["Short"]['shares']
         pnl = round((res['funds'] + (Long + Short)) - 10000, 3)
@@ -266,7 +266,10 @@ def open(update, context):
     x = re.split("\s", update.message.text)
     wager = (x[2])
     try:
-        wager = float(x[2])
+        if x[2] == "max":
+            wager = "max"
+        else:
+            wager = float(x[2])
     except ValueError as error:
         update.message.reply_text('Please enter a number')
     try:
@@ -278,6 +281,8 @@ def open(update, context):
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
+        if wager == "max":
+            wager = balance['funds'] - 1e-09
         if wager > funds:
             raise ValueError('More than you have in your account')
         purchased = wager / currIndexPrice
@@ -331,7 +336,6 @@ def close(update, context):
             wager = avg_buy_price * reduction
             cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
                 (reduction * currIndexPrice)
-            print(cash_out)
             if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                 raise ValueError('More than you have in your account')
             trades.append({"direction": x[1], "amount": reduction})
@@ -362,7 +366,8 @@ def help(update, context):
     update.message.reply_text(
         """
   /play -> Welcome to the channel! Use this command to get $10,000 dollars to start up!
-  /close
+  /close -> Close a position
+  /open -> Open a position
   /portfolio -> Show your current index holdings
   /help -> Shows this message
   /instructions -> See how to play daily bread
