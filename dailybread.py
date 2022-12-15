@@ -3,21 +3,25 @@ from telegram import *
 from telegram.ext import *
 import requests
 import re
+import os
+from dotenv import load_dotenv
 import configparser
 import requests
 from datetime import datetime
 from pymongo import MongoClient
 
+load_dotenv()
+
 config = configparser.ConfigParser()
 config.read('config.ini')
-PASSWORD = config.get('default', 'password')
-USERNAME = config.get('default', 'username')
-BOT_TOKEN = config.get('default', 'bot_token')
-API = config.get('default', 'api')
-CHAT = config.get('default', 'chat')
-DATABASE_NAME = config.get('default', 'db_name')
-COLLECTION_NAME1 = config.get('default', 'collection_name1')
-COLLECTION_NAME2 = config.get('default', 'collection_name2')
+PASSWORD = os.environ['password']
+USERNAME = os.environ['username']
+BOT_TOKEN = os.environ['bot_token']
+API = os.environ['api']
+CHAT = os.environ['chat']
+DATABASE_NAME = os.environ['db_name']
+COLLECTION_NAME1 = os.environ['collection_name1']
+COLLECTION_NAME2 = os.environ['collection_name2']
 
 url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
     "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
@@ -58,7 +62,7 @@ def priceUpdate(context):
         culture += resData[8] * .017
         culture += resData[9] * .037
 
-        context.bot.send_message(chat_id='-1001872658552',
+        context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
         db = cluster[DATABASE_NAME]
