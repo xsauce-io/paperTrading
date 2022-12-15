@@ -1,16 +1,12 @@
 import math
-from telegram import ParseMode
+from telegram import *
 from telegram.ext import *
-from prettytable import PrettyTable
 import requests
-import json
 import re
 import configparser
 import requests
 from datetime import datetime
-from bson.objectid import ObjectId
 from pymongo import MongoClient
-
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -28,166 +24,87 @@ url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
 cluster = MongoClient(url)
 
 
+def priceUpdate(context):
+    try:
+        skus = ["555088-063",
+                "DO9392-700",
+                "DD1391-400",
+                "GW3355",
+                "DC9533-800",
+                "BB550WT1",
+                "GX2487",
+                "GW1229",
+                "DH9792-100",
+                "DH7863-100"]
+
+        resData = []
+
+        for sku in skus:
+            sneak_url = API + sku
+            response = requests.get(sneak_url)
+            print(response.json()[
+                'results'][0]['estimatedMarketValue'])
+            resData.append(response.json()[
+                'results'][0]['estimatedMarketValue'])
+        culture = 0
+        culture += resData[0] * .125
+        culture += resData[1] * .14
+        culture += resData[2] * .150
+        culture += resData[3] * .075
+        culture += resData[4] * .011
+        culture += resData[5] * .18
+        culture += resData[6] * .08
+        culture += resData[7] * .185
+        culture += resData[8] * .017
+        culture += resData[9] * .037
+
+        context.bot.send_message(chat_id='-1001872658552',
+                                 text="Xsauce Culture Index is ${}".format(round(culture, 2)))
+
+        db = cluster[DATABASE_NAME]
+        stats = db[COLLECTION_NAME2]
+        strip = datetime.now()
+        date = strip.strftime('%m/%d/%Y')
+        time = strip.strftime("%H:%M:%S")
+        stats.insert_one(
+            {"price": culture, "date": date, "time": time})
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+
 def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
+    job_queue = updater.job_queue
+    job_seconds = job_queue.run_repeating(
+        priceUpdate, interval=14400, first=1)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('set', set_xci_price))
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('website', website))
     dispatcher.add_handler(CommandHandler('xci', xci_price))
-    dispatcher.add_handler(CommandHandler('poll', poll))
     dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
-    dispatcher.add_handler(PollAnswerHandler(send2db, pass_user_data=True))
 
     updater.start_polling()
     updater.idle()
 
 
-def set_xci_price(update, context):
-    sender = update.message.from_user.username
-    if sender == "zmill28" or sender == "el_malchemist":
-        try:
-            skus = ["555088-063",
-                    "DO9392-700",
-                    "DD1391-400",
-                    "GW3355",
-                    "DC9533-800",
-                    "BB550WT1",
-                    "GX2487",
-                    "GW1229",
-                    "DH9792-100",
-                    "DH7863-100"]
-
-            resData = []
-
-            for sku in skus:
-                url = API + sku
-                response = requests.get(url)
-                resData.append(response.json()[
-                    'results'][0]['estimatedMarketValue'])
-
-                culture = 0
-                culture += resData[0] * .125
-                culture += resData[1] * .14
-                culture += resData[2] * .150
-                culture += resData[3] * .075
-                culture += resData[4] * .011
-                culture += resData[5] * .18
-                culture += resData[6] * .08
-                culture += resData[7] * .185
-                culture += resData[8] * .017
-                culture += resData[9] * .037
-
-                db = cluster[DATABASE_NAME]
-                stats = db[COLLECTION_NAME2]
-                stats.insert_one({"price": culture})
-                update.message.reply_text("Baseline Set!")
-
-        except Exception as error:
-            print('Cause {}'.format(error))
-            update.message.reply_text("Not Authorized!")
-
-
 def xci_price(update, context):
-    sender = update.message.from_user.username
-    if sender == "zmill28" or sender == "el_malchemist":
-        try:
-            skus = ["555088-063",
-                    "DO9392-700",
-                    "DD1391-400",
-                    "GW3355",
-                    "DC9533-800",
-                    "BB550WT1",
-                    "GX2487",
-                    "GW1229",
-                    "DH9792-100",
-                    "DH7863-100"]
-
-            resData = []
-
-            for sku in skus:
-                url = API + sku
-                response = requests.get(url)
-                resData.append(response.json()[
-                    'results'][0]['estimatedMarketValue'])
-                culture = 0
-                culture += resData[0] * .125
-                culture += resData[1] * .14
-                culture += resData[2] * .150
-                culture += resData[3] * .075
-                culture += resData[4] * .011
-                culture += resData[5] * .18
-                culture += resData[6] * .08
-                culture += resData[7] * .185
-                culture += resData[8] * .017
-                culture += resData[9] * .037
-
-                update.message.reply_text(
-                    "Xsauce Culture Index is ${}".format(round(culture, 2)))
-
-                db = cluster[DATABASE_NAME]
-                stats = db[COLLECTION_NAME2]
-                stats.update_one({"price": {"$exists": True}},
-                                 {"$set": {"price": culture}})
-        except Exception as error:
-            print('Cause {}'.format(error))
-            update.message.reply_text("Not Authorized!")
-
-
-def send2db(update, context):
-    selection = update.poll_answer.option_ids[0]
-    wager = None
-    isShort = bool
-    if selection == 7:
-        wager = 3000
-        isShort = True
-    elif selection == 6:
-        wager = 2000
-        isShort = True
-    elif selection == 5:
-        wager = 1000
-        isShort = True
-    elif selection == 4:
-        wager = 500
-        isShort = True
-    elif selection == 3:
-        wager = 500
-        isShort = False
-    elif selection == 2:
-        wager = 1000
-        isShort = False
-    elif selection == 1:
-        wager = 2000
-        isShort = False
-    elif selection == 0:
-        wager = 3000
-        isShort = False
-
     try:
-        username = update.poll_answer.user.username
         db = cluster[DATABASE_NAME]
-        participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = participants.find({"username": username})[0]
-        res2 = stats.find()[0]
-        currIndexPrice = res2['price']
-        currFunds = res['funds']
-        currSelect = res['selection']
-        position = wager / currIndexPrice
-        currSelect.append({"direction": isShort, "amount": wager})
-        if isShort == False:
-            participants.update_one({"username": username}, {"$set": {
-                "position": {"Long": {"shares": position, "buyIn": currIndexPrice}, "Short": {"shares": res['position']['Short']['shares'], "buyIn": res['position']['Short']['buyIn']}}, "selection": [currSelect], "funds": currFunds - wager, "trades": res['trades'] + 1}})
-        else:
-            participants.update_one({"username": username}, {"$set": {
-                "position": {"Short": {"shares": position, "buyIn": currIndexPrice}, "Long": {"shares": res['position']['Long']['shares'], "buyIn": res['position']['Long']['buyIn']}}, "selection": [currSelect], "funds": currFunds - wager, "trades": res['trades'] + 1}})
+        info = stats.find().sort("_id", -1)[0]
+        culture = info['price']
+        culture_date = info['date']
+        culture_time = info['time']
+        update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {}".format(
+            round(culture, 2), culture_date, culture_time))
     except Exception as error:
         print('Cause {}'.format(error))
+        update.message.reply_text(error)
 
 
 def play(update, context):
@@ -258,20 +175,29 @@ def portfolio(update, context):
 
 
 def instructions(update, context):
-    update.message.reply_text("These will be the instructions {}".format(id))
+    update.message.reply_text(
+        "https://docs.xsauce.io/applications/how-it-works")
 
 
 def open(update, context):
     sender = update.message.from_user.username
     x = re.split("\s", update.message.text)
-    wager = (x[2])
+    wager = x[2]
     try:
         if x[2] == "max":
             wager = "max"
+        elif x[2] == None or x[1] == None or len(x) > 3:
+            raise ValueError()
         else:
+            if float(x[2]) < 0:
+                raise ValueError('Please enter a positive number')
             wager = float(x[2])
     except ValueError as error:
-        update.message.reply_text('Please enter a number')
+        if error == 'Please enter a positive number':
+            return update.message.reply_text('Please enter a positive number')
+        else:
+            return update.message.reply_text(
+                'Please enter valid command. eg: /open long 500')
     try:
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
@@ -286,16 +212,20 @@ def open(update, context):
         if wager > funds:
             raise ValueError('More than you have in your account')
         purchased = wager / currIndexPrice
-
+        strip = datetime.now()
+        date = strip.strftime('%m/%d/%Y')
+        time = strip.strftime("%H:%M:%S")
         if x[1] == "short":
-            trades.append({"direction": x[1], "amount": wager})
+            trades.append(
+                {"direction": x[1], "amount": wager, "date": date, "time": time})
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Short']
                                                                                                                ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Short']
                                                                                                                ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Short position has been opened!')
         if x[1] == "long":
-            trades.append({"direction": x[1], "amount": wager})
+            trades.append(
+                {"direction": x[1], "amount": wager, "date": date, "time": time})
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Long']
                                                                                                                                                                                                                                                                                                                              ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Long']
@@ -314,10 +244,18 @@ def close(update, context):
     try:
         if x[2] == "max":
             reduction = "max"
+        elif x[2] == None or x[1] == None or len(x) > 3:
+            raise ValueError()
         else:
+            if float(x[2]) < 0:
+                raise ValueError('Please enter a positive number')
             reduction = float(x[2])
     except ValueError as error:
-        return update.message.reply_text('Please enter a number')
+        if error == 'Please enter a positive number':
+            return update.message.reply_text('Please enter a positive number')
+        else:
+            return update.message.reply_text(
+                'Please enter valid command. eg: /close short 300')
     try:
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
@@ -327,6 +265,9 @@ def close(update, context):
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
+        strip = datetime.now()
+        date = strip.strftime('%m/%d/%Y')
+        time = strip.strftime("%H:%M:%S")
 
         if x[1] == "short":
             avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
@@ -338,7 +279,8 @@ def close(update, context):
                 (reduction * currIndexPrice)
             if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                 raise ValueError('More than you have in your account')
-            trades.append({"direction": x[1], "amount": reduction})
+            trades.append(
+                {"direction": x[1], "amount": reduction, "date": date, "time": time})
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Short']['buyIn']['amount_spent'] - wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Short position has been closed!')
@@ -352,7 +294,8 @@ def close(update, context):
                 (reduction * currIndexPrice)
             if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
                 raise ValueError('More than you have in your account')
-            trades.append({"direction": x[1], "amount": reduction})
+            trades.append(
+                {"direction": x[1], "amount": reduction, "date": date, "time": time})
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Long position has been closed!')
@@ -364,35 +307,16 @@ def close(update, context):
 
 def help(update, context):
     update.message.reply_text(
-        """
-  /play -> Welcome to the channel! Use this command to get $10,000 dollars to start up!
-  /close -> Close a position
-  /open -> Open a position
-  /portfolio -> Show your current index holdings
-  /help -> Shows this message
-  /instructions -> See how to play daily bread
-  /website -> Learn about Xsauce and cultural assets
-  """
+        "Welcome to the Xchange!\n\n"
+        "/instructions -> Learn how to use the Xchange\n"
+        "/play -> Use this command to get $10,000 dollars to start up!\n"
+        "/open -> Open a position\n"
+        "/close -> Close a position\n"
+        "/portfolio -> Show your current index holdings\n"
+        "/help -> Shows this message\n"
+        "/website -> Learn about Xsauce and cultural assets"
+
     )
-
-
-def poll(update, context):
-    sender = update.message.from_user.username
-    if sender == "zmill28" or sender == "el_malchemist":
-        db = cluster[DATABASE_NAME]
-        stats = db[COLLECTION_NAME2]
-        res = stats.find()[0]
-        currPrice = res['price']
-        base_url = CHAT
-        parameters = {
-            "chat_id": "-1001872658552",
-            "question": "How much are you wagering on the Culture Index? - Current Price:{}".format(round(currPrice, 2)),
-            "options": json.dumps(["$3,000(Long)", "$2,000(Long)", "$1,000(Long)", "$500(Long)", "$500(Short)", "$1000(Short)", "$2000(Short)", "$3000(Short)"]),
-            "is_anonymous": False,
-        }
-        resp = requests.get(base_url, data=parameters)
-    else:
-        update.message.reply_text('Not Authorized')
 
 
 def website(update, context):
