@@ -302,7 +302,7 @@ def help(update, context):
         "/play -> Use this command to get $10,000 dollars to start up!\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
-        "/xci -> Show the current price of the Xsauce Culture Index"
+        "/xci -> Show the current price of the Xsauce Culture Index\n"
         "/portfolio -> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
