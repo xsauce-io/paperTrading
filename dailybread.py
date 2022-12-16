@@ -91,6 +91,7 @@ def main():
     dispatcher.add_handler(CommandHandler('xci', xci_price))
     dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
+    dispatcher.add_handler(ChatMemberHandler(welcome))
 
     updater.start_polling()
     updater.idle()
@@ -128,9 +129,9 @@ def play(update, context):
         print('Cause{}'.format(error))
 
 
-def welcome(update, context, new_member):
+def welcome(update, context):
     context.bot.send_message(CHAT,
-                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(new_member.first_name))
+                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(update.chat_member))
 
 
 def portfolio(update, context):
