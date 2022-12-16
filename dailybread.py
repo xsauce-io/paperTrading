@@ -331,7 +331,7 @@ def main():
     dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
-        Filters.status_update.new_chat_members, new_members))
+        Filters.status_update.new_chat_members, welcome))
 
     updater.start_polling(allowed_updates=Update.ALL_TYPES)
     updater.idle()
