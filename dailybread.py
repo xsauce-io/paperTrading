@@ -104,7 +104,7 @@ def xci_price(update, context):
         culture = info['price']
         culture_date = info['date']
         culture_time = info['time']
-        update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {}".format(
+        update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
             round(culture, 2), culture_date, culture_time))
     except Exception as error:
         print('Cause {}'.format(error))
@@ -128,13 +128,18 @@ def play(update, context):
         print('Cause{}'.format(error))
 
 
+def welcome(update, context, new_member):
+    context.bot.send_message(CHAT,
+                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(new_member.first_name))
+
+
 def portfolio(update, context):
     username = update.message.from_user.username
     try:
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res2 = stats.find()[0]
+        res2 = stats.find().sort("_id", -1)[0]
         currIndexPrice = res2['price']
         res = participants.find({"username": username})[0]
         avg_buy_price_long = 0
@@ -206,7 +211,7 @@ def open(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find()[0]
+        res = stats.find().sort("_id", -1)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
@@ -264,7 +269,7 @@ def close(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find()[0]
+        res = stats.find().sort("_id", -1)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
@@ -311,11 +316,11 @@ def close(update, context):
 
 def help(update, context):
     update.message.reply_text(
-        "Welcome to the Xchange!\n\n"
         "/instructions -> Learn how to use the Xchange\n"
         "/play -> Use this command to get $10,000 dollars to start up!\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
+        "/xci -> Show the current price of the Xsauce Culture Index"
         "/portfolio -> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
