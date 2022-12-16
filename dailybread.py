@@ -284,6 +284,7 @@ def close(update, context):
             cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
                 (reduction * currIndexPrice)
             if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
+                update.message.reply_text('Error!')
                 raise ValueError('More than you have in your account')
             trades.append(
                 {"direction": x[1], "amount": reduction, "date": date, "time": time})
