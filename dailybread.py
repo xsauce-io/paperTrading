@@ -261,9 +261,11 @@ def close(update, context):
         time = strip.strftime("%H:%M:%S")
 
         if x[1] == "short":
-            avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
-                balance['position']['Short']['buyIn']['purchased']
             try:
+                if balance['position']['Short']['shares'] == None:
+                    raise ValueError('You have no positions')
+                avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
+                    balance['position']['Short']['buyIn']['purchased']
                 if reduction == "max":
                     reduction = balance['position']['Short']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
@@ -280,16 +282,17 @@ def close(update, context):
                 print('Cause {}'.format(error))
                 update.message.reply_text('{}'.format(error))
         if x[1] == "long":
-            avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
-                balance['position']['Long']['buyIn']['purchased']
             try:
+                if balance['position']['Short']['shares'] == None:
+                    raise ValueError('You have no positions')
+                avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
+                    balance['position']['Long']['buyIn']['purchased']
                 if reduction == "max":
                     reduction = balance['position']['Long']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
                 cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
                     (reduction * currIndexPrice)
                 if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
-                    update.message.reply_text('Error!')
                     raise ValueError('More than you have in your account')
                 trades.append(
                     {"direction": x[1], "amount": reduction, "date": date, "time": time})
