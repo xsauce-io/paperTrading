@@ -76,28 +76,6 @@ def priceUpdate(context):
         print('Cause {}'.format(error))
 
 
-def main():
-    updater = Updater(
-        BOT_TOKEN, use_context=True)
-    job_queue = updater.job_queue
-    job_seconds = job_queue.run_repeating(
-        priceUpdate, interval=14400, first=1)
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('help', help))
-    dispatcher.add_handler(CommandHandler('close', close))
-    dispatcher.add_handler(CommandHandler('portfolio', portfolio))
-    dispatcher.add_handler(CommandHandler('play', play))
-    dispatcher.add_handler(CommandHandler('website', website))
-    dispatcher.add_handler(CommandHandler('xci', xci_price))
-    dispatcher.add_handler(CommandHandler('open', open))
-    dispatcher.add_handler(CommandHandler('instructions', instructions))
-    dispatcher.add_handler(ChatMemberHandler(
-        welcome, ChatMemberHandler.CHAT_MEMBER))
-
-    updater.start_polling(allowed_updates=Update.ALL_TYPES)
-    updater.idle()
-
-
 def xci_price(update, context):
     try:
         db = cluster[DATABASE_NAME]
@@ -131,8 +109,10 @@ def play(update, context):
 
 
 def welcome(update, context):
+    new_members = update.effective_message.new_chat_members
+
     context.bot.send_message(CHAT,
-                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(update.chat_member.username))
+                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(new_members[-1].username))
 
 
 def portfolio(update, context):
@@ -333,6 +313,28 @@ def help(update, context):
 def website(update, context):
     update.message.reply_text(
         "Check out our website to see what Xsauce is all about: https://xsauce.io/ ")
+
+
+def main():
+    updater = Updater(
+        BOT_TOKEN, use_context=True)
+    job_queue = updater.job_queue
+    job_seconds = job_queue.run_repeating(
+        priceUpdate, interval=14400, first=1)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler('help', help))
+    dispatcher.add_handler(CommandHandler('close', close))
+    dispatcher.add_handler(CommandHandler('portfolio', portfolio))
+    dispatcher.add_handler(CommandHandler('play', play))
+    dispatcher.add_handler(CommandHandler('website', website))
+    dispatcher.add_handler(CommandHandler('xci', xci_price))
+    dispatcher.add_handler(CommandHandler('open', open))
+    dispatcher.add_handler(CommandHandler('instructions', instructions))
+    dispatcher.add_handler(MessageHandler(
+        Filters.status_update.new_chat_members, new_members))
+
+    updater.start_polling(allowed_updates=Update.ALL_TYPES)
+    updater.idle()
 
 
 main()
