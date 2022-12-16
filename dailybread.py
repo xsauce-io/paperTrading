@@ -283,7 +283,7 @@ def close(update, context):
                 update.message.reply_text('{}'.format(error))
         if x[1] == "long":
             try:
-                if balance['position']['Short']['shares'] == None:
+                if balance['position']['Long']['shares'] == None:
                     raise ValueError('You have no positions')
                 avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
                     balance['position']['Long']['buyIn']['purchased']
