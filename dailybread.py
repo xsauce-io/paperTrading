@@ -263,35 +263,42 @@ def close(update, context):
         if x[1] == "short":
             avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
                 balance['position']['Short']['buyIn']['purchased']
-            if reduction == "max":
-                reduction = balance['position']['Short']['shares'] - 1e-09
-            wager = avg_buy_price * reduction
-            cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
-                (reduction * currIndexPrice)
-            if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
-                raise ValueError('More than you have in your account')
-            trades.append(
-                {"direction": x[1], "amount": reduction, "date": date, "time": time})
-            participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": balance['position']['Short']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Short']['buyIn']['amount_spent'] - wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
-            update.message.reply_text('Short position has been closed!')
+            try:
+                if reduction == "max":
+                    reduction = balance['position']['Short']['shares'] - 1e-09
+                wager = avg_buy_price * reduction
+                cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
+                    (reduction * currIndexPrice)
+                if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
+                    raise ValueError('More than you have in your account')
+                trades.append(
+                    {"direction": x[1], "amount": reduction, "date": date, "time": time})
+                participants.update_one({"username": sender}, {"$set": {
+                    "position": {"Short": {"shares": balance['position']['Short']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Short']['buyIn']['amount_spent'] - wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+                update.message.reply_text('Short position has been closed!')
+            except Exception and ValueError as error:
+                print('Cause {}'.format(error))
+                update.message.reply_text('{}'.format(error))
         if x[1] == "long":
             avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
                 balance['position']['Long']['buyIn']['purchased']
-            if reduction == "max":
-                reduction = balance['position']['Long']['shares'] - 1e-09
-            wager = avg_buy_price * reduction
-            cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
-                (reduction * currIndexPrice)
-            if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
-                update.message.reply_text('Error!')
-                raise ValueError('More than you have in your account')
-            trades.append(
-                {"direction": x[1], "amount": reduction, "date": date, "time": time})
-            participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
-            update.message.reply_text('Long position has been closed!')
-
+            try:
+                if reduction == "max":
+                    reduction = balance['position']['Long']['shares'] - 1e-09
+                wager = avg_buy_price * reduction
+                cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
+                    (reduction * currIndexPrice)
+                if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
+                    update.message.reply_text('Error!')
+                    raise ValueError('More than you have in your account')
+                trades.append(
+                    {"direction": x[1], "amount": reduction, "date": date, "time": time})
+                participants.update_one({"username": sender}, {"$set": {
+                    "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+                update.message.reply_text('Long position has been closed!')
+            except Exception and ValueError as error:
+                print('Cause {}'.format(error))
+                update.message.reply_text('{}'.format(error))
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
