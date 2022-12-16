@@ -94,7 +94,7 @@ def main():
     dispatcher.add_handler(ChatMemberHandler(
         welcome, ChatMemberHandler.CHAT_MEMBER))
 
-    updater.start_polling()
+    updater.start_polling(allowed_updates=Update.ALL_TYPES)
     updater.idle()
 
 
