@@ -23,10 +23,13 @@ CHAT = os.environ['chat']
 DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
+URL = os.environ['db_url'] #@Warning : This is configured to a dev environment
 
+
+#@Warning : This is configured to a dev environment
 url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
     "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
-cluster = MongoClient(url)
+cluster = MongoClient(URL)
 
 
 def priceUpdate(context):
