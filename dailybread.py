@@ -317,7 +317,6 @@ def help(update, context):
         "/portfolio -> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
-
     )
 
 
@@ -331,7 +330,7 @@ def main():
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
     job_seconds = job_queue.run_repeating(
-        priceUpdate, interval=14400, first=1)
+        priceUpdate, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
