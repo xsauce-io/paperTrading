@@ -23,10 +23,7 @@ CHAT = os.environ['chat']
 DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
-URL = os.environ['db_url'] #@Warning : This is configured to a dev environment
-
-
-#@Warning : This is configured to a dev environment
+URL = os.environ['db_url']
 url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
     "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
 cluster = MongoClient(URL)
@@ -65,7 +62,6 @@ def priceUpdate(context):
         culture += resData[7] * .185
         culture += resData[8] * .017
         culture += resData[9] * .037
-
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
@@ -74,6 +70,7 @@ def priceUpdate(context):
         strip = datetime.now()
         date = strip.strftime('%m/%d/%Y')
         time = strip.strftime("%H:%M:%S")
+
         stats.insert_one(
             {"price": culture, "date": date, "time": time})
     except Exception as error:
@@ -125,7 +122,7 @@ def portfolio(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res2 = stats.find().sort("_id", pymongo.DESCENDING)[0]
+        res2 = stats.find().sort("_id", -1)[0]
         currIndexPrice = res2['price']
         res = participants.find({"username": username})[0]
         avg_buy_price_long = 0
@@ -197,7 +194,7 @@ def open(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", pymongo.DESCENDING)[0]
+        res = stats.find().sort("_id", -1)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
@@ -255,7 +252,7 @@ def close(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", pymongo.DESCENDING)[0]
+        res = stats.find().sort("_id", -1)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
