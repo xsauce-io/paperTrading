@@ -28,7 +28,7 @@ URL = os.environ['db_url']
 cluster = MongoClient(URL)
 
 
-def priceUpdate(context):
+def price_update(context):
     try:
         skus = ["555088-063",
                 "DO9392-700",
@@ -78,7 +78,7 @@ def priceUpdate(context):
 
 def xci_price(update, context):
     try:
-        xci_info = controller.get_latest_xci_price()
+        xci_info = controller.get_latest_xci_info()
         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
             xci_info.price, xci_info.date, xci_info.time))
     except Exception as error:
@@ -107,29 +107,36 @@ def welcome(update, context):
 
 
 def portfolio(update, context):
-    username = update.message.from_user.username
+    sender = update.message.from_user.username
     try:
-        db = cluster[DATABASE_NAME]
-        participants = db[COLLECTION_NAME1]
-        stats = db[COLLECTION_NAME2]
-        res2 = stats.find().sort("_id", -1)[0]
-        currIndexPrice = res2['price']
-        res = participants.find({"username": username})[0]
+
+        current_index_price = controller.get_latest_xci_info().price
+        position_info = controller.get_participant_position_info(sender)
+        number_of_trades = controller.get_participants_trades_total(sender)
+        funds = controller.get_participant_funds(sender)
+        long_amount_spent = position_info.long_amount_spent
+        short_amount_spent = position_info.short_amount_spent
+        long_purchased = position_info.long_purchased
+        short_purchased = position_info.short_purchased
+        long_shares = position_info.long_shares
+        short_shares = position_info.short_shares
         avg_buy_price_long = 0
         avg_buy_price_short = 0
-        if res['position']['Long']['buyIn']['amount_spent'] > 0:
-            avg_buy_price_long = res['position']['Long']['buyIn']['amount_spent'] / \
-                res['position']['Long']['buyIn']['purchased']
-        if res['position']['Short']['buyIn']['amount_spent'] > 0:
-            avg_buy_price_short = res['position']['Short']['buyIn']['amount_spent'] / \
-                res['position']['Short']['buyIn']['purchased']
-        Long = res['position']["Long"]['shares'] * avg_buy_price_long + \
-            (currIndexPrice - avg_buy_price_long) * \
-            res['position']['Long']['shares']
-        Short = res['position']["Short"]['shares'] * avg_buy_price_short + \
-            (avg_buy_price_short - currIndexPrice) * \
-            res['position']["Short"]['shares']
-        pnl = round((res['funds'] + (Long + Short)) - 10000, 3)
+
+        if long_amount_spent > 0:
+            avg_buy_price_long = calculate_average_buy_price(
+                long_amount_spent, long_purchased)
+        if short_amount_spent > 0:
+            avg_buy_price_short = calculate_average_buy_price(
+                short_amount_spent, short_purchased)
+
+        Long = calculate_long_position(
+            long_shares, avg_buy_price_long, current_index_price)
+        Short = calculate_short_position(
+            short_shares, avg_buy_price_short, current_index_price)
+
+        pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
+
         if math.isclose(pnl, 0.00):
             pnl = 0
         message = "*Balance:* ${}\n" \
@@ -140,20 +147,40 @@ def portfolio(update, context):
             "*Total Trades*: {}"
 
         update.message.reply_text(
-            message.format(round(res['funds'], 3),
-                           round(res['position']['Short']['shares'], 3),
-                           round(res['position']['Long']['shares'], 3),
+            message.format(round(funds, 3),
+                           round(short_shares, 3),
+                           round(long_shares, 3),
                            round(Long + Short, 2),
                            round(avg_buy_price_short, 3),
                            round(avg_buy_price_long, 3),
                            pnl,
-                           res['trades']['total']),
+                           number_of_trades),
             parse_mode='Markdown'
         )
 
     except Exception as error:
         update.message.reply_text("You hold no positions/ Error")
         print('Cause {}'.format(error))
+
+
+def calculate_average_buy_price(amount_spent, purchased):
+    avg_buy_price = amount_spent / purchased
+    return avg_buy_price
+
+
+def calculate_long_position(shares, avg_buy_price, index_price):
+    long = (shares * avg_buy_price) + ((index_price - avg_buy_price) * shares)
+    return long
+
+
+def calculate_short_position(shares, avg_buy_price, index_price):
+    long = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
+    return long
+
+
+def calculate_profit_and_loss(funds, long, short):
+    pnl = (funds + short + long) - 10000
+    return pnl
 
 
 def instructions(update, context):
@@ -329,7 +356,7 @@ def main():
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
     job_seconds = job_queue.run_repeating(
-        priceUpdate, interval=86400, first=1)
+        price_update, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
