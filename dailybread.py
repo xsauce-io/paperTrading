@@ -11,7 +11,7 @@ from datetime import datetime
 import pymongo
 from pymongo import MongoClient
 import unittest
-import database
+import controller
 
 load_dotenv()
 
@@ -78,7 +78,7 @@ def priceUpdate(context):
 
 def xci_price(update, context):
     try:
-        xci_info = database.get_latest_xci_price()
+        xci_info = controller.get_latest_xci_price()
         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
             xci_info.price, xci_info.date, xci_info.time))
     except Exception as error:
@@ -89,17 +89,12 @@ def xci_price(update, context):
 def play(update, context):
     sender = update.message.from_user.username
     try:
-        db = cluster[DATABASE_NAME]
-        participants = db[COLLECTION_NAME1]
-        res = participants.find({"username": sender})
-        print(res)
-        if len(tuple(res.clone())) > 0:
+        if controller.find_participant(sender):
             update.message.reply_text("Nice try! No such thing as free")
         else:
-            participants.insert_one(
-                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})
+            controller.create_participant(sender)
             update.message.reply_text(
-                "Welcome {},\n This is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
+                "Welcome {},\nThis is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
     except Exception as error:
         print('Cause{}'.format(error))
 
