@@ -10,11 +10,12 @@ import requests
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient
+import unittest
+import database
 
 load_dotenv()
 
-config = configparser.ConfigParser()
-config.read('config.ini')
+
 PASSWORD = os.environ['password']
 USERNAME = os.environ['username']
 BOT_TOKEN = os.environ['bot_token']
@@ -24,8 +25,6 @@ DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
 URL = os.environ['db_url']
-url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
-    "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
 cluster = MongoClient(URL)
 
 
@@ -79,14 +78,9 @@ def priceUpdate(context):
 
 def xci_price(update, context):
     try:
-        db = cluster[DATABASE_NAME]
-        stats = db[COLLECTION_NAME2]
-        info = stats.find().sort("_id", -1)[0]
-        culture = info['price']
-        culture_date = info['date']
-        culture_time = info['time']
+        xci_info = database.get_latest_xci_price()
         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
-            round(culture, 2), culture_date, culture_time))
+            xci_info.price, xci_info.date, xci_info.time))
     except Exception as error:
         print('Cause {}'.format(error))
         update.message.reply_text(error)
@@ -98,7 +92,8 @@ def play(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         res = participants.find({"username": sender})
-        if len(list(res.clone())) > 0:
+        print(res)
+        if len(tuple(res.clone())) > 0:
             update.message.reply_text("Nice try! No such thing as free")
         else:
             participants.insert_one(
