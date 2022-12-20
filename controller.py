@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import configparser
 import requests
 from datetime import datetime
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from models import Index, Position
 
 
@@ -42,7 +42,7 @@ def get_participants_collection():
 
 #TODO:This function can be generalized - get_latest_index with a parameter.
 def get_latest_xci_info():
-    latest_xci_info = stats.find().sort("_id", -1)[0] #WARNING: This is hardcoded to get first element
+    latest_xci_info = stats.find().sort("_id", DESCENDING)[0] #WARNING: This is hardcoded to get first element
     price = round(latest_xci_info["price"], 2)
     date = latest_xci_info["date"]
     time = latest_xci_info["time"]

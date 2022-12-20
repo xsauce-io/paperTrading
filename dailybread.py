@@ -10,7 +10,6 @@ import requests
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient
-import unittest
 import controller
 
 load_dotenv()
