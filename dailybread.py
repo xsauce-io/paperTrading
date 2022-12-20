@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import configparser
 import requests
 from datetime import datetime
+import pymongo
 from pymongo import MongoClient
 
 load_dotenv()
@@ -121,7 +122,7 @@ def portfolio(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res2 = stats.find().sort("_id", -1)[0]
+        res2 = stats.find().sort("_id", pymongo.DESCENDING)[0]
         currIndexPrice = res2['price']
         res = participants.find({"username": username})[0]
         avg_buy_price_long = 0
@@ -193,7 +194,7 @@ def open(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", -1)[0]
+        res = stats.find().sort("_id", pymongo.DESCENDING)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
@@ -251,7 +252,7 @@ def close(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", -1)[0]
+        res = stats.find().sort("_id", pymongo.DESCENDING)[0]
         currIndexPrice = res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
