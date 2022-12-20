@@ -1,14 +1,10 @@
-import math
 from telegram import *
 from telegram.ext import *
-import requests
-import re
 import os
 from dotenv import load_dotenv
-import configparser
-import requests
 from datetime import datetime
-from pymongo import MongoClient, DESCENDING
+import pymongo
+from pymongo import MongoClient, DESCENDING , InsertOne
 from models import Index, Position
 
 
@@ -40,10 +36,10 @@ def get_stats_collection():
 def get_participants_collection():
     return participants
 
-#TODO:This function can be generalized - get_latest_index with a parameter.
+#TODO:This function can be generalized - get_latest_index with a parameter break down to get latest price , data and time => put together in service layer.
 def get_latest_xci_info():
     latest_xci_info = stats.find().sort("_id", DESCENDING)[0] #WARNING: This is hardcoded to get first element
-    price = round(latest_xci_info["price"], 2)
+    price = round(latest_xci_info["price"], 2) #TODO: rm rounding and put in service layer
     date = latest_xci_info["date"]
     time = latest_xci_info["time"]
     xci_index = Index(price, date, time)
@@ -59,7 +55,7 @@ def find_participant(sender):
 def create_participant(sender):
     try:
         participants.insert_one(
-                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})
+                {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})  #TODO: move schema to service layer
     except Exception as error:
         print('Cause{}'.format(error))
 
@@ -103,3 +99,14 @@ def get_participant_funds(sender):
 
 def get_participants_trades_total(sender):
     return get_participant(sender)['trades']['total']
+
+def get_participant_trades_details(sender):
+    return get_participant(sender)['trades']['tradeDetails']
+
+def append_trade_to_participant(sender, position, wager, date, time ):
+    print("here")
+    trades = get_participant_trades_details(sender)
+    print(trades)
+    here = trades.append({"direction": position, "amount": wager, "date": date, "time": time}) #TODO: move schema to service layer
+    print(trades)
+    return

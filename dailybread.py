@@ -109,7 +109,7 @@ def portfolio(update, context):
     sender = update.message.from_user.username
     try:
 
-        current_index_price = controller.get_latest_xci_info().price * 2
+        current_index_price = controller.get_latest_xci_info().price
         position_info = controller.get_participant_position_info(sender)
         number_of_trades = controller.get_participants_trades_total(sender)
         funds = controller.get_participant_funds(sender)
@@ -190,51 +190,45 @@ def instructions(update, context):
 
 def open(update, context):
     sender = update.message.from_user.username
-    x = re.split("\s", update.message.text)
-    wager = x[2]
+    message = update.message.text
+    wager = 0
+    position =''
     try:
-        if x[2] == "max":
-            wager = "max"
-        elif x[2] == None or x[1] == None or len(x) > 3:
-            raise ValueError()
-        else:
-            if float(x[2]) < 0:
-                raise ValueError('Please enter a positive number')
-            wager = float(x[2])
+        wager, position = get_wager_info_from(message)
+
     except ValueError as error:
-        if error == 'Please enter a positive number':
+        if str(error) == 'Please enter a positive number':
             return update.message.reply_text('Please enter a positive number')
         else:
             return update.message.reply_text(
                 'Please enter valid command. eg: /open long 500')
+
     try:
-        db = cluster[DATABASE_NAME]
-        participants = db[COLLECTION_NAME1]
-        stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", -1)[0]
-        currIndexPrice = res['price']
-        balance = participants.find({"username": sender})[0]
-        funds = balance['funds']
-        trades = balance['trades']['tradeDetails']
+        current_index_price = controller.get_latest_xci_info().price
+        funds = controller.get_participant_funds(sender)
+        balance = controller.get_participant(sender)
+        funds = controller.get_participant_funds(sender)
+        trades = controller.get_participant_trades_details(sender)
+        participants = controller.get_participants_collection()
         if wager == "max":
-            wager = balance['funds'] - 1e-09
+            wager = funds - 1e-09
         if wager > funds:
             raise ValueError('More than you have in your account')
-        purchased = wager / currIndexPrice
+
+        purchased = wager /  current_index_price
         strip = datetime.now()
         date = strip.strftime('%m/%d/%Y')
         time = strip.strftime("%H:%M:%S")
-        if x[1] == "short":
-            trades.append(
-                {"direction": x[1], "amount": wager, "date": date, "time": time})
+        if position == "short":
+            controller.append_trade_to_participant(sender, position, wager, date, time)
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Short']
                                                                                                                ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Short']
                                                                                                                ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
             update.message.reply_text('Short position has been opened!')
-        if x[1] == "long":
+        if position == "long":
             trades.append(
-                {"direction": x[1], "amount": wager, "date": date, "time": time})
+                {"direction": position, "amount": wager, "date": date, "time": time})
             participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Long']
                                                                                                                                                                                                                                                                                                                              ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Long']
@@ -245,6 +239,29 @@ def open(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+
+
+def parse_open_command(message):
+    parsed_message = re.split("\s", message)
+    return parsed_message
+
+def get_wager_info_from(open_command):
+    parsed_open_command = parse_open_command(open_command)
+
+    if len(parsed_open_command) < 3:
+        raise IndexError()
+    elif parsed_open_command[2] == None or parsed_open_command[1] == None or len(parsed_open_command) > 3:
+        raise ValueError()
+    elif parsed_open_command[2] == "max":
+        position = parsed_open_command[1]
+        wager = "max"
+    else:
+        if float(parsed_open_command[2]) < 0:
+            raise ValueError('Please enter a positive number')
+        position = parsed_open_command[1]
+        wager = float(parsed_open_command[2])
+
+    return wager, position
 
 def close(update, context):
     sender = update.message.from_user.username
