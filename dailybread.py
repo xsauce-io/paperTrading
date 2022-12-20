@@ -23,10 +23,10 @@ CHAT = os.environ['chat']
 DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
-
-url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
-    "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
-cluster = MongoClient(url)
+URL = os.environ['db_url']
+# url = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
+#     "@xsauce-telegram.7zeqjol.mongodb.net/?retryWrites=true&w=majority"
+cluster = MongoClient(URL)
 
 
 def priceUpdate(context):
@@ -123,7 +123,8 @@ def portfolio(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res2 = stats.find().sort("_id", pymongo.DESCENDING)[0]
-        currIndexPrice = res2['price']
+        currIndexPrice = res2['price'] + 50
+        print(currIndexPrice)
         res = participants.find({"username": username})[0]
         avg_buy_price_long = 0
         avg_buy_price_short = 0
@@ -253,7 +254,8 @@ def close(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res = stats.find().sort("_id", pymongo.DESCENDING)[0]
-        currIndexPrice = res['price']
+        currIndexPrice = res['price'] + 50
+        print(currIndexPrice)
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
@@ -270,8 +272,15 @@ def close(update, context):
                 if reduction == "max":
                     reduction = balance['position']['Short']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
-                cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
-                    (reduction * currIndexPrice)
+
+                pnl_by_share =  ((balance['position']["Short"]['shares']) * avg_buy_price + \
+                (avg_buy_price - currIndexPrice) * \
+                balance['position']["Short"]['shares'])/ balance['position']["Short"]['shares']
+
+                cash_out =  reduction * pnl_by_share
+                print(balance['position']["Short"]['shares'])
+                print(reduction)
+
                 if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                     raise ValueError('More than you have in your account')
                 trades.append(
