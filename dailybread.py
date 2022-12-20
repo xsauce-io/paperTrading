@@ -110,7 +110,7 @@ def portfolio(update, context):
     sender = update.message.from_user.username
     try:
 
-        current_index_price = controller.get_latest_xci_info().price
+        current_index_price = controller.get_latest_xci_info().price * 2
         position_info = controller.get_participant_position_info(sender)
         number_of_trades = controller.get_participants_trades_total(sender)
         funds = controller.get_participant_funds(sender)
@@ -174,12 +174,13 @@ def calculate_long_position(shares, avg_buy_price, index_price):
 
 
 def calculate_short_position(shares, avg_buy_price, index_price):
-    long = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
-    return long
+    short = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
+    return short
 
 
 def calculate_profit_and_loss(funds, long, short):
-    pnl = (funds + short + long) - 10000
+    initial_funds = 10000
+    pnl = (funds + short + long) - initial_funds
     return pnl
 
 
@@ -270,7 +271,8 @@ def close(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res = stats.find().sort("_id", -1)[0]
-        currIndexPrice = res['price']
+        currIndexPrice = 170
+        res['price']
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
@@ -285,10 +287,14 @@ def close(update, context):
                 avg_buy_price = balance['position']['Short']['buyIn']['amount_spent'] / \
                     balance['position']['Short']['buyIn']['purchased']
                 if reduction == "max":
+                    print("here" + str(reduction))
                     reduction = balance['position']['Short']['shares'] - 1e-09
+                    print("here reduction" + str(reduction))
                 wager = avg_buy_price * reduction
+                print("here" + str(wager))
                 cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
                     (reduction * currIndexPrice)
+                print("here" + str(cash_out))
                 if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                     raise ValueError('More than you have in your account')
                 trades.append(
