@@ -11,6 +11,7 @@ from datetime import datetime
 import pymongo
 from pymongo import MongoClient
 import controller
+import service
 
 load_dotenv()
 
@@ -77,7 +78,7 @@ def price_update(context):
 
 def xci_price(update, context):
     try:
-        xci_info = controller.get_latest_xci_info()
+        xci_info = service.get_latest_xci_info()
         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
             xci_info.price, xci_info.date, xci_info.time))
     except Exception as error:
@@ -88,7 +89,7 @@ def xci_price(update, context):
 def play(update, context):
     sender = update.message.from_user.username
     try:
-        if controller.find_participant(sender):
+        if service.find_participant(sender):
             update.message.reply_text("Nice try! No such thing as free")
         else:
             controller.create_participant(sender)
@@ -109,7 +110,7 @@ def portfolio(update, context):
     sender = update.message.from_user.username
     try:
 
-        current_index_price = controller.get_latest_xci_info().price
+        current_index_price = service.get_latest_xci_info().price
         position_info = controller.get_participant_position_info(sender)
         number_of_trades = controller.get_participants_trades_total(sender)
         funds = controller.get_participant_funds(sender)
@@ -203,7 +204,7 @@ def open(update, context):
                 'Please enter valid command. eg: /open long 500')
 
     try:
-        current_index_price = controller.get_latest_xci_info().price
+        current_index_price = service.get_latest_xci_info().price
         funds = controller.get_participant_funds(sender)
         trades = controller.get_participant_trades_details(sender)
         if wager == "max":
@@ -278,7 +279,7 @@ def close(update, context):
             return update.message.reply_text(
                 'Please enter valid command. eg: /close long 10')
     try:
-        current_index_price = controller.get_latest_xci_info().price
+        current_index_price = service.get_latest_xci_info().price
         balance = controller.get_participant(sender)
         funds = controller.get_participant_funds(sender)
         trades = controller.get_participant_trades_details(sender)

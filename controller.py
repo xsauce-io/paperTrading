@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient, DESCENDING, InsertOne
-from models import Index, Position
+from models import *
+
 
 
 load_dotenv()
@@ -39,25 +40,19 @@ def get_participants_collection():
     return participants
 
 # TODO:This function can be generalized - get_latest_index with a parameter break down to get latest price , data and time => put together in service layer.
-
-
-def get_latest_xci_info():
+def get_latest_xci():
     # WARNING: This is hardcoded to get first element
-    latest_xci_info = stats.find().sort("_id", DESCENDING)[0]
-    # TODO: rm rounding and put in service layer
-    price = round(latest_xci_info["price"], 2)
-    date = latest_xci_info["date"]
-    time = latest_xci_info["time"]
-    xci_index = Index(price, date, time)
-    return xci_index
+    latest_xci = stats.find().sort("_id", DESCENDING)[0]
+    price = latest_xci["price"]
+    date = latest_xci["date"]
+    time = latest_xci["time"]
+    index = Index(price, date, time)
+    return index
 
 
 def find_participant(sender):
-    participant = tuple(participants.find({"username": sender}).clone())
-    if (len(participant) > 0):
-        return True
-    else:
-        return False
+    participant = participants.find({"username": sender})
+    return participant
 
 
 def create_participant(sender):
