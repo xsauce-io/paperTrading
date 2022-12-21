@@ -123,7 +123,7 @@ def portfolio(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res2 = stats.find().sort("_id", pymongo.DESCENDING)[0]
-        currIndexPrice = res2['price'] + 50
+        currIndexPrice = res2['price']
         print(currIndexPrice)
         res = participants.find({"username": username})[0]
         avg_buy_price_long = 0
@@ -254,7 +254,7 @@ def close(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res = stats.find().sort("_id", pymongo.DESCENDING)[0]
-        currIndexPrice = res['price'] + 50
+        currIndexPrice = res['price']
         print(currIndexPrice)
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
