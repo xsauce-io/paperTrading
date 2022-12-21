@@ -286,9 +286,9 @@ def close(update, context):
         db = cluster[DATABASE_NAME]
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
-        res = stats.find().sort("_id", -1)[0]
-        currIndexPrice = 170
-        res['price']
+        res = stats.find().sort("_id", pymongo.DESCENDING)[0]
+        currIndexPrice = res['price'] + 50
+        print(currIndexPrice)
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
         trades = balance['trades']['tradeDetails']
@@ -307,10 +307,14 @@ def close(update, context):
                     reduction = balance['position']['Short']['shares'] - 1e-09
                     print("here reduction" + str(reduction))
                 wager = avg_buy_price * reduction
-                print("here" + str(wager))
-                cash_out = ((avg_buy_price - currIndexPrice) * reduction) + \
-                    (reduction * currIndexPrice)
-                print("here" + str(cash_out))
+
+                short_value_by_share = ((balance['position']["Short"]['shares']) * avg_buy_price +
+                                (avg_buy_price - currIndexPrice) *
+                                balance['position']["Short"]['shares']) / balance['position']["Short"]['shares']
+
+                cash_out = reduction * short_value_by_share
+
+
                 if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                     raise ValueError('More than you have in your account')
                 trades.append(
@@ -334,8 +338,13 @@ def close(update, context):
                 if reduction == "max":
                     reduction = balance['position']['Long']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
-                cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
-                    (reduction * currIndexPrice)
+
+                long_value_by_share = (balance['position']["Long"]['shares'] * avg_buy_price +
+                                (currIndexPrice - avg_buy_price) *
+                                balance['position']['Long']['shares']) / balance['position']["Long"]['shares']
+
+                cash_out = reduction * long_value_by_share
+
                 if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
                     raise ValueError('More than you have in your account')
                 trades.append(
