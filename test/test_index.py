@@ -1,16 +1,14 @@
 import unittest
-from service import calculate_long_position
+from service import *
 
 class TestIndex(unittest.TestCase):
 
-    def test_calculate_long_position(self):
-        shares = 10
-        avg_buy_price = 100
-        index_price = 150
-        expected = 1500
-        long_position = calculate_long_position(shares, avg_buy_price, index_price)
+    def test_format_index_price(self):
 
-        self.assertEqual(expected,long_position)
+        index = Index(100.99999, "12/10/2000", "11:43:34")
+        index_formatted = format_index_price(index)
+        expected = {101.00, "12/10/2000", "11:43:34"}
+        self.assertEqual(expected, {index_formatted.price, index.date, index.time})
 
 if __name__ == '__main__':
     unittest.main()

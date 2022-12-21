@@ -5,12 +5,15 @@ import requests
 import re
 import os
 from dotenv import load_dotenv
-import configparser
 import requests
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient
 import controller
+import processes.play
+import processes.index_price
+import processes.portfolio
+import processes.open
 import service
 
 load_dotenv()
@@ -78,7 +81,7 @@ def price_update(context):
 
 def xci_price(update, context):
     try:
-        xci_info = service.get_latest_xci_info()
+        xci_info = processes.index_price.get_latest_xci_info()
         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
             xci_info.price, xci_info.date, xci_info.time))
     except Exception as error:
@@ -89,10 +92,10 @@ def xci_price(update, context):
 def play(update, context):
     sender = update.message.from_user.username
     try:
-        if service.find_participant(sender):
+        if processes.play.find_participant(sender):
             update.message.reply_text("Nice try! No such thing as free")
         else:
-            controller.create_participant(sender)
+            processes.play.create_participant(sender)
             update.message.reply_text(
                 "Welcome {},\nThis is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
     except Exception as error:
@@ -109,36 +112,17 @@ def welcome(update, context):
 def portfolio(update, context):
     sender = update.message.from_user.username
     try:
+        portfolio = processes.portfolio.get_portfolio(sender)
+        funds = portfolio.funds
+        short_shares = portfolio.short_shares
+        long_shares = portfolio.long_shares
+        Long  = portfolio.long
+        Short = portfolio.short
+        avg_buy_price_long = portfolio.avg_buy_price_long
+        avg_buy_price_short = portfolio.avg_buy_price_short
+        pnl = portfolio.pnl
+        number_of_trades = portfolio.number_of_trades
 
-        current_index_price = service.get_latest_xci_info().price
-        position_info = controller.get_participant_position_info(sender)
-        number_of_trades = controller.get_participants_trades_total(sender)
-        funds = controller.get_participant_funds(sender)
-        long_amount_spent = position_info.long_amount_spent
-        short_amount_spent = position_info.short_amount_spent
-        long_purchased = position_info.long_purchased
-        short_purchased = position_info.short_purchased
-        long_shares = position_info.long_shares
-        short_shares = position_info.short_shares
-        avg_buy_price_long = 0
-        avg_buy_price_short = 0
-
-        if long_amount_spent > 0:
-            avg_buy_price_long = calculate_average_buy_price(
-                long_amount_spent, long_purchased)
-        if short_amount_spent > 0:
-            avg_buy_price_short = calculate_average_buy_price(
-                short_amount_spent, short_purchased)
-
-        Long = calculate_long_position(
-            long_shares, avg_buy_price_long, current_index_price)
-        Short = calculate_short_position(
-            short_shares, avg_buy_price_short, current_index_price)
-
-        pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
-
-        if math.isclose(pnl, 0.00):
-            pnl = 0
         message = "*Balance:* ${}\n" \
             "*Holdings(of XCI)*: {} Short / {} Long\n" \
             "*Total(Unsettled)*: ${}\n" \
@@ -178,11 +162,6 @@ def calculate_short_position(shares, avg_buy_price, index_price):
     return short
 
 
-def calculate_profit_and_loss(funds, long, short):
-    initial_funds = 10000
-    pnl = (funds + short + long) - initial_funds
-    return pnl
-
 
 def instructions(update, context):
     update.message.reply_text(
@@ -192,43 +171,10 @@ def instructions(update, context):
 def open(update, context):
     sender = update.message.from_user.username
     message = update.message.text
-    wager = 0
-    position = ''
-    try:
-        wager, position = get_info_from_open_close_command(message)
-    except ValueError as error:
-        if str(error) == 'Please enter a positive number':
-            return update.message.reply_text('Please enter a positive number')
-        else:
-            return update.message.reply_text(
-                'Please enter valid command. eg: /open long 500')
 
     try:
-        current_index_price = service.get_latest_xci_info().price
-        funds = controller.get_participant_funds(sender)
-        trades = controller.get_participant_trades_details(sender)
-        if wager == "max":
-            wager = funds - 1e-09
-        if wager > funds:
-            raise ValueError('More than you have in your account')
-
-        purchased = wager / current_index_price
-
-        date, time = get_current_date_time()
-        print(date, time)
-        if position == "short":
-            trades = controller.append_trade_to_participant(
-                sender, position, wager, date, time)
-            controller.update_participant_cash_out_short(
-                sender, purchased, wager, funds, trades)
-            update.message.reply_text('Short position has been opened!')
-        if position == "long":
-            trades = controller.append_trade_to_participant(
-                sender, position, wager, date, time)
-            controller.update_participant_cash_out_long(
-                sender, purchased, wager, funds, trades)
-            update.message.reply_text('Long position has been opened!')
-
+        result = processes.open.open(sender, message)
+        update.message.reply_text(result)
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))

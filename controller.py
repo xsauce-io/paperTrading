@@ -28,6 +28,8 @@ stats = db[COLLECTION_NAME2]
 participants = db[COLLECTION_NAME1]
 
 
+#TODO: Check that all public return models
+
 def get_database():
     return db
 
@@ -50,15 +52,18 @@ def get_latest_xci():
     return index
 
 
-def find_participant(sender):
-    participant = participants.find({"username": sender})
-    return participant
+def find_participant(sender) -> bool:
+    participant = tuple(participants.find({"username": sender}).clone())
+    if (len(participant) > 0):
+        return True
+    else:
+        return False
 
 
-def create_participant(sender):
+
+def add_participant(name, funds):
     try:
-        participants.insert_one(
-            {"username": sender, "funds": 10000, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
+        participants.insert_one({"username": name, "funds": funds, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
     except Exception as error:
         print('Cause{}'.format(error))
 
@@ -75,10 +80,9 @@ def get_participant_position_info(sender):
     short_purchased = get_participant_short_purchased(sender)
     long_shares = get_participant_long_shares(sender)
     short_shares = get_participant_short_shares(sender)
-    funds = get_participant_funds(sender)
 
     participant_position_info = Position(
-        long_amount_spent, short_amount_spent, long_purchased, short_purchased, long_shares, short_shares, funds)
+        long_amount_spent, short_amount_spent, long_purchased, short_purchased, long_shares, short_shares)
 
     return participant_position_info
 
