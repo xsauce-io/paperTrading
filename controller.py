@@ -158,3 +158,15 @@ def update_participant_close_short_max(sender, funds, trades, cash_out):
     participant = get_participant(sender)
     participants.update_one({"username": sender}, {"$set": {
                         "position": {"Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Long": {"shares": participant['position']['Long']['shares'], "buyIn": {"purchased":participant['position']['Long']['buyIn']['purchased'], "amount_spent": participant['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds + cash_out, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
+
+
+def update_participant_close_long(sender, wager, funds, reduction, trades, cash_out):
+    participant = get_participant(sender)
+    participants.update_one({"username": sender}, {"$set": {
+                        "position": {"Short": {"shares": participant['position']['Short']['shares'], "buyIn": {"purchased": participant['position']['Short']['buyIn']['purchased'], "amount_spent": participant['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": participant['position']['Long']['shares'] - reduction, "buyIn": {"purchased": participant['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": participant['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
+
+
+def update_participant_close_long_max(sender, funds, trades,cash_out ):
+    participant = get_participant(sender)
+    participants.update_one({"username": sender}, {"$set": {
+                        "position": {"Short": {"shares": participant['position']['Short']['shares'], "buyIn": {"purchased": participant['position']['Short']['buyIn']['purchased'], "amount_spent": participant['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "funds": funds + cash_out, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})

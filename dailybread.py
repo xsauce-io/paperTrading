@@ -296,15 +296,14 @@ def close(update, context):
 
         if position == "short":
             try:
-                check_close_requirements(short_shares, reduction)
-
                 if reduction == "max":
                     reduction = set_reduction_max(short_shares)
+
+                check_close_requirements(short_shares, reduction)
 
                 avg_buy_price_short = calculate_average_buy_price(short_amount_spent , short_purchased)
                 wager = avg_buy_price_short * reduction
                 short_value_by_share = calculate_short_position(short_shares, avg_buy_price_short, current_index_price) / short_shares
-
                 cash_out = reduction * short_value_by_share
 
 
@@ -324,30 +323,24 @@ def close(update, context):
 
         if position == "long":
             try:
-                if balance['position']['Long']['shares'] == 0:
-                    raise ValueError('You have no positions')
-                avg_buy_price = balance['position']['Long']['buyIn']['amount_spent'] / \
-                    balance['position']['Long']['buyIn']['purchased']
                 if reduction == "max":
-                    reduction = balance['position']['Long']['shares'] - 1e-09
-                wager = avg_buy_price * reduction
+                    reduction = long_shares - 1e-09
 
-                long_value_by_share = (balance['position']["Long"]['shares'] * avg_buy_price +
-                                       (currIndexPrice - avg_buy_price) *
-                                       balance['position']['Long']['shares']) / balance['position']["Long"]['shares']
+                check_close_requirements(long_shares, reduction)
 
+                avg_buy_price_long = long_amount_spent / long_purchased
+                wager = avg_buy_price_long * reduction
+                long_value_by_share = calculate_long_position(long_shares, avg_buy_price_long, current_index_price ) / long_shares
                 cash_out = reduction * long_value_by_share
 
-                if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
-                    raise ValueError('More than you have in your account')
-                trades.append(
+                if (reduction != long_shares - 1e-09):
+                    trades.append(
                     {"direction": position, "amount": reduction, "date": date, "time": time})
-                if (reduction != balance['position']['Long']['shares'] - 1e-09):
-                    participants.update_one({"username": sender}, {"$set": {
-                        "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] - reduction, "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'] - reduction, "amount_spent": balance['position']['Long']['buyIn']['amount_spent'] - wager}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
-                if (reduction == balance['position']['Long']['shares'] - 1e-09):
-                    participants.update_one({"username": sender}, {"$set": {
-                        "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "funds": funds + cash_out, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+                    controller.update_participant_close_long(sender, wager, funds, reduction, trades, cash_out)
+                if (reduction == long_shares - 1e-09):
+                    trades.append(
+                    {"direction": position, "amount": reduction, "date": date, "time": time})
+                    controller.update_participant_close_long_max(sender,funds, trades, cash_out)
                 update.message.reply_text('Long position has been closed!')
             except Exception and ValueError as error:
                 print('Cause {}'.format(error))
