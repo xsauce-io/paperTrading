@@ -206,10 +206,8 @@ def open(update, context):
     try:
         current_index_price = controller.get_latest_xci_info().price
         funds = controller.get_participant_funds(sender)
-        balance = controller.get_participant(sender)
         funds = controller.get_participant_funds(sender)
         trades = controller.get_participant_trades_details(sender)
-        participants = controller.get_participants_collection()
         if wager == "max":
             wager = funds - 1e-09
         if wager > funds:
@@ -220,19 +218,12 @@ def open(update, context):
         date = strip.strftime('%m/%d/%Y')
         time = strip.strftime("%H:%M:%S")
         if position == "short":
-            controller.append_trade_to_participant(sender, position, wager, date, time)
-            participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": balance['position']['Short']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Short']
-                                                                                                               ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Short']
-                                                                                                               ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": balance['position']['Long']['shares'], "buyIn": {"purchased": balance['position']['Long']['buyIn']['purchased'], "amount_spent": balance['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            trades = controller.append_trade_to_participant(sender, position, wager, date, time)
+            controller.update_participant_cash_out_short(sender, purchased, wager, funds, trades)
             update.message.reply_text('Short position has been opened!')
         if position == "long":
-            trades.append(
-                {"direction": position, "amount": wager, "date": date, "time": time})
-            participants.update_one({"username": sender}, {"$set": {
-                "position": {"Short": {"shares": balance['position']['Short']['shares'], "buyIn": {"purchased": balance['position']['Short']['buyIn']['purchased'], "amount_spent": balance['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": balance['position']['Long']['shares'] + purchased, "buyIn": {"purchased": balance['position']['Long']
-                                                                                                                                                                                                                                                                                                                             ['buyIn']['purchased'] + purchased, "amount_spent": balance['position']['Long']
-                                                                                                                                                                                                                                                                                                                             ['buyIn']['amount_spent'] + wager}}}, "funds": funds - wager, "trades": {"total": balance['trades']['total'] + 1, "tradeDetails": trades}}})
+            trades = controller.append_trade_to_participant(sender, position, wager, date, time)
+            controller.update_participant_cash_out_long(sender, purchased, wager, funds, trades)
             update.message.reply_text('Long position has been opened!')
 
     except Exception and ValueError as error:
@@ -249,7 +240,7 @@ def get_wager_info_from(open_command):
     parsed_open_command = parse_open_command(open_command)
 
     if len(parsed_open_command) < 3:
-        raise IndexError()
+        raise ValueError()
     elif parsed_open_command[2] == None or parsed_open_command[1] == None or len(parsed_open_command) > 3:
         raise ValueError()
     elif parsed_open_command[2] == "max":
@@ -287,7 +278,7 @@ def close(update, context):
         participants = db[COLLECTION_NAME1]
         stats = db[COLLECTION_NAME2]
         res = stats.find().sort("_id", pymongo.DESCENDING)[0]
-        currIndexPrice = res['price'] + 50
+        currIndexPrice = res['price']
         print(currIndexPrice)
         balance = participants.find({"username": sender})[0]
         funds = balance['funds']
