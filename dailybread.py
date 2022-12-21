@@ -273,13 +273,12 @@ def close(update, context):
                     reduction = balance['position']['Short']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
 
-                pnl_by_share =  ((balance['position']["Short"]['shares']) * avg_buy_price + \
-                (avg_buy_price - currIndexPrice) * \
-                balance['position']["Short"]['shares'])/ balance['position']["Short"]['shares']
+                short_value_by_share = ((balance['position']["Short"]['shares']) * avg_buy_price +
+                                (avg_buy_price - currIndexPrice) *
+                                balance['position']["Short"]['shares']) / balance['position']["Short"]['shares']
 
-                cash_out =  reduction * pnl_by_share
-                print(balance['position']["Short"]['shares'])
-                print(reduction)
+                cash_out = reduction * short_value_by_share
+
 
                 if math.isclose(balance['position']['Short']['shares'], reduction) == False and reduction > balance['position']['Short']['shares']:
                     raise ValueError('More than you have in your account')
@@ -304,8 +303,13 @@ def close(update, context):
                 if reduction == "max":
                     reduction = balance['position']['Long']['shares'] - 1e-09
                 wager = avg_buy_price * reduction
-                cash_out = ((currIndexPrice - avg_buy_price) * reduction) + \
-                    (reduction * currIndexPrice)
+
+                long_value_by_share = (balance['position']["Long"]['shares'] * avg_buy_price +
+                                (currIndexPrice - avg_buy_price) *
+                                balance['position']['Long']['shares']) / balance['position']["Long"]['shares']
+
+                cash_out = reduction * long_value_by_share
+
                 if math.isclose(balance['position']['Long']['shares'], reduction) == False and reduction > balance['position']['Long']['shares']:
                     raise ValueError('More than you have in your account')
                 trades.append(
