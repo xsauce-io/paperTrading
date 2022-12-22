@@ -13,7 +13,6 @@ def open(sender, message):
         controller.update_participant_opened_position(sender, updated_position, updated_participant, update_trades)
     except UserInputException as error:
         return str(error)
-
     return '{} position has been opened!'.format(new_trade.direction)
 
 
@@ -61,7 +60,6 @@ def validate_extract_open_message(message): #might need to split up in two funct
     elif parsed_message[2] == None or parsed_message[1] == None or len(parsed_message) > 3:
         raise UserInputException('Please enter valid command. eg: /open long 500')
     if parsed_message[1] != "short" and parsed_message[1] != "long":
-        print("here")
         raise UserInputException('Please enter valid command. eg: /open long 500')
     elif parsed_message[2] == "max":
         direction = parsed_message[1]

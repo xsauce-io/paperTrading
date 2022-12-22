@@ -8,8 +8,9 @@ def portfolio(sender):
     position = controller.get_participant_position_info(sender)
     number_of_trades = controller.get_participants_trades_total(sender)
     funds = controller.get_participant_funds(sender)
-    portfolio = create_portfolio(position, funds, number_of_trades, current_index_price)
-    return portfolio
+    portfolio_info = create_portfolio(position, funds, number_of_trades, current_index_price)
+
+    return portfolio_info
 
 
 def create_portfolio(position: Position, funds, number_of_trades, current_index_price):
