@@ -14,6 +14,7 @@ import processes.play
 import processes.index_price
 import processes.portfolio
 import processes.open
+import processes.close
 import service
 
 load_dotenv()
@@ -180,132 +181,15 @@ def open(update, context):
         update.message.reply_text('{}'.format(error))
 
 
-def get_current_date_time():
-    now = datetime.now()
-    date = now.strftime('%m/%d/%Y')
-    time = now.strftime("%H:%M:%S")
-    return date, time
-
-
-def parse_open_close_command(message):
-    parsed_message = re.split("\s", message)
-    return parsed_message
-
-
-def get_info_from_open_close_command(command):
-    parsed_command = parse_open_close_command(command)
-
-    if len(parsed_command) < 3:
-        raise ValueError()
-    elif parsed_command[2] == None or parsed_command[1] == None or len(parsed_command) > 3:
-        raise ValueError()
-    elif parsed_command[2] == "max":
-        position = parsed_command[1]
-        wager = "max"
-    else:
-        if float(parsed_command[2]) < 0:
-            raise ValueError('Please enter a positive number')
-        position = parsed_command[1]
-        wager = float(parsed_command[2])
-
-    return wager, position
-
-
 def close(update, context):
     sender = update.message.from_user.username
     message = update.message.text
-    reduction = 0
-    position = ''
     try:
-        reduction, position = get_info_from_open_close_command(message)
-    except ValueError as error:
-        if str(error) == 'Please enter a positive number':
-            return update.message.reply_text('Please enter a positive number')
-        else:
-            return update.message.reply_text(
-                'Please enter valid command. eg: /close long 10')
-    try:
-        current_index_price = service.get_latest_xci_info().price
-        balance = controller.get_participant(sender)
-        funds = controller.get_participant_funds(sender)
-        trades = controller.get_participant_trades_details(sender)
-        position_info = controller.get_participant_position_info(sender)
-        number_of_trades = controller.get_participants_trades_total(sender)
-        long_amount_spent = position_info.long_amount_spent
-        short_amount_spent = position_info.short_amount_spent
-        long_purchased = position_info.long_purchased
-        short_purchased = position_info.short_purchased
-        long_shares = position_info.long_shares
-        short_shares = position_info.short_shares
-
-
-        date, time = get_current_date_time()
-
-        if position == "short":
-            try:
-                if reduction == "max":
-                    reduction = set_reduction_max(short_shares)
-
-                check_close_requirements(short_shares, reduction)
-
-                avg_buy_price_short = calculate_average_buy_price(short_amount_spent , short_purchased)
-                wager = avg_buy_price_short * reduction
-                short_value_by_share = calculate_short_position(short_shares, avg_buy_price_short, current_index_price) / short_shares
-                cash_out = reduction * short_value_by_share
-
-
-                if (reduction != short_shares - 1e-09):
-                    trades.append(
-                    {"direction": position, "amount": reduction, "date": date, "time": time})
-                    controller.update_participant_close_short(sender, wager, reduction, funds, trades, cash_out)
-                if (reduction == short_shares - 1e-09):
-                    trades.append(
-                    {"direction": position, "amount": reduction, "date": date, "time": time})
-                    controller.update_participant_close_short_max(sender, funds, trades, cash_out)
-
-                update.message.reply_text('Short position has been closed!')
-            except Exception and ValueError as error:
-                print('Cause {}'.format(error))
-                update.message.reply_text('{}'.format(error))
-
-        if position == "long":
-            try:
-                if reduction == "max":
-                    reduction = long_shares - 1e-09
-
-                check_close_requirements(long_shares, reduction)
-
-                avg_buy_price_long = long_amount_spent / long_purchased
-                wager = avg_buy_price_long * reduction
-                long_value_by_share = calculate_long_position(long_shares, avg_buy_price_long, current_index_price ) / long_shares
-                cash_out = reduction * long_value_by_share
-
-                if (reduction != long_shares - 1e-09):
-                    trades.append(
-                    {"direction": position, "amount": reduction, "date": date, "time": time})
-                    controller.update_participant_close_long(sender, wager, funds, reduction, trades, cash_out)
-                if (reduction == long_shares - 1e-09):
-                    trades.append(
-                    {"direction": position, "amount": reduction, "date": date, "time": time})
-                    controller.update_participant_close_long_max(sender,funds, trades, cash_out)
-                update.message.reply_text('Long position has been closed!')
-            except Exception and ValueError as error:
-                print('Cause {}'.format(error))
-                update.message.reply_text('{}'.format(error))
+        reply = processes.close.close(sender,message)
+        update.message.reply_text(reply)
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
-
-def check_close_requirements(shares, reduction):
-    if shares == 0:
-        raise ValueError('You have no positions')
-
-    if math.isclose(shares, reduction) == False and reduction > shares:
-        raise ValueError('More than you have in your account')
-
-def set_reduction_max(shares):
-    reduction = shares - 1e-09
-    return reduction
 
 
 def help(update, context):
