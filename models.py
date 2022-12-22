@@ -40,9 +40,28 @@ class TradeDetails:
     def __init__(self, trades: list[Trade]):
         self.trades = trades
 
+class Trades:
+    def __init__(self, total, tradeDetails: list[Trade]):
+        self.total = total
+        self.tradeDetails = tradeDetails
+
+class BuyIn:
+    def __init__(self, purchased, amount_spent):
+        self.purchased = purchased
+        self.amount_spent = amount_spent
+
+class Side:
+    def __init__(self, share, buy_in: BuyIn):
+       self.share = share
+
+class position_n:
+    def __init__(self, short: Side, long: Side ):
+        self.short = short
+
+
 class Participant:
-     def __init__(self, name,funds, position, trades):
-        self.name = name
+     def __init__(self, username, funds, positions: list[Position], trades: Trades):
+        self.username = username
         self.funds = funds
-        self.position = position
+        self.positions = positions
         self.trades = trades

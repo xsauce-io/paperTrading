@@ -22,8 +22,9 @@ def open(sender, message):
 
 
     current_index_price = controller.get_latest_xci().price
-
+    #get_participant_as_object(sender)
     #create_position(message, participant, current_index)
+    #get_participant(sender)
     funds = controller.get_participant_funds(sender)
     trades = controller.get_participant_trades_details(sender)
     if wager == "max":
