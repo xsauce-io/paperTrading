@@ -69,6 +69,7 @@ def add_participant(name, funds):
 
 
 def get_participant(sender):
+    print(participants.find({"username": sender})[0])
     return participants.find({"username": sender})[0]
 
 
