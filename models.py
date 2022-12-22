@@ -15,7 +15,7 @@ class Position :
         self.short_shares = short_shares
 
 class Portfolio :
-    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_short, avg_buy_price_long, pnl, number_of_trades):
+    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades):
         self.funds = funds
         self.short_shares = short_shares
         self.long_shares = long_shares
@@ -26,7 +26,7 @@ class Portfolio :
         self.pnl = pnl
         self.number_of_trades = number_of_trades
 
-class Trade :
+class TradeDetails :
     def __init__(self, direction, amount, action, index_price, index_name, date, time):
         self.direction = direction
         self.amount = amount
@@ -36,13 +36,17 @@ class Trade :
         self.date = date
         self.time = time
 
-class TradeDetails:
-    def __init__(self, trades: list[Trade]):
-        self.trades = trades
+# class TradeDetails:
+#     def __init__(self, trades: list[Trade]):
+#         self.trades = trades
 
 class Participant:
-     def __init__(self, name,funds, position, trades):
+     def __init__(self, name, funds, number_of_trades):
         self.name = name
         self.funds = funds
-        self.position = position
-        self.trades = trades
+        #self.position = position
+        self.number_of_trades = number_of_trades
+        #self.trades = trades
+
+class UserInputException(Exception):
+    """ my custom exception class """

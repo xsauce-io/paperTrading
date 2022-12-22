@@ -15,7 +15,6 @@ import processes.index_price
 import processes.portfolio
 import processes.open
 import processes.close
-import service
 
 load_dotenv()
 

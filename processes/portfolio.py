@@ -31,7 +31,7 @@ def create_portfolio(position: Position, funds, number_of_trades, current_index_
     Short = calculate_short_position(short_shares, avg_buy_price_short, current_index_price)
     pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
 
-    return Portfolio(funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short,pnl, number_of_trades)
+    return Portfolio(funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short, pnl, number_of_trades)
 
 def calculate_average_buy_price(amount_spent, purchased):
     avg_buy_price = amount_spent / purchased

@@ -16,6 +16,6 @@ def find_participant(sender):
 
 def create_participant(sender):
     init_funds = 10000
-    participant = Participant(sender, init_funds, position=None, trades=None)
+    participant = Participant(sender, init_funds, number_of_trades=0)
     controller.add_participant(participant.name, participant.funds)
     return participant

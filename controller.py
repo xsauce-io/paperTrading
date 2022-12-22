@@ -6,11 +6,9 @@ from datetime import datetime
 import pymongo
 from pymongo import MongoClient, DESCENDING, InsertOne
 from models import *
-
-
+import json
 
 load_dotenv()
-
 
 PASSWORD = os.environ['password']
 USERNAME = os.environ['username']
@@ -59,8 +57,6 @@ def find_participant(sender) -> bool:
     else:
         return False
 
-
-
 def add_participant(name, funds):
     try:
         participants.insert_one({"username": name, "funds": funds, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
@@ -69,7 +65,6 @@ def add_participant(name, funds):
 
 
 def get_participant(sender):
-    print(participants.find({"username": sender})[0])
     return participants.find({"username": sender})[0]
 
 
@@ -87,6 +82,13 @@ def get_participant_position_info(sender):
 
     return participant_position_info
 
+def get_participant_info(sender):
+    username = get_participant_username(sender)
+    funds = get_participant_funds(sender)
+    number_of_trades = get_participants_trades_total(sender)
+
+    participant = Participant(username, funds, number_of_trades)
+    return participant
 
 def get_participant_long_amount_spent(sender):
     return get_participant(sender)['position']['Long']['buyIn']['amount_spent']
@@ -123,12 +125,19 @@ def get_participants_trades_total(sender):
 def get_participant_trades_details(sender):
     return get_participant(sender)['trades']['tradeDetails']
 
+def get_participant_positions(sender):
+    return get_participant(sender)['position']
 
-def append_trade_to_participant(sender, position, wager, date, time):
-    trades = get_participant_trades_details(sender)
+def get_participant_username(sender):
+    return get_participant(sender)['username']
+
+
+def append_trade_to_participant_trades(sender, trade: TradeDetails):
+    trades = list(get_participant_trades_details(sender))
     # TODO: move schema to service layer
-    trades.append({"direction": position, "amount": wager,
-                  "date": date, "time": time})
+
+    trades.append({"direction": trade.direction, "amount": trade.amount,
+                  "date": trade.date, "time": trade.time})
     return trades
 
 
@@ -140,12 +149,18 @@ def update_participant_cash_out_long(sender, purchased, wager, funds, trades): #
                                                                                                                                                                                                                                                                                                                                      ['buyIn']['amount_spent'] + wager}}}, "funds": funds - wager, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
     return
 
+#HERE
+def update_participant_opened_position(sender , position:Position, participant:Participant, trades): #TODO: move to service layer
+    participants.update_one({"username": sender}, {"$set": {
+                "position": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": {"total": participant.number_of_trades, "tradeDetails": trades}}})
+    return
+
 def update_participant_cash_out_short(sender, purchased, wager, funds, trades): #TODO: move to service layer
     participant = get_participant(sender)
     participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": participant['position']['Short']['shares'] + purchased, "buyIn": {"purchased": participant['position']['Short']
                                                                                                                ['buyIn']['purchased'] + purchased, "amount_spent": participant['position']['Short']
-                                                                                                               ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": participant['position']['Long']['shares'], "buyIn": {"purchased": participant['position']['Long']['buyIn']['purchased'], "amount_spent": participant['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds - wager, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
+                                                                                                               ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": participant['position']['Long']['shares'], "buyIn": {"purchased": participant['position']['Long']['buyIn']['purchased'], "amount_spent": participant['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
     return
 
 def update_participant_close_short(sender, wager, reduction, funds, trades, cash_out ):
