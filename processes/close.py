@@ -17,11 +17,9 @@ def close(sender, message):
             return 'Please enter valid command. eg: /close long 10'
 
     current_index_price = controller.get_latest_xci().price
-    balance = controller.get_participant(sender)
     funds = controller.get_participant_funds(sender)
     trades = controller.get_participant_trades_details(sender)
     position_info = controller.get_participant_position_info(sender)
-    number_of_trades = controller.get_participants_trades_total(sender)
     long_amount_spent = position_info.long_amount_spent
     short_amount_spent = position_info.short_amount_spent
     long_purchased = position_info.long_purchased

@@ -9,7 +9,7 @@ import requests
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient
-import controller
+from models import *
 import processes.play
 import processes.index_price
 import processes.portfolio
@@ -93,12 +93,8 @@ def xci_price(update, context):
 def play(update, context):
     sender = update.message.from_user.username
     try:
-        if processes.play.find_participant(sender):
-            update.message.reply_text("Nice try! No such thing as free")
-        else:
-            processes.play.create_participant(sender)
-            update.message.reply_text(
-                "Welcome {},\nThis is v0 of Daily Bread. Your account has been funded with $10,000".format(sender))
+        reply = processes.play.play(sender)
+        update.message.reply_text(reply)
     except Exception as error:
         print('Cause{}'.format(error))
 
@@ -113,33 +109,10 @@ def welcome(update, context):
 def portfolio(update, context):
     sender = update.message.from_user.username
     try:
-        portfolio = processes.portfolio.get_portfolio(sender)
-        funds = portfolio.funds
-        short_shares = portfolio.short_shares
-        long_shares = portfolio.long_shares
-        Long  = portfolio.long
-        Short = portfolio.short
-        avg_buy_price_long = portfolio.avg_buy_price_long
-        avg_buy_price_short = portfolio.avg_buy_price_short
-        pnl = portfolio.pnl
-        number_of_trades = portfolio.number_of_trades
-
-        message = "*Balance:* ${}\n" \
-            "*Holdings(of XCI)*: {} Short / {} Long\n" \
-            "*Total(Unsettled)*: ${}\n" \
-            "*Avg Buy Price*:{} Short / {} Long\n" \
-            "*PNL*: ${}\n" \
-            "*Total Trades*: {}"
-
+        portfolio = processes.portfolio.portfolio(sender)
+        formatted_message = format_portfolio_string(portfolio)
         update.message.reply_text(
-            message.format(round(funds, 3),
-                           round(short_shares, 3),
-                           round(long_shares, 3),
-                           round(Long + Short, 2),
-                           round(avg_buy_price_short, 3),
-                           round(avg_buy_price_long, 3),
-                           pnl,
-                           number_of_trades),
+            formatted_message,
             parse_mode='Markdown'
         )
 
@@ -148,20 +121,22 @@ def portfolio(update, context):
         print('Cause {}'.format(error))
 
 
-def calculate_average_buy_price(amount_spent, purchased):
-    avg_buy_price = amount_spent / purchased
-    return avg_buy_price
-
-
-def calculate_long_position(shares, avg_buy_price, index_price):
-    long = (shares * avg_buy_price) + ((index_price - avg_buy_price) * shares)
-    return long
-
-
-def calculate_short_position(shares, avg_buy_price, index_price):
-    short = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
-    return short
-
+def format_portfolio_string(portfolio: Portfolio):
+    message = "*Balance:* ${}\n" \
+        "*Holdings(of XCI)*: {} Short / {} Long\n" \
+        "*Total(Unsettled)*: ${}\n" \
+        "*Avg Buy Price*:{} Short / {} Long\n" \
+        "*PNL*: ${}\n" \
+        "*Total Trades*: {}"
+    formatted_message = message.format(round(portfolio.funds, 3),
+                           round(portfolio.short_shares, 3),
+                           round(portfolio.long_shares, 3),
+                           round(portfolio.long + portfolio.short, 2),
+                           round(portfolio.avg_buy_price_short, 3),
+                           round(portfolio.avg_buy_price_long, 3),
+                           portfolio.pnl,
+                           portfolio.number_of_trades)
+    return formatted_message
 
 
 def instructions(update, context):
@@ -185,7 +160,7 @@ def close(update, context):
     sender = update.message.from_user.username
     message = update.message.text
     try:
-        reply = processes.close.close(sender,message)
+        reply = processes.close.close(sender, message)
         update.message.reply_text(reply)
     except Exception and ValueError as error:
         print('Cause {}'.format(error))

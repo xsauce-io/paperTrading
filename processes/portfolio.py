@@ -3,17 +3,16 @@ from models import *
 import math
 
 
-def get_portfolio(sender):
+def portfolio(sender):
     current_index_price = controller.get_latest_xci().price
     position = controller.get_participant_position_info(sender)
     number_of_trades = controller.get_participants_trades_total(sender)
     funds = controller.get_participant_funds(sender)
-    portfolio = calculate_portfolio(position, funds, number_of_trades, current_index_price)
-
+    portfolio = create_portfolio(position, funds, number_of_trades, current_index_price)
     return portfolio
 
 
-def calculate_portfolio(position: Position, funds, number_of_trades, current_index_price):
+def create_portfolio(position: Position, funds, number_of_trades, current_index_price):
     long_amount_spent = position.long_amount_spent
     short_amount_spent = position.short_amount_spent
     long_purchased = position.long_purchased
@@ -24,21 +23,13 @@ def calculate_portfolio(position: Position, funds, number_of_trades, current_ind
     avg_buy_price_short = 0
 
     if long_amount_spent > 0:
-        avg_buy_price_long = calculate_average_buy_price(
-            long_amount_spent, long_purchased)
+        avg_buy_price_long = calculate_average_buy_price(long_amount_spent, long_purchased)
     if short_amount_spent > 0:
-        avg_buy_price_short = calculate_average_buy_price(
-            short_amount_spent, short_purchased)
+        avg_buy_price_short = calculate_average_buy_price(short_amount_spent, short_purchased)
 
-    Long = calculate_long_position(
-        long_shares, avg_buy_price_long, current_index_price)
-    Short = calculate_short_position(
-        short_shares, avg_buy_price_short, current_index_price)
-
+    Long = calculate_long_position(long_shares, avg_buy_price_long, current_index_price)
+    Short = calculate_short_position(short_shares, avg_buy_price_short, current_index_price)
     pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
-
-    if math.isclose(pnl, 0.00):
-        pnl = 0
 
     return Portfolio(funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short,pnl, number_of_trades)
 
@@ -60,4 +51,6 @@ def calculate_short_position(shares, avg_buy_price, index_price):
 def calculate_profit_and_loss(funds, long, short):
     initial_funds = 10000
     pnl = (funds + short + long) - initial_funds
+    if math.isclose(pnl, 0.00):
+        pnl = 0
     return pnl
