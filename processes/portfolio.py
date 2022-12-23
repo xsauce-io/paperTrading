@@ -38,7 +38,7 @@ def create_portfolio(position: Position, participant: Participant, index: Index)
 
 def calculate_profit_and_loss(funds, long, short):
     initial_funds = 10000
-    pnl = (funds + short + long) - initial_funds
+    pnl = round((funds + short + long) - initial_funds, 3)
     if math.isclose(pnl, 0.00):
         pnl = 0
 

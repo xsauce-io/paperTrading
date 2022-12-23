@@ -11,7 +11,7 @@ def open(sender, message):
     try:
         updated_position, updated_participant, new_trade = open_position(message, current_position_info, current_participant_info, current_index)
         updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
-        controller.update_participant_opened_position(sender, updated_position, updated_participant, updated_trades)
+        controller.update_participant_position(sender, updated_position, updated_participant, updated_trades)
     except UserInputException as error:
         return str(error)
     return '{} position has been opened!'.format(new_trade.direction)

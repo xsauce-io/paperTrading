@@ -24,7 +24,5 @@ class TestPortfolio(unittest.TestCase):
 
         self.assertEqual(expected, repr(portfolio_info))
 
-
-
 if __name__ == '__main__':
     unittest.main()

@@ -7,6 +7,7 @@ from models import *
 
 class TestOpenClose(unittest.TestCase):
 
+    #TODO: refactor
     def test_close_short_position_at_index_price_(self):
         #Close
         message = "/open long 100"
