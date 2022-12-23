@@ -52,7 +52,7 @@ def open_position(message, position: Position, participant: Participant, index: 
     return updated_position, updated_participant, new_trade
 
 
-def extract_open_message(message): #might need to split up in two functions validate / extract
+def extract_open_message(message):
     parsed_message = split_message(message)
 
     if is_open_message_valid(parsed_message) == False:
