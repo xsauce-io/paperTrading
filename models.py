@@ -32,23 +32,24 @@ class Portfolio:
 
     def __repr__(self) -> str:
         message = "Funds: {}\n" \
-        "Short Shares: {}  \n"\
-        "Long Shares: {} \n" \
-        "Short: {}  \n"\
-        "Long: {} \n" \
-        "Avg Buy Price Short: {}  \n"\
-        "Avg Buy Price Long: {} \n" \
-        "PNL: {}\n" \
-        "Total Trades: {}".format(round(self.funds, 3),
-                           round(self.short_shares, 3),
-                           round(self.long_shares, 3),
-                           round(self.short, 3),
-                           round(self.long, 3),
-                           round(self.avg_buy_price_short, 3),
-                           round(self.avg_buy_price_long, 3),
-                           self.pnl,
-                           self.number_of_trades)
+            "Short Shares: {}  \n"\
+            "Long Shares: {} \n" \
+            "Short: {}  \n"\
+            "Long: {} \n" \
+            "Avg Buy Price Short: {}  \n"\
+            "Avg Buy Price Long: {} \n" \
+            "PNL: {}\n" \
+            "Total Trades: {}".format(round(self.funds, 3),
+                                      round(self.short_shares, 3),
+                                      round(self.long_shares, 3),
+                                      round(self.short, 3),
+                                      round(self.long, 3),
+                                      round(self.avg_buy_price_short, 3),
+                                      round(self.avg_buy_price_long, 3),
+                                      self.pnl,
+                                      self.number_of_trades)
         return message
+
 
 class TradeDetails:
     def __init__(self, direction, amount, action, index_price, index_name, date, time):
@@ -60,6 +61,7 @@ class TradeDetails:
         self.date = date
         self.time = time
 
+
 class Participant:
     def __init__(self, name, funds, number_of_trades):
         self.name = name
@@ -68,6 +70,7 @@ class Participant:
 
     def __repr__(self) -> str:
         return "name: {}, funds: {}, number_of_trades: {}".format(self.name, self.funds, self.number_of_trades)
+
 
 class UserInputException(Exception):
     """ my custom exception class """
