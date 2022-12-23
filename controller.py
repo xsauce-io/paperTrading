@@ -140,28 +140,13 @@ def append_trade_to_participant_trades(sender, trade: TradeDetails):
                   "date": trade.date, "time": trade.time})
     return trades
 
-
-# def update_participant_cash_out_long(sender, purchased, wager, funds, trades): #TODO: move to service layer
-#     participant = get_participant(sender)
-#     participants.update_one({"username": sender}, {"$set": {
-#         "position": {"Short": {"shares": participant['position']['Short']['shares'], "buyIn": {"purchased": participant['position']['Short']['buyIn']['purchased'], "amount_spent": participant['position']['Short']['buyIn']['amount_spent']}}, "Long": {"shares": participant['position']['Long']['shares'] + purchased, "buyIn": {"purchased": participant['position']['Long']
-#                                                                                                                                                                                                                                                                                                                                      ['buyIn']['purchased'] + purchased, "amount_spent": participant['position']['Long']
-#                                                                                                                                                                                                                                                                                                                                      ['buyIn']['amount_spent'] + wager}}}, "funds": funds - wager, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
-#     return
-
 #HERE
 def update_participant_opened_position(sender , position:Position, participant:Participant, trades): #TODO: move to service layer
     participants.update_one({"username": sender}, {"$set": {
                 "position": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": {"total": participant.number_of_trades, "tradeDetails": trades}}})
     return
 
-# def update_participant_cash_out_short(sender, purchased, wager, funds, trades): #TODO: move to service layer
-#     participant = get_participant(sender)
-#     participants.update_one({"username": sender}, {"$set": {
-#                 "position": {"Short": {"shares": participant['position']['Short']['shares'] + purchased, "buyIn": {"purchased": participant['position']['Short']
-#                                                                                                                ['buyIn']['purchased'] + purchased, "amount_spent": participant['position']['Short']
-#                                                                                                                ['buyIn']['amount_spent'] + wager}}, "Long": {"shares": participant['position']['Long']['shares'], "buyIn": {"purchased": participant['position']['Long']['buyIn']['purchased'], "amount_spent": participant['position']['Long']['buyIn']['amount_spent']}}}, "funds": funds, "trades": {"total": participant['trades']['total'] + 1, "tradeDetails": trades}}})
-#     return
+
 
 def update_participant_close_short(sender, wager, reduction, funds, trades, cash_out ):
     participant = get_participant(sender)

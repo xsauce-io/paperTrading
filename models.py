@@ -1,11 +1,11 @@
-class Index :
+class Index:
     def __init__(self, price, date, time):
         self.price = price
         self.date = date
         self.time = time
 
 
-class Position :
+class Position:
     def __init__(self, long_amount_spent, short_amount_spent, long_purchased, short_purchased, long_shares, short_shares):
         self.long_amount_spent = long_amount_spent
         self.short_amount_spent = short_amount_spent
@@ -14,7 +14,11 @@ class Position :
         self.long_shares = long_shares
         self.short_shares = short_shares
 
-class Portfolio :
+    def __repr__(self) -> str:
+        return "long_amount_spent: {}, short_amount_spent: {}, long_purchased: {}, short_purchased: {}, long_shares: {}, short_shares: {}".format(self.long_amount_spent, self.short_amount_spent, self.long_purchased, self.short_purchased, self.long_shares, self.short_shares)
+
+
+class Portfolio:
     def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades):
         self.funds = funds
         self.short_shares = short_shares
@@ -26,7 +30,8 @@ class Portfolio :
         self.pnl = pnl
         self.number_of_trades = number_of_trades
 
-class TradeDetails :
+
+class TradeDetails:
     def __init__(self, direction, amount, action, index_price, index_name, date, time):
         self.direction = direction
         self.amount = amount
@@ -36,17 +41,14 @@ class TradeDetails :
         self.date = date
         self.time = time
 
-# class TradeDetails:
-#     def __init__(self, trades: list[Trade]):
-#         self.trades = trades
-
 class Participant:
-     def __init__(self, name, funds, number_of_trades):
+    def __init__(self, name, funds, number_of_trades):
         self.name = name
         self.funds = funds
-        #self.position = position
         self.number_of_trades = number_of_trades
-        #self.trades = trades
+
+    def __repr__(self) -> str:
+        return "name: {}, funds: {}, number_of_trades: {}".format(self.name, self.funds, self.number_of_trades)
 
 class UserInputException(Exception):
     """ my custom exception class """

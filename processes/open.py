@@ -2,6 +2,7 @@ import controller
 from models import *
 import re
 from datetime import datetime
+import math
 
 def open(sender, message):
     current_index= controller.get_latest_xci()
@@ -20,16 +21,15 @@ def update_position(message, position: Position, participant: Participant, index
     updated_position = None
     updated_participant = None
 
-    #extract in
     try:
-        wager, direction = validate_extract_open_message(message)
+        wager, direction = extract_open_message(message)
     except Exception as error:
             raise error
 
     if wager == "max":
         wager = participant.funds - 1e-09
     if wager > participant.funds:
-        raise UserInputException('More than you have in your account')
+        raise UserInputException('That cost more than you got in your bag')
 
 
     purchased = wager / index.price
@@ -52,16 +52,13 @@ def update_position(message, position: Position, participant: Participant, index
     return updated_position, updated_participant, new_trade
 
 
-def validate_extract_open_message(message): #might need to split up in two functions validate / extract
+def extract_open_message(message): #might need to split up in two functions validate / extract
     parsed_message = split_message(message)
 
-    if len(parsed_message) < 3:
+    if is_open_message_valid(parsed_message) == False:
         raise UserInputException('Please enter valid command. eg: /open long 500')
-    elif parsed_message[2] == None or parsed_message[1] == None or len(parsed_message) > 3:
-        raise UserInputException('Please enter valid command. eg: /open long 500')
-    if parsed_message[1] != "short" and parsed_message[1] != "long":
-        raise UserInputException('Please enter valid command. eg: /open long 500')
-    elif parsed_message[2] == "max":
+
+    if parsed_message[2] == "max":
         direction = parsed_message[1]
         wager = "max"
     else:
@@ -72,25 +69,30 @@ def validate_extract_open_message(message): #might need to split up in two funct
 
     return wager, direction
 
+def is_open_message_valid(parsed_message: list):
+    if len(parsed_message) == 3:
+       if parsed_message[1] == "short" or parsed_message[1] == "long":
+            if is_float(parsed_message[2]):
+                return True
+            else:
+                if parsed_message[2] == "max":
+                    return True
+    return False
+
 def split_message(message):
     parsed_message = re.split("\s", message)
     return parsed_message
 
-def calculate_average_buy_price(amount_spent, purchased):
-    avg_buy_price = amount_spent / purchased
-    return avg_buy_price
-
-
-def calculate_long_position(shares, avg_buy_price, index_price):
-    long = (shares * avg_buy_price) + ((index_price - avg_buy_price) * shares)
-    return long
-
-def calculate_short_position(shares, avg_buy_price, index_price):
-    short = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
-    return short
 
 def get_current_date_time():
     now = datetime.now()
     date = now.strftime('%m/%d/%Y')
     time = now.strftime("%H:%M:%S")
     return date, time
+
+def is_float(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False

@@ -1,6 +1,7 @@
 import controller
 from models import *
 import math
+from helpers.market_math import *
 
 
 def portfolio(sender):
@@ -30,28 +31,16 @@ def create_portfolio(position: Position, funds, number_of_trades, current_index_
 
     Long = calculate_long_position(long_shares, avg_buy_price_long, current_index_price)
     Short = calculate_short_position(short_shares, avg_buy_price_short, current_index_price)
+    print(Short)
     pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
 
     return Portfolio(funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short, pnl, number_of_trades)
-
-def calculate_average_buy_price(amount_spent, purchased):
-    avg_buy_price = amount_spent / purchased
-    return avg_buy_price
-
-
-def calculate_long_position(shares, avg_buy_price, index_price):
-    long = (shares * avg_buy_price) + ((index_price - avg_buy_price) * shares)
-    return long
-
-
-def calculate_short_position(shares, avg_buy_price, index_price):
-    short = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
-    return short
 
 
 def calculate_profit_and_loss(funds, long, short):
     initial_funds = 10000
     pnl = (funds + short + long) - initial_funds
+    print(pnl)
     if math.isclose(pnl, 0.00):
         pnl = 0
     return pnl
