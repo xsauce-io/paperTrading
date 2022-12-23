@@ -30,6 +30,25 @@ class Portfolio:
         self.pnl = pnl
         self.number_of_trades = number_of_trades
 
+    def __repr__(self) -> str:
+        message = "Funds: {}\n" \
+        "Short Shares: {}  \n"\
+        "Long Shares: {} \n" \
+        "Short: {}  \n"\
+        "Long: {} \n" \
+        "Avg Buy Price Short: {}  \n"\
+        "Avg Buy Price Long: {} \n" \
+        "PNL: {}\n" \
+        "Total Trades: {}".format(round(self.funds, 3),
+                           round(self.short_shares, 3),
+                           round(self.long_shares, 3),
+                           round(self.short, 3),
+                           round(self.long, 3),
+                           round(self.avg_buy_price_short, 3),
+                           round(self.avg_buy_price_long, 3),
+                           self.pnl,
+                           self.number_of_trades)
+        return message
 
 class TradeDetails:
     def __init__(self, direction, amount, action, index_price, index_name, date, time):

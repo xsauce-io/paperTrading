@@ -5,16 +5,16 @@ from helpers.market_math import *
 
 
 def portfolio(sender):
-    current_index_price = controller.get_latest_xci().price
-    position = controller.get_participant_position_info(sender)
-    number_of_trades = controller.get_participants_trades_total(sender)
-    funds = controller.get_participant_funds(sender)
-    portfolio_info = create_portfolio(position, funds, number_of_trades, current_index_price)
+    current_index= controller.get_latest_xci()
+    current_position_info = controller.get_participant_position_info(sender)
+    current_participant_info = controller.get_participant_info(sender)
+
+    portfolio_info = create_portfolio(current_position_info, current_participant_info, current_index)
 
     return portfolio_info
 
 
-def create_portfolio(position: Position, funds, number_of_trades, current_index_price):
+def create_portfolio(position: Position, participant: Participant, index: Index):
     long_amount_spent = position.long_amount_spent
     short_amount_spent = position.short_amount_spent
     long_purchased = position.long_purchased
@@ -29,18 +29,17 @@ def create_portfolio(position: Position, funds, number_of_trades, current_index_
     if short_amount_spent > 0:
         avg_buy_price_short = calculate_average_buy_price(short_amount_spent, short_purchased)
 
-    Long = calculate_long_position(long_shares, avg_buy_price_long, current_index_price)
-    Short = calculate_short_position(short_shares, avg_buy_price_short, current_index_price)
-    print(Short)
-    pnl = round(calculate_profit_and_loss(funds, Long, Short), 3)
+    Long = calculate_long_position(long_shares, avg_buy_price_long, index.price)
+    Short = calculate_short_position(short_shares, avg_buy_price_short, index.price)
+    pnl = round(calculate_profit_and_loss(participant.funds, Long, Short), 3)
 
-    return Portfolio(funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short, pnl, number_of_trades)
+    return Portfolio(participant.funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short, pnl, participant.number_of_trades)
 
 
 def calculate_profit_and_loss(funds, long, short):
     initial_funds = 10000
     pnl = (funds + short + long) - initial_funds
-    print(pnl)
     if math.isclose(pnl, 0.00):
         pnl = 0
+
     return pnl

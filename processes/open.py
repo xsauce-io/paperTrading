@@ -1,30 +1,30 @@
 import controller
 from models import *
-import re
 from datetime import datetime
-import math
+
+from helpers.utils import *
 
 def open(sender, message):
     current_index= controller.get_latest_xci()
     current_position_info = controller.get_participant_position_info(sender)
     current_participant_info = controller.get_participant_info(sender)
     try:
-        updated_position, updated_participant, new_trade = update_position(message, current_position_info, current_participant_info, current_index)
-        update_trades = controller.append_trade_to_participant_trades(sender, new_trade)
-        controller.update_participant_opened_position(sender, updated_position, updated_participant, update_trades)
+        updated_position, updated_participant, new_trade = open_position(message, current_position_info, current_participant_info, current_index)
+        updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
+        controller.update_participant_opened_position(sender, updated_position, updated_participant, updated_trades)
     except UserInputException as error:
         return str(error)
     return '{} position has been opened!'.format(new_trade.direction)
 
 
-def update_position(message, position: Position, participant: Participant, index: Index):
+def open_position(message, position: Position, participant: Participant, index: Index):
     updated_position = None
     updated_participant = None
 
     try:
         wager, direction = extract_open_message(message)
     except Exception as error:
-            raise error
+        raise error
 
     if wager == "max":
         wager = participant.funds - 1e-09
@@ -78,21 +78,3 @@ def is_open_message_valid(parsed_message: list):
                 if parsed_message[2] == "max":
                     return True
     return False
-
-def split_message(message):
-    parsed_message = re.split("\s", message)
-    return parsed_message
-
-
-def get_current_date_time():
-    now = datetime.now()
-    date = now.strftime('%m/%d/%Y')
-    time = now.strftime("%H:%M:%S")
-    return date, time
-
-def is_float(num):
-    try:
-        float(num)
-        return True
-    except ValueError:
-        return False

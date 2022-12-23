@@ -3,138 +3,120 @@ from models import *
 import math
 import re
 from datetime import datetime
+from helpers.market_math import *
+from helpers.utils import *
 
 
 def close(sender, message):
-    reduction = 0
-    position = ''
+    current_index = controller.get_latest_xci()
+    current_position_info = controller.get_participant_position_info(sender)
+    current_participant_info = controller.get_participant_info(sender)
     try:
-        reduction, position = get_info_from_open_close_command(message)
-    except ValueError as error:
-        if str(error) == 'Please enter a positive number':
-            return 'Please enter a positive number'
-        else:
-            return 'Please enter valid command. eg: /close long 10'
+        updated_position, updated_participant, new_trade = close_position(message, current_position_info, current_participant_info, current_index)
+        updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
+        controller.update_participant_opened_position(sender, updated_position, updated_participant, updated_trades)
+    except UserInputException as error:
+        return str(error)
+    return '{} position has been closed!'.format(new_trade.direction)
 
-    current_index_price = controller.get_latest_xci().price
-    funds = controller.get_participant_funds(sender)
-    trades = controller.get_participant_trades_details(sender)
-    position_info = controller.get_participant_position_info(sender)
-    long_amount_spent = position_info.long_amount_spent
-    short_amount_spent = position_info.short_amount_spent
-    long_purchased = position_info.long_purchased
-    short_purchased = position_info.short_purchased
-    long_shares = position_info.long_shares
-    short_shares = position_info.short_shares
+def close_position(message, position:Position, participant:Participant, index: Index):
+    updated_position = None
+    updated_participant = None
+    reset_position = False
 
-    date, time = get_current_date_time()
+    try:
+        reduction, direction = extract_close_message(message)
+    except Exception as error:
+        raise error
 
-    if position == "short":
+    try:
+        if direction == "long":
+            if reduction == "max":
+                reduction = position.long_shares - 1e-09
+                reset_position = True
 
-        if reduction == "max":
-            reduction = set_reduction_max(short_shares)
+            has_required_shares(position.long_shares, reduction)
 
-        check_close_requirements(short_shares, reduction)
+            avg_buy_price_long = position.long_amount_spent / position.long_purchased
+            wager = avg_buy_price_long * reduction
+            long_value_by_share = calculate_long_position(position.long_shares, avg_buy_price_long, index.price) / position.long_shares
+            cash_out = reduction * long_value_by_share
+            funds = participant.funds + cash_out
+            number_of_trades = participant.number_of_trades + 1
+            date, time = get_current_date_time()
 
-        avg_buy_price_short = calculate_average_buy_price(
-            short_amount_spent, short_purchased)
-        wager = avg_buy_price_short * reduction
-        short_value_by_share = calculate_short_position(
-            short_shares, avg_buy_price_short, current_index_price) / short_shares
-        cash_out = reduction * short_value_by_share
+            if (reset_position):
+                updated_position = Position(0, position.short_amount_spent, 0, position.short_purchased, 0, position.short_shares)
+            else:
+                updated_position = Position(position.long_amount_spent - wager, position.short_amount_spent, position.long_purchased - reduction, position.short_purchased, position.long_shares-reduction, position.short_shares)
 
-        if (reduction != short_shares - 1e-09):
-            trades.append(
-                {"direction": position, "amount": reduction, "date": date, "time": time})
-            controller.update_participant_close_short(
-                sender, wager, reduction, funds, trades, cash_out)
-        if (reduction == short_shares - 1e-09):
-            trades.append(
-                {"direction": position, "amount": reduction, "date": date, "time": time})
-            controller.update_participant_close_short_max(
-                sender, funds, trades, cash_out)
+            updated_participant = Participant(participant.name, funds, number_of_trades)
+            new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
 
-        return 'Short position has been closed!'
+        if direction == "short":
+            if reduction == "max":
 
-    if position == "long":
-        if reduction == "max":
-            reduction = long_shares - 1e-09
+                reduction = position.short_shares - 1e-09
+                reset_position = True
 
-        check_close_requirements(long_shares, reduction)
+            has_required_shares(position.short_shares, reduction)
 
-        avg_buy_price_long = long_amount_spent / long_purchased
-        wager = avg_buy_price_long * reduction
-        long_value_by_share = calculate_long_position(
-            long_shares, avg_buy_price_long, current_index_price) / long_shares
-        cash_out = reduction * long_value_by_share
+            avg_buy_price_short = calculate_average_buy_price(
+                position.short_amount_spent, position.short_purchased)
+            wager = avg_buy_price_short * reduction
+            short_value_by_share = calculate_short_position(
+                position.short_shares, avg_buy_price_short, index.price) / position.short_shares
+            cash_out = reduction * short_value_by_share
 
-        if (reduction != long_shares - 1e-09):
-            trades.append(
-                {"direction": position, "amount": reduction, "date": date, "time": time})
-            controller.update_participant_close_long(
-                sender, wager, funds, reduction, trades, cash_out)
-        if (reduction == long_shares - 1e-09):
-            trades.append(
-                {"direction": position, "amount": reduction, "date": date, "time": time})
-            controller.update_participant_close_long_max(
-                sender, funds, trades, cash_out)
-        return ('Long position has been closed!')
+            funds = participant.funds + cash_out
+            number_of_trades = participant.number_of_trades + 1
 
+            date, time = get_current_date_time()
 
-def get_current_date_time():
-    now = datetime.now()
-    date = now.strftime('%m/%d/%Y')
-    time = now.strftime("%H:%M:%S")
-    return date, time
+            if (reset_position):
+                updated_position = Position(position.long_amount_spent,0, position.long_purchased, 0, position.long_shares, 0)
+            else:
+                updated_position = Position(position.long_amount_spent, position.short_amount_spent - wager, position.long_purchased , position.short_purchased - reduction, position.long_shares, position.short_shares - reduction)
 
+            updated_participant = Participant(participant.name, funds, number_of_trades)
+            new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
 
-def parse_open_close_command(message):
-    parsed_message = re.split("\s", message)
-    return parsed_message
+    except Exception as error:
+        raise error
 
+    return updated_position, updated_participant, new_trade
 
-def get_info_from_open_close_command(command):
-    parsed_command = parse_open_close_command(command)
+def extract_close_message(close):
+    parsed_message = split_message(close)
 
-    if len(parsed_command) < 3:
-        raise ValueError()
-    elif parsed_command[2] == None or parsed_command[1] == None or len(parsed_command) > 3:
-        raise ValueError()
-    elif parsed_command[2] == "max":
-        position = parsed_command[1]
-        wager = "max"
+    if is_close_message_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /open long 500')
+
+    if  parsed_message[2] == "max":
+        direction =  parsed_message[1]
+        reduction = "max"
     else:
-        if float(parsed_command[2]) < 0:
+        if float( parsed_message[2]) < 0:
             raise ValueError('Please enter a positive number')
-        position = parsed_command[1]
-        wager = float(parsed_command[2])
+        direction =  parsed_message[1]
+        reduction = float( parsed_message[2])
 
-    return wager, position
+    return reduction, direction
 
 
-def check_close_requirements(shares, reduction):
+def is_close_message_valid(parsed_message: list):
+    if len(parsed_message) == 3:
+       if parsed_message[1] == "short" or parsed_message[1] == "long":
+            if is_float(parsed_message[2]):
+                return True
+            else:
+                if parsed_message[2] == "max":
+                    return True
+    return False
+
+def has_required_shares(shares, reduction):
     if shares == 0:
         raise ValueError('You have no positions')
 
     if math.isclose(shares, reduction) == False and reduction > shares:
         raise ValueError('More than you have in your account')
-
-
-def set_reduction_max(shares):
-    reduction = shares - 1e-09
-    return reduction
-
-
-def calculate_average_buy_price(amount_spent, purchased):
-    avg_buy_price = amount_spent / purchased
-    return avg_buy_price
-
-
-def calculate_long_position(shares, avg_buy_price, index_price):
-    long = (shares * avg_buy_price) + ((index_price - avg_buy_price) * shares)
-    return long
-
-
-def calculate_short_position(shares, avg_buy_price, index_price):
-    short = (shares * avg_buy_price) + ((avg_buy_price - index_price) * shares)
-    return short
