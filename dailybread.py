@@ -11,11 +11,11 @@ import pymongo
 from pymongo import MongoClient
 from models import *
 import processes.play
-import processes.index_price
+import processes.info
 import processes.portfolio
 import processes.open
 import processes.close
-
+import processes.manage_index
 load_dotenv()
 
 
@@ -67,23 +67,49 @@ def price_update(context):
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
-        db = cluster[DATABASE_NAME]
-        stats = db[COLLECTION_NAME2]
-        strip = datetime.now()
-        date = strip.strftime('%m/%d/%Y')
-        time = strip.strftime("%H:%M:%S")
+        processes.manage_index.add_index("xci" , "Xsauce Culture Index" ,culture)
 
-        stats.insert_one(
-            {"price": culture, "date": date, "time": time})
+
+
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def price_update2(context):
+    try:
+
+        culture = 250.77
+        name = "nix"
+        full_name = "New Index"
+        context.bot.send_message(CHAT,
+                                 text="New Index is ${}".format(round(culture, 2)))
+
+
+        processes.manage_index.add_index("nix" , "New Index" ,culture)
+
+
     except Exception as error:
         print('Cause {}'.format(error))
 
 
-def xci_price(update, context):
+# def xci_price(update, context):
+#     message = update.message.text
+
+#     try:
+#         xci_info = processes.info.get_index_latest_info(message)
+#         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
+#             xci_info.price, xci_info.date, xci_info.time))
+#     except Exception as error:
+#         print('Cause {}'.format(error))
+#         update.message.reply_text(error)
+
+
+def index_price(update, context):
+    message = update.message.text
     try:
-        xci_info = processes.index_price.get_latest_xci_info()
-        update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
-            xci_info.price, xci_info.date, xci_info.time))
+        index_info = processes.info.get_index_latest_info(message)
+        update.message.reply_text("{} is ${}. Updated on {} at {} UTC".format(
+            index_info.full_name, index_info.price, index_info.date, index_info.time))
     except Exception as error:
         print('Cause {}'.format(error))
         update.message.reply_text(error)
@@ -173,6 +199,7 @@ def help(update, context):
         "/open -> Open a position\n"
         "/close -> Close a position\n"
         "/xci -> Show the current price of the Xsauce Culture Index\n"
+        "/info -> Show the current price an index\n"
         "/portfolio -> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
@@ -190,14 +217,16 @@ def main():
     job_queue = updater.job_queue
     job_seconds = job_queue.run_repeating(
         price_update, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(
+        price_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('website', website))
-    dispatcher.add_handler(CommandHandler('xci', xci_price))
     dispatcher.add_handler(CommandHandler('open', open))
+    dispatcher.add_handler(CommandHandler('info', index_price))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
