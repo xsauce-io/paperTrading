@@ -198,9 +198,11 @@ def open(update, context):
     try:
         result = processes.open.open(sender, message)
         update.message.reply_text(result)
-    except Exception and ValueError as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 
 def close(update, context):

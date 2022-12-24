@@ -7,37 +7,36 @@ from helpers.utils import *
 def open(sender, message):
 
     parsed_message = split_message(message)
-    if is_open_message_valid(parsed_message) == False:
-        return ('Please enter valid command. eg: /open long 500')
 
-    index_name = parsed_message[1]
+    if is_open_message_format_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /open xci long 500')
+    if is_open_message_input_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /open xci long 500')
 
-    if controller.find_index(index_name) == False:
-       return "Index {} Not Found".format(index_name)
+    index_name, wager, direction = extract_open_message(parsed_message)
 
-    if controller.find_participant_position(sender, index_name) == False:
+    if controller.does_index_exist(index_name) == False:
+       raise UserInputException("Index {} Not Found".format(index_name))
+
+    if controller.does_participant_have_position_for_index(sender, index_name) == False:
         controller.add_index_to_participant_positions(sender, index_name)
+
 
     current_index= controller.get_latest_index(index_name)
     current_position_info = controller.get_participant_position_info(sender, index_name)
     current_participant_info = controller.get_participant_info(sender)
-    try:
-        updated_position, updated_participant, new_trade = open_position(message, current_position_info, current_participant_info, current_index)
-        updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
-        controller.update_participant_position(sender,index_name ,updated_position, updated_participant, updated_trades)
-    except UserInputException as error:
-        return str(error)
+
+    updated_position, updated_participant, new_trade = determine_opened_position_update(wager, direction, current_position_info, current_participant_info, current_index)
+    updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
+    controller.update_participant_position(sender,index_name ,updated_position, updated_participant, updated_trades)
+
     return '{} position has been opened!'.format(new_trade.direction)
 
 
-def open_position(message, position: Position, participant: Participant, index: Index):
+def determine_opened_position_update(wager, direction, position: Position, participant: Participant, index: Index):
     updated_position = None
     updated_participant = None
-
-    try:
-        wager, direction = extract_open_message(message)
-    except Exception as error:
-        raise error
+    new_trade = None
 
     if wager == "max":
         wager = participant.funds
@@ -69,29 +68,33 @@ def open_position(message, position: Position, participant: Participant, index: 
     return updated_position, updated_participant, new_trade
 
 
-def extract_open_message(message):
-    parsed_message = split_message(message)
+def extract_open_message(parsed_message):
+    index_name = parsed_message[1]
+    direction = parsed_message[2]
+    wager = parsed_message[3]
 
-    if is_open_message_valid(parsed_message) == False:
-        raise UserInputException('Please enter valid command. eg: /open long 500')
-
-    if parsed_message[3] == "max":
-        direction = parsed_message[2]
+    if wager == "max":
         wager = "max"
     else:
-        if float(parsed_message[3]) < 0:
-            raise UserInputException('Please enter a positive number')
-        direction = parsed_message[2]
         wager = float(parsed_message[3])
 
-    return wager, direction
+    return index_name, wager, direction
 
-def is_open_message_valid(parsed_message: list):
-    if len(parsed_message) == 4:
-       if parsed_message[2] == "short" or parsed_message[2] == "long":
-            if is_float(parsed_message[3]):
-                return True
-            else:
-                if parsed_message[3] == "max":
+def is_open_message_input_valid(parsed_message: list):
+    index_name = parsed_message[1]
+    direction = parsed_message[2]
+    wager = parsed_message[3]
+    if direction == "short" or direction == "long":
+            if is_float(wager):
+                 if float(parsed_message[3]) > 0:
                     return True
+
+            else:
+                if wager == "max":
+                    return True
+    return False
+
+def is_open_message_format_valid(parsed_message: list):
+    if len(parsed_message) == 4:
+       return True
     return False

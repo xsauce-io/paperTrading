@@ -58,7 +58,7 @@ def find_participant(sender) -> bool:
     else:
         return False
 
-def find_participant_position(sender, index_name) -> bool:
+def does_participant_have_position_for_index(sender, index_name) -> bool:
     participant_position = tuple(participants.find({"username": sender, f"positions.{index_name}": {"$exists": True}}).clone())
     if (len(participant_position) > 0):
         return True

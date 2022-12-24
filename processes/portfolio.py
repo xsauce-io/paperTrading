@@ -37,11 +37,10 @@ def portfolio(sender, message):
     if len(parsed_message) > 1:
         index_name = parsed_message[1]
 
-        if controller.find_index(index_name) == False:
+        if controller.does_index_exist(index_name) == False:
             raise ValueError("Index Not Found")
-        if controller.find_index(index_name) == False:
-            raise ValueError("Index {} Not Found".format(index_name))
-        if controller.find_participant_position(sender, index_name) == False:
+
+        if controller.does_participant_have_position_for_index(sender, index_name) == False:
             raise ValueError('You have no positions open')
 
         current_index = controller.get_latest_index(index_name)
