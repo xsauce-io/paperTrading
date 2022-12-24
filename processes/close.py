@@ -10,47 +10,36 @@ from helpers.utils import *
 def close(sender, message):
     parsed_message = split_message(message)
 
-    try:
-        if is_close_message_valid(parsed_message) == False:
-            raise UserInputException('Please enter valid command. eg: /close xci long 500')
-    except UserInputException as error:
-        return str(error)
+    if is_close_message_format_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /close xci long 10')
+    if is_close_message_input_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /close xci long 10')
 
-    index_name = parsed_message[1]
+    index_name, reduction, direction = extract_close_message(parsed_message)
 
-    try:
-        if controller.find_index(index_name) == False:
-            raise "Index {} Not Found".format(index_name)
-        if controller.find_participant_position(sender, index_name) == False:
-            raise ValueError('You have no positions open')
-    except UserInputException as error:
-        return str(error)
+    if controller.does_index_exist(index_name) == False:
+       raise UserInputException("Index {} Not Found".format(index_name))
+    if controller.does_participant_have_position_for_index(sender, index_name) == False:
+        raise UserInputException('You have no positions open')
 
     current_index=controller.get_latest_index(index_name)
     current_position_info = controller.get_participant_position_info(sender, index_name)
-    print(repr(current_position_info))
     current_participant_info = controller.get_participant_info(sender)
-    try:
-        updated_position, updated_participant, new_trade = close_position(message, current_position_info, current_participant_info, current_index)
-        updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
-        controller.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
-    except UserInputException as error:
-        return str(error)
+
+    updated_position, updated_participant, new_trade = determine_closed_position_update(reduction, direction, current_position_info, current_participant_info, current_index)
+    updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
+    controller.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
 
     return '{} position has been closed!'.format(new_trade.direction)
 
-def close_position(message, position:Position, participant:Participant, index: Index):
+def determine_closed_position_update(reduction, direction, position:Position, participant:Participant, index: Index):
     updated_position = None
     updated_participant = None
     reset_position = False
+    new_trade = None
 
-    try:
-        reduction, direction = extract_close_message(message)
-    except Exception as error:
-        raise error
 
-    try:
-        if direction == "long":
+    if direction == "long":
             if reduction == "max":
                 reduction = position.long_shares - 1e-09
                 reset_position = True
@@ -76,7 +65,7 @@ def close_position(message, position:Position, participant:Participant, index: I
             updated_participant = Participant(participant.name, funds, number_of_trades)
             new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
 
-        if direction == "short":
+    if direction == "short":
             if reduction == "max":
                 reduction = position.short_shares - 1e-09
                 reset_position = True
@@ -104,42 +93,44 @@ def close_position(message, position:Position, participant:Participant, index: I
             updated_participant = Participant(participant.name, funds, number_of_trades)
             new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
 
-    except Exception as error:
-        raise error
 
     return updated_position, updated_participant, new_trade
 
-def extract_close_message(close):
-    parsed_message = split_message(close)
+def extract_close_message(parsed_message):
+    index_name = parsed_message[1]
+    direction = parsed_message[2]
+    reduction = parsed_message[3]
 
-    if is_close_message_valid(parsed_message) == False:
-        raise UserInputException('Please enter valid command. eg: /open long 500')
-
-    if  parsed_message[3] == "max":
-        direction =  parsed_message[2]
+    if reduction == "max":
         reduction = "max"
     else:
-        if float(parsed_message[3]) < 0:
-            raise ValueError('Please enter a positive number')
-        direction =  parsed_message[2]
-        reduction = float( parsed_message[3])
+        reduction = float(parsed_message[3])
 
-    return reduction, direction
+    return index_name, reduction, direction
 
 
-def is_close_message_valid(parsed_message: list):
-    if len(parsed_message) == 4:
-       if parsed_message[2] == "short" or parsed_message[2] == "long":
-            if is_float(parsed_message[3]):
-                return True
-            else:
-                if parsed_message[3] == "max":
+def is_close_message_input_valid(parsed_message: list):
+    index_name = parsed_message[1]
+    direction = parsed_message[2]
+    wager = parsed_message[3]
+    if direction == "short" or direction == "long":
+            if is_float(wager):
+                 if float(parsed_message[3]) > 0:
                     return True
+
+            else:
+                if wager == "max":
+                    return True
+    return False
+
+def is_close_message_format_valid(parsed_message: list):
+    if len(parsed_message) == 4:
+       return True
     return False
 
 def has_required_shares(shares, reduction):
     if shares == 0:
-        raise ValueError('You have no positions')
+        raise UserInputException('You have no positions')
 
     if math.isclose(shares, reduction) == False and reduction > shares:
-        raise ValueError('More than you have in your account')
+        raise UserInputException('More than you have in your account')
