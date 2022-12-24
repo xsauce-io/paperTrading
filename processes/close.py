@@ -31,7 +31,6 @@ def close(sender, message):
         controller.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
     except UserInputException as error:
         return str(error)
-    #except ZeroDivisionError as error:
 
     return '{} position has been closed!'.format(new_trade.direction)
 
@@ -50,7 +49,6 @@ def close_position(message, position:Position, participant:Participant, index: I
             if reduction == "max":
                 reduction = position.long_shares - 1e-09
                 reset_position = True
-            print({position.long_shares, reduction})
 
             has_required_shares(position.long_shares, reduction)
             has_required_shares(position.long_purchased, reduction)
@@ -60,7 +58,7 @@ def close_position(message, position:Position, participant:Participant, index: I
             long_value_by_share = calculate_long_position(position.long_shares, avg_buy_price_long, index.price) / position.long_shares
             cash_out = reduction * long_value_by_share
 
-            funds = rounder(participant.funds + cash_out)
+            funds = participant.funds + cash_out
             number_of_trades = participant.number_of_trades + 1
 
             date, time = get_current_date_time()
@@ -68,14 +66,14 @@ def close_position(message, position:Position, participant:Participant, index: I
             if (reset_position):
                 updated_position = Position(0, position.short_amount_spent, 0, position.short_purchased, 0, position.short_shares)
             else:
-                updated_position = Position(rounder(position.long_amount_spent - wager), rounder(position.short_amount_spent), rounder(position.long_purchased - reduction), position.short_purchased, rounder(position.long_shares-reduction), position.short_shares)
+                updated_position = Position(position.long_amount_spent - wager, position.short_amount_spent, position.long_purchased - reduction, position.short_purchased, position.long_shares-reduction, position.short_shares)
 
             updated_participant = Participant(participant.name, funds, number_of_trades)
             new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
 
         if direction == "short":
             if reduction == "max":
-                reduction = rounder(position.short_shares)
+                reduction = position.short_shares - 1e-09
                 reset_position = True
 
             has_required_shares(position.short_shares, reduction)
@@ -88,7 +86,7 @@ def close_position(message, position:Position, participant:Participant, index: I
                 position.short_shares, avg_buy_price_short, index.price) / position.short_shares
             cash_out = reduction * short_value_by_share
 
-            funds = rounder(participant.funds + cash_out)
+            funds = participant.funds + cash_out
             number_of_trades = participant.number_of_trades + 1
 
             date, time = get_current_date_time()
@@ -96,7 +94,7 @@ def close_position(message, position:Position, participant:Participant, index: I
             if (reset_position):
                 updated_position = Position(position.long_amount_spent,0, position.long_purchased, 0, position.long_shares, 0)
             else:
-                updated_position = Position(position.long_amount_spent, rounder(position.short_amount_spent - wager), position.long_purchased , rounder(position.short_purchased - reduction), position.long_shares, rounder(position.short_shares - reduction))
+                updated_position = Position(position.long_amount_spent, position.short_amount_spent - wager, position.long_purchased , position.short_purchased - reduction, position.long_shares, position.short_shares - reduction)
 
             updated_participant = Participant(participant.name, funds, number_of_trades)
             new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)

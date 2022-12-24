@@ -49,18 +49,18 @@ def open_position(message, position: Position, participant: Participant, index: 
         raise UserInputException('That cost more than you got in your bag')
 
 
-    purchased = rounder(wager / index.price)
-    funds = rounder(participant.funds - wager)
+    purchased = wager / index.price
+    funds = participant.funds - wager
     number_of_trades = participant.number_of_trades + 1
     date, time = get_current_date_time()
 
     try:
         if direction == "long":
             print("updating_long_position")
-            updated_position = Position(rounder(position.long_amount_spent + wager), position.short_amount_spent , rounder(position.long_purchased + purchased), position.short_purchased, rounder(position.long_shares + purchased), position.short_shares )
+            updated_position = Position(position.long_amount_spent + wager, position.short_amount_spent , position.long_purchased + purchased, position.short_purchased, position.long_shares + purchased, position.short_shares )
         if direction == "short":
             print("updating__short_position")
-            updated_position = Position(position.long_amount_spent, rounder(position.short_amount_spent + wager) , position.long_purchased, rounder(position.short_purchased + purchased), position.long_shares, rounder(position.short_shares + purchased) )
+            updated_position = Position(position.long_amount_spent, position.short_amount_spent + wager , position.long_purchased, position.short_purchased + purchased, position.long_shares,position.short_shares + purchased)
         updated_participant = Participant(participant.name, funds, number_of_trades)
         new_trade = TradeDetails(direction, amount=wager, action="buy", index_price=index.price, index_name=None, date=date, time=time)
     except Exception as error:

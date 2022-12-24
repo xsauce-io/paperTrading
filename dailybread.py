@@ -79,29 +79,12 @@ def price_update2(context):
     try:
 
         culture = 250.77
-        name = "nix"
-        full_name = "New Index"
         context.bot.send_message(CHAT,
                                  text="New Index is ${}".format(round(culture, 2)))
 
-
         processes.manage_index.add_index("nix" , "New Index" ,culture)
-
-
     except Exception as error:
         print('Cause {}'.format(error))
-
-
-# def xci_price(update, context):
-#     message = update.message.text
-
-#     try:
-#         xci_info = processes.info.get_index_latest_info(message)
-#         update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
-#             xci_info.price, xci_info.date, xci_info.time))
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-#         update.message.reply_text(error)
 
 
 def index_price(update, context):
@@ -133,8 +116,9 @@ def welcome(update, context):
 
 def portfolio(update, context):
     sender = update.message.from_user.username
+    message = update.message.text
     try:
-        portfolio = processes.portfolio.portfolio(sender)
+        portfolio = processes.portfolio.portfolio(sender, message)
         formatted_message = format_portfolio_string(portfolio)
         update.message.reply_text(
             formatted_message,
@@ -147,13 +131,15 @@ def portfolio(update, context):
 
 
 def format_portfolio_string(portfolio: Portfolio):
-    message = "*Balance:* ${}\n" \
+    message = "*Index:* {}\n" \
+        "*Balance:* ${}\n" \
         "*Holdings(of XCI)*: {} Short / {} Long\n" \
         "*Total(Unsettled)*: ${}\n" \
         "*Avg Buy Price*:{} Short / {} Long\n" \
         "*PNL*: ${}\n" \
         "*Total Trades*: {}"
-    formatted_message = message.format(round(portfolio.funds, 3),
+    formatted_message = message.format(portfolio.index_name,
+                            round(portfolio.funds, 3),
                            round(portfolio.short_shares, 3),
                            round(portfolio.long_shares, 3),
                            round(portfolio.long + portfolio.short, 2),

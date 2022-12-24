@@ -21,7 +21,7 @@ class Position:
 
 
 class Portfolio:
-    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades):
+    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades, index_name):
         self.funds = funds
         self.short_shares = short_shares
         self.long_shares = long_shares
@@ -31,6 +31,7 @@ class Portfolio:
         self.avg_buy_price_short = avg_buy_price_short
         self.pnl = pnl
         self.number_of_trades = number_of_trades
+        self.index_name = index_name
 
     def __repr__(self) -> str:
         message = "Funds: {}\n" \
