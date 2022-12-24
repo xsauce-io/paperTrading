@@ -16,6 +16,7 @@ import processes.portfolio
 import processes.open
 import processes.close
 import processes.manage_index
+import processes.composition
 load_dotenv()
 
 
@@ -86,9 +87,9 @@ def price_update3(context):
     try:
         culture = 35.20
         context.bot.send_message(CHAT,
-                                 text="Idiss Index is ${}".format(round(culture, 2)))
+                                 text="Sneaker S&P 50 is ${} *temp".format(round(culture, 2)))
 
-        processes.manage_index.add_index("ids" , "Idiss Index" ,culture)
+        processes.manage_index.add_index("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -102,6 +103,14 @@ def index_price(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+def index_composition(update, context):
+    message = update.message.text
+    try:
+        composition_string = processes.composition.get_index_composition(message)
+        update.message.reply_text(composition_string, parse_mode='Markdown')
+    except Exception as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
 
 
 def play(update, context):
@@ -213,6 +222,7 @@ def help(update, context):
     update.message.reply_text(
         "/instructions -> Learn how to use the Xchange\n"
         "/play -> Use this command to get $10,000 dollars to start up!\n"
+        "/list -> Show the list of available indexes\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
         "/info -> Show the current price an index\n"
@@ -221,7 +231,6 @@ def help(update, context):
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
-
 
 def website(update, context):
     update.message.reply_text(
@@ -247,6 +256,7 @@ def main():
     dispatcher.add_handler(CommandHandler('website', website))
     dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('info', index_price))
+    dispatcher.add_handler(CommandHandler('comp', index_composition))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))

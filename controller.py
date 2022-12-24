@@ -197,3 +197,9 @@ def get_participant_long_shares(sender, index_name):
 
 def get_participant_short_shares(sender, index_name):
     return get_participant(sender)['positions'][index_name]['Short']['shares']
+
+
+def get_index_composition(index_name):
+    index_composition = list(composition.find({"name": index_name})[0]['composition'])
+    print(str(index_composition[0]))
+    return index_composition

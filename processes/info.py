@@ -7,7 +7,6 @@ def get_index_latest_info(message):
     parsed_message = split_message(message)
 
     if len(parsed_message) <= 1:
-        print("dede")
         raise ValueError('Please enter valid command. eg: /info xci')
 
     index_name = parsed_message[1]
