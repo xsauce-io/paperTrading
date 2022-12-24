@@ -68,28 +68,28 @@ def price_update(context):
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
-        processes.manage_index.add_index("xci" , "Xsauce Culture Index" ,culture)
+        processes.manage_index.add_index_statistics("xci" , "Xsauce Culture Index" ,culture)
 
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update2(context):
     try:
-        culture = 250.77
+        culture = 150.77
         context.bot.send_message(CHAT,
                                  text="New Index is ${}".format(round(culture, 2)))
 
-        processes.manage_index.add_index("nix" , "New Index" ,culture)
+        processes.manage_index.add_index_statistics("nix" , "New Index" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update3(context):
     try:
-        culture = 35.20
+        culture = 335.20
         context.bot.send_message(CHAT,
                                  text="Sneaker S&P 50 is ${} *temp".format(round(culture, 2)))
 
-        processes.manage_index.add_index("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
+        processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
