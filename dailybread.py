@@ -124,8 +124,11 @@ def play(update, context):
     try:
         reply = processes.play.play(sender)
         update.message.reply_text(reply)
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
     except Exception as error:
-        print('Cause{}'.format(error))
+        print('Cause {}'.format(error))
 
 
 def welcome(update, context):
@@ -143,15 +146,16 @@ def portfolio(update, context):
         if type(portfolio) == Portfolio:
             formatted_message = format_portfolio_string(portfolio)
 
-        elif type(portfolio) == TotalPortfolio:
+        elif type(portfolio) == GlobalPortfolio:
             formatted_message = format_total_string(portfolio)
         update.message.reply_text(
                 formatted_message,
                 parse_mode='Markdown'
             )
-
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
     except Exception as error:
-        update.message.reply_text("You hold no positions/ Error")
         print('Cause {}'.format(error))
 
 

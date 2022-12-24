@@ -144,15 +144,20 @@ def get_participant_username(sender):
     return get_participant(sender)['username']
 
 
-def get_participant_all_positions_info(sender):
-    positions = list(get_participant(sender)['positions'])
-    all_positions = []
-    # for p in positions:
-    #     item = get_participant_position_info(sender, p)
-    #     all_positions.append({"index_name": p, "position" :item})
-    # print(all_positions)
-    return positions
+def get_participant_all_positions_names(sender):
+    positions_index_names = list(get_participant(sender)['positions'])
+    return positions_index_names
 
+def get_participant_all_positions(sender):
+    positions_index_names = list(get_participant(sender)['positions'])
+    positions = []
+    for index_name in positions_index_names:
+        index = get_latest_index(index_name)
+        position = get_participant_position_info(sender, index_name)
+        positions.append(position)
+
+
+    return positions
 def get_participant_position_info(sender, index_name):
 
     long_amount_spent = get_participant_long_amount_spent(sender, index_name)
