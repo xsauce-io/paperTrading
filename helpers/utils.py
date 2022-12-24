@@ -20,3 +20,8 @@ def is_float(num):
         return True
     except ValueError:
         return False
+
+def rounder(num):
+    rounded = round(num, 8)
+    print('rounded')
+    return rounded

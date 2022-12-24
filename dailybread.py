@@ -11,11 +11,12 @@ import pymongo
 from pymongo import MongoClient
 from models import *
 import processes.play
-import processes.index_price
+import processes.info
 import processes.portfolio
 import processes.open
 import processes.close
-
+import processes.manage_index
+import processes.composition
 load_dotenv()
 
 
@@ -67,26 +68,49 @@ def price_update(context):
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
-        db = cluster[DATABASE_NAME]
-        stats = db[COLLECTION_NAME2]
-        strip = datetime.now()
-        date = strip.strftime('%m/%d/%Y')
-        time = strip.strftime("%H:%M:%S")
+        processes.manage_index.add_index("xci" , "Xsauce Culture Index" ,culture)
 
-        stats.insert_one(
-            {"price": culture, "date": date, "time": time})
     except Exception as error:
         print('Cause {}'.format(error))
 
-
-def xci_price(update, context):
+def price_update2(context):
     try:
-        xci_info = processes.index_price.get_latest_xci_info()
-        update.message.reply_text("Xsauce Culture Index is ${}. Updated on {} at {} UTC".format(
-            xci_info.price, xci_info.date, xci_info.time))
+        culture = 250.77
+        context.bot.send_message(CHAT,
+                                 text="New Index is ${}".format(round(culture, 2)))
+
+        processes.manage_index.add_index("nix" , "New Index" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
-        update.message.reply_text(error)
+
+def price_update3(context):
+    try:
+        culture = 35.20
+        context.bot.send_message(CHAT,
+                                 text="Sneaker S&P 50 is ${} *temp".format(round(culture, 2)))
+
+        processes.manage_index.add_index("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def index_price(update, context):
+    message = update.message.text
+    try:
+        index_info = processes.info.get_index_latest_info(message)
+        update.message.reply_text("{} is ${}. Updated on {} at {} UTC".format(
+            index_info.full_name, index_info.price, index_info.date, index_info.time))
+    except Exception as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+
+def index_composition(update, context):
+    message = update.message.text
+    try:
+        composition_string = processes.composition.get_index_composition(message)
+        update.message.reply_text(composition_string, parse_mode='Markdown')
+    except Exception as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
 
 
 def play(update, context):
@@ -107,13 +131,18 @@ def welcome(update, context):
 
 def portfolio(update, context):
     sender = update.message.from_user.username
+    message = update.message.text
     try:
-        portfolio = processes.portfolio.portfolio(sender)
-        formatted_message = format_portfolio_string(portfolio)
+        portfolio = processes.portfolio.portfolio(sender, message)
+        if type(portfolio) == Portfolio:
+            formatted_message = format_portfolio_string(portfolio)
+
+        elif type(portfolio) == TotalPortfolio:
+            formatted_message = format_total_string(portfolio)
         update.message.reply_text(
-            formatted_message,
-            parse_mode='Markdown'
-        )
+                formatted_message,
+                parse_mode='Markdown'
+            )
 
     except Exception as error:
         update.message.reply_text("You hold no positions/ Error")
@@ -121,13 +150,15 @@ def portfolio(update, context):
 
 
 def format_portfolio_string(portfolio: Portfolio):
-    message = "*Balance:* ${}\n" \
+    message = "*Index:* {}\n" \
+        "*Balance:* ${}\n" \
         "*Holdings(of XCI)*: {} Short / {} Long\n" \
         "*Total(Unsettled)*: ${}\n" \
         "*Avg Buy Price*:{} Short / {} Long\n" \
         "*PNL*: ${}\n" \
         "*Total Trades*: {}"
-    formatted_message = message.format(round(portfolio.funds, 3),
+    formatted_message = message.format(portfolio.index_name,
+                            round(portfolio.funds, 3),
                            round(portfolio.short_shares, 3),
                            round(portfolio.long_shares, 3),
                            round(portfolio.long + portfolio.short, 2),
@@ -137,6 +168,17 @@ def format_portfolio_string(portfolio: Portfolio):
                            portfolio.number_of_trades)
     return formatted_message
 
+def format_total_string(portfolio: Portfolio):
+    message = "*Balance:* ${}\n" \
+        "*Total(Unsettled)*: ${}\n" \
+        "*PNL*: ${}\n" \
+        "*Total Trades*: {}"
+    formatted_message = message.format(
+                           round(portfolio.funds, 3),
+                           round(portfolio.long + portfolio.short, 2),
+                           portfolio.pnl,
+                           portfolio.number_of_trades)
+    return formatted_message
 
 def instructions(update, context):
     update.message.reply_text(
@@ -165,19 +207,30 @@ def close(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+def list_index(update, context):
+    ##warning the list is hard coded for now
+    try:
+        update.message.reply_text( "*Xsauce Index:* xci\n" \
+        "*New Index:* nix\n" \
+        "*Idiss Index*: ids\n", parse_mode='Markdown')
+    except Exception and ValueError as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+
 
 def help(update, context):
     update.message.reply_text(
         "/instructions -> Learn how to use the Xchange\n"
         "/play -> Use this command to get $10,000 dollars to start up!\n"
+        "/list -> Show the list of available indexes\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
-        "/xci -> Show the current price of the Xsauce Culture Index\n"
-        "/portfolio -> Show your current index holdings\n"
+        "/info -> Show the current price an index\n"
+        "/portfolio -> Show your current portfolio holdings\n"
+        "/portfolio [index_name]-> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
-
 
 def website(update, context):
     update.message.reply_text(
@@ -190,14 +243,20 @@ def main():
     job_queue = updater.job_queue
     job_seconds = job_queue.run_repeating(
         price_update, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(
+        price_update2, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(
+        price_update3, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
+    dispatcher.add_handler(CommandHandler('list', list_index))
     dispatcher.add_handler(CommandHandler('website', website))
-    dispatcher.add_handler(CommandHandler('xci', xci_price))
     dispatcher.add_handler(CommandHandler('open', open))
+    dispatcher.add_handler(CommandHandler('info', index_price))
+    dispatcher.add_handler(CommandHandler('comp', index_composition))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))

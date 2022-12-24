@@ -1,5 +1,7 @@
 class Index:
-    def __init__(self, price, date, time):
+    def __init__(self,name, full_name, price, date, time):
+        self.name = name
+        self.full_name = full_name
         self.price = price
         self.date = date
         self.time = time
@@ -19,7 +21,7 @@ class Position:
 
 
 class Portfolio:
-    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades):
+    def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades, index_name):
         self.funds = funds
         self.short_shares = short_shares
         self.long_shares = long_shares
@@ -29,6 +31,7 @@ class Portfolio:
         self.avg_buy_price_short = avg_buy_price_short
         self.pnl = pnl
         self.number_of_trades = number_of_trades
+        self.index_name = index_name
 
     def __repr__(self) -> str:
         message = "Funds: {}\n" \
@@ -46,6 +49,26 @@ class Portfolio:
                                       round(self.long, 3),
                                       round(self.avg_buy_price_short, 3),
                                       round(self.avg_buy_price_long, 3),
+                                      self.pnl,
+                                      self.number_of_trades)
+        return message
+
+class TotalPortfolio:
+    def __init__(self, funds, long, short, pnl, number_of_trades):
+        self.funds = funds
+        self.long = long
+        self.short = short
+        self.pnl = pnl
+        self.number_of_trades = number_of_trades
+
+    def __repr__(self) -> str:
+        message = "Funds: {}\n" \
+            "Short: {}  \n"\
+            "Long: {} \n" \
+            "PNL: {}\n" \
+            "Total Trades: {}".format(round(self.funds, 3),
+                                      round(self.short, 3),
+                                      round(self.long, 3),
                                       self.pnl,
                                       self.number_of_trades)
         return message
