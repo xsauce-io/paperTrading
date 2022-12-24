@@ -7,14 +7,14 @@ def get_index_latest_info(message):
     parsed_message = split_message(message)
 
     if is_info_message_format_valid(parsed_message) == False:
-        raise ValueError('Please enter valid command. eg: /info xci')
+        raise UserInputException('Please enter valid command.\neg: /info xci')
     if is_info_message_input_valid(parsed_message) == False:
-        raise ValueError('Please enter valid command. eg: /info xci')
+        raise UserInputException('Please enter valid command.\neg: /info xci')
 
     index_name = extract_info_message(parsed_message)
 
     if controller.does_index_exist(index_name) == False:
-       raise ValueError("Index Not Found")
+       raise UserInputException("Index Not Found")
 
     index = controller.get_latest_index(index_name)
     index = format_index_price(index)

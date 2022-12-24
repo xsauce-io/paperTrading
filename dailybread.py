@@ -99,18 +99,24 @@ def index_price(update, context):
         index_info = processes.info.get_index_latest_info(message)
         update.message.reply_text("{} is ${}. Updated on {} at {} UTC".format(
             index_info.full_name, index_info.price, index_info.date, index_info.time))
-    except Exception as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def index_composition(update, context):
     message = update.message.text
     try:
         composition_string = processes.composition.get_index_composition(message)
         update.message.reply_text(composition_string, parse_mode='Markdown')
-    except Exception as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+
 
 
 def play(update, context):
