@@ -211,9 +211,11 @@ def close(update, context):
     try:
         reply = processes.close.close(sender, message)
         update.message.reply_text(reply)
-    except Exception and ValueError as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def list_index(update, context):
     ##warning the list is hard coded for now
