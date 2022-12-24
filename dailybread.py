@@ -69,15 +69,11 @@ def price_update(context):
 
         processes.manage_index.add_index("xci" , "Xsauce Culture Index" ,culture)
 
-
-
-
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update2(context):
     try:
-
         culture = 250.77
         context.bot.send_message(CHAT,
                                  text="New Index is ${}".format(round(culture, 2)))
@@ -86,6 +82,15 @@ def price_update2(context):
     except Exception as error:
         print('Cause {}'.format(error))
 
+def price_update3(context):
+    try:
+        culture = 35.20
+        context.bot.send_message(CHAT,
+                                 text="Idiss Index is ${}".format(round(culture, 2)))
+
+        processes.manage_index.add_index("ids" , "Idiss Index" ,culture)
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def index_price(update, context):
     message = update.message.text
@@ -95,7 +100,8 @@ def index_price(update, context):
             index_info.full_name, index_info.price, index_info.date, index_info.time))
     except Exception as error:
         print('Cause {}'.format(error))
-        update.message.reply_text(error)
+        update.message.reply_text('{}'.format(error))
+
 
 
 def play(update, context):
@@ -192,6 +198,16 @@ def close(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+def list_index(update, context):
+    ##warning the list is hard coded for now
+    try:
+        update.message.reply_text( "*Xsauce Index:* xci\n" \
+        "*New Index:* nix\n" \
+        "*Idiss Index*: ids\n", parse_mode='Markdown')
+    except Exception and ValueError as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+
 
 def help(update, context):
     update.message.reply_text(
@@ -199,9 +215,9 @@ def help(update, context):
         "/play -> Use this command to get $10,000 dollars to start up!\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
-        "/xci -> Show the current price of the Xsauce Culture Index\n"
         "/info -> Show the current price an index\n"
-        "/portfolio -> Show your current index holdings\n"
+        "/portfolio -> Show your current portfolio holdings\n"
+        "/portfolio [index_name]-> Show your current index holdings\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
@@ -220,11 +236,14 @@ def main():
         price_update, interval=86400, first=1)
     job_seconds_2 = job_queue.run_repeating(
         price_update2, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(
+        price_update3, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
+    dispatcher.add_handler(CommandHandler('list', list_index))
     dispatcher.add_handler(CommandHandler('website', website))
     dispatcher.add_handler(CommandHandler('open', open))
     dispatcher.add_handler(CommandHandler('info', index_price))

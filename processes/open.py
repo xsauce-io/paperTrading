@@ -7,10 +7,10 @@ from helpers.utils import *
 def open(sender, message):
 
     parsed_message = split_message(message)
-    index_name = parsed_message[1]
-
     if is_open_message_valid(parsed_message) == False:
         return ('Please enter valid command. eg: /open long 500')
+
+    index_name = parsed_message[1]
 
     if controller.find_index(index_name) == False:
        return "Index {} Not Found".format(index_name)

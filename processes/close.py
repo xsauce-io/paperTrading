@@ -9,11 +9,16 @@ from helpers.utils import *
 
 def close(sender, message):
     parsed_message = split_message(message)
-    index_name = parsed_message[1]
 
     try:
         if is_close_message_valid(parsed_message) == False:
             raise UserInputException('Please enter valid command. eg: /close xci long 500')
+    except UserInputException as error:
+        return str(error)
+
+    index_name = parsed_message[1]
+
+    try:
         if controller.find_index(index_name) == False:
             raise "Index {} Not Found".format(index_name)
         if controller.find_participant_position(sender, index_name) == False:

@@ -4,8 +4,12 @@ from datetime import datetime
 from helpers.utils import *
 
 def get_index_latest_info(message):
-    #parse index
     parsed_message = split_message(message)
+
+    if len(parsed_message) <= 1:
+        print("dede")
+        raise ValueError('Please enter valid command. eg: /info xci')
+
     index_name = parsed_message[1]
 
     if controller.find_index(index_name) == False:
