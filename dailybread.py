@@ -54,6 +54,7 @@ def price_update(context):
                 'results'][0]['estimatedMarketValue'])
             resData.append(response.json()[
                 'results'][0]['estimatedMarketValue'])
+
         culture = 0
         culture += resData[0] * .125
         culture += resData[1] * .14
@@ -146,6 +147,7 @@ def portfolio(update, context):
         if type(portfolio) == Portfolio:
             formatted_message = format_portfolio_string(portfolio)
 
+
         elif type(portfolio) == GlobalPortfolio:
             formatted_message = format_total_string(portfolio)
         update.message.reply_text(
@@ -227,6 +229,7 @@ def list_index(update, context):
         update.message.reply_text( "*Xsauce Index:* xci\n" \
         "*New Index:* nix\n" \
         "*Idiss Index*: ids\n", parse_mode='Markdown')
+
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
