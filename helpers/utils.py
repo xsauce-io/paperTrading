@@ -22,6 +22,6 @@ def is_float(num):
         return False
 
 def rounder(num):
-    rounded = round(num, 3)
+    rounded = round(num, 6)
     print('rounded')
     return rounded

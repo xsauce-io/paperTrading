@@ -59,7 +59,7 @@ def find_participant(sender) -> bool:
         return False
 
 def find_participant_position(sender, index_name) -> bool:
-    participant_position = tuple(participants.find({"username": sender, "positions": {index_name: { "$exists": True}} }).clone())
+    participant_position = tuple(participants.find({"username": sender, f"positions.{index_name}": {"$exists": True}}).clone())
     if (len(participant_position) > 0):
         return True
     else:
@@ -148,7 +148,7 @@ def get_participant_position_info(sender, index_name):
     long_amount_spent = get_participant_long_amount_spent(sender, index_name)
     short_amount_spent = get_participant_short_amount_spent(sender, index_name)
     long_purchased = get_participant_long_purchased(sender, index_name)
-    short_purchased = get_participant_long_purchased(sender, index_name)
+    short_purchased = get_participant_short_purchased(sender, index_name)
     long_shares = get_participant_long_shares(sender, index_name)
     short_shares = get_participant_short_shares(sender, index_name)
 

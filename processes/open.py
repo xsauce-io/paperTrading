@@ -9,6 +9,9 @@ def open(sender, message):
     parsed_message = split_message(message)
     index_name = parsed_message[1]
 
+    if is_open_message_valid(parsed_message) == False:
+        return ('Please enter valid command. eg: /open long 500')
+
     if controller.find_index(index_name) == False:
        return "Index {} Not Found".format(index_name)
 
@@ -41,7 +44,7 @@ def open_position(message, position: Position, participant: Participant, index: 
     if wager == 0:
         raise UserInputException("You can't get something for nothing")
     if participant.funds == 0:
-        raise UserInputException("Your broke. Sell some shares to feed your funds")
+        raise UserInputException("You're broke. Sell some shares to feed your funds")
     if wager > participant.funds:
         raise UserInputException('That cost more than you got in your bag')
 
