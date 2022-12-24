@@ -8,7 +8,7 @@ from helpers.utils import *
 
 
 def close(sender, message):
-    current_index = controller.get_latest_xci()
+    current_index = controller.get_latest_index("xci")
     current_position_info = controller.get_participant_position_info(sender)
     current_participant_info = controller.get_participant_info(sender)
     try:

@@ -27,8 +27,10 @@ participants = db[COLLECTION_NAME1]
 stats = db[COLLECTION_NAME2]
 composition = db[COLLECTION_NAME3]
 
+def add_index(index: Index):
+     stats.insert_one(
+            {"name": index.name , "full_name" : index.full_name ,"price": index.price, "date": index.date, "time": index.time})
 
-# TODO:This function can be generalized - get_latest_index with a parameter break down to get latest price , data and time => put together in service layer.
 def get_latest_index(index_name):
     # WARNING: This is hardcoded to get first element
     latest_index = stats.find({"name": index_name}).sort("_id", DESCENDING)[0]
@@ -56,21 +58,18 @@ def find_participant(sender) -> bool:
     else:
         return False
 
-# def add_participant(name, funds):
-#     try:
-#         participants.insert_one({"username": name, "funds": funds, "position": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}, "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
-#     except Exception as error:
-#         print('Cause{}'.format(error))
+def find_participant_position(sender, index_name) -> bool:
+    participant_position = tuple(participants.find({"username": sender, "positions": {index_name: { "$exists": True}} }).clone())
+    if (len(participant_position) > 0):
+        return True
+    else:
+        return False
 
 def add_participant(name, funds):
     try:
-        participants.insert_one({"username": name, "funds": funds, "positions":[{"xci": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}}], "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
+        participants.insert_one({"username": name, "funds": funds, "positions":{"xci": {"Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}}, "trades": {"total": 0, "tradeDetails": []}})  # TODO: move schema to service layer
     except Exception as error:
         print('Cause{}'.format(error))
-
-def add_index(index: Index):
-     stats.insert_one(
-            {"name": index.name , "full_name" : index.full_name ,"price": index.price, "date": index.date, "time": index.time})
 
 
 def get_participant(sender):
@@ -139,7 +138,51 @@ def get_participant_trades_details(sender):
     return get_participant(sender)['trades']['tradeDetails']
 
 def get_participant_positions(sender):
-    return get_participant(sender)['position']
+    return get_participant(sender)['positions']
 
 def get_participant_username(sender):
     return get_participant(sender)['username']
+
+def get_participant_position_info(sender, index_name):
+
+    long_amount_spent = get_participant_long_amount_spent(sender, index_name)
+    short_amount_spent = get_participant_short_amount_spent(sender, index_name)
+    long_purchased = get_participant_long_purchased(sender, index_name)
+    short_purchased = get_participant_long_purchased(sender, index_name)
+    long_shares = get_participant_long_shares(sender, index_name)
+    short_shares = get_participant_short_shares(sender, index_name)
+
+    participant_position_info = Position(
+        long_amount_spent, short_amount_spent, long_purchased, short_purchased, long_shares, short_shares)
+
+    return participant_position_info
+
+def update_participant_position(sender, index_name, position:Position, participant:Participant, trades):
+    print("here")
+    participants.update_one({"username": sender}, {"$set": {
+                f"positions.{index_name}": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": {"total": participant.number_of_trades, "tradeDetails": trades}}})
+    return
+
+def add_index_to_participant_positions(sender, index_name):
+    participants.update_one({"username": sender}, {"$set": {
+                f"positions.{index_name}": {"Short": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}, "Long": {"shares": 0, "buyIn": {"purchased": 0, "amount_spent": 0}}}}})
+
+    return
+
+def get_participant_long_amount_spent(sender, index_name):
+    return get_participant(sender)['positions'][index_name]['Long']['buyIn']['amount_spent']
+
+def get_participant_short_amount_spent(sender, index_name):
+    return get_participant(sender)['positions'][index_name]['Short']['buyIn']['amount_spent']
+
+def get_participant_long_purchased(sender, index_name):
+    return get_participant(sender)['positions'][index_name]['Long']['buyIn']['purchased']
+
+def get_participant_short_purchased(sender,index_name):
+    return get_participant(sender)['positions'][index_name]['Short']['buyIn']['purchased']
+
+def get_participant_long_shares(sender, index_name):
+    return get_participant(sender)['positions'][index_name]['Long']['shares']
+
+def get_participant_short_shares(sender, index_name):
+    return get_participant(sender)['positions'][index_name]['Short']['shares']

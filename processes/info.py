@@ -1,7 +1,6 @@
 import controller
 from models import *
 from datetime import datetime
-
 from helpers.utils import *
 
 def get_index_latest_info(message):

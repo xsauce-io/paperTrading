@@ -10,5 +10,4 @@ def add_index(name, full_name, price):
 
 def create_index(name, full_name, price):
     date,time = get_current_date_time()
-
     return Index(name, full_name, price, date, time)
