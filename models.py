@@ -19,6 +19,14 @@ class Position:
     def __repr__(self) -> str:
         return "long_amount_spent: {}, short_amount_spent: {}, long_purchased: {}, short_purchased: {}, long_shares: {}, short_shares: {}".format(self.long_amount_spent, self.short_amount_spent, self.long_purchased, self.short_purchased, self.long_shares, self.short_shares)
 
+class PositionNamed:
+    def __init__(self, position: Position, index_name):
+        self.position = position
+        self.index_name = index_name
+
+    def __repr__(self) -> str:
+        return "position: {}, index_name: {}".format(self.position, self.index_name)
+
 
 class Portfolio:
     def __init__(self, funds, short_shares, long_shares, long, short, avg_buy_price_long, avg_buy_price_short,  pnl, number_of_trades, index_name):
@@ -53,7 +61,7 @@ class Portfolio:
                                       self.number_of_trades)
         return message
 
-class TotalPortfolio:
+class GlobalPortfolio:
     def __init__(self, funds, long, short, pnl, number_of_trades):
         self.funds = funds
         self.long = long

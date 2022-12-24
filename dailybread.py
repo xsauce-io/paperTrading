@@ -68,28 +68,28 @@ def price_update(context):
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
-        processes.manage_index.add_index("xci" , "Xsauce Culture Index" ,culture)
+        processes.manage_index.add_index_statistics("xci" , "Xsauce Culture Index" ,culture)
 
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update2(context):
     try:
-        culture = 250.77
+        culture = 150.77
         context.bot.send_message(CHAT,
                                  text="New Index is ${}".format(round(culture, 2)))
 
-        processes.manage_index.add_index("nix" , "New Index" ,culture)
+        processes.manage_index.add_index_statistics("nix" , "New Index" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update3(context):
     try:
-        culture = 35.20
+        culture = 335.20
         context.bot.send_message(CHAT,
                                  text="Sneaker S&P 50 is ${} *temp".format(round(culture, 2)))
 
-        processes.manage_index.add_index("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
+        processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -99,18 +99,24 @@ def index_price(update, context):
         index_info = processes.info.get_index_latest_info(message)
         update.message.reply_text("{} is ${}. Updated on {} at {} UTC".format(
             index_info.full_name, index_info.price, index_info.date, index_info.time))
-    except Exception as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def index_composition(update, context):
     message = update.message.text
     try:
         composition_string = processes.composition.get_index_composition(message)
         update.message.reply_text(composition_string, parse_mode='Markdown')
-    except Exception as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+
 
 
 def play(update, context):
@@ -118,8 +124,11 @@ def play(update, context):
     try:
         reply = processes.play.play(sender)
         update.message.reply_text(reply)
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
     except Exception as error:
-        print('Cause{}'.format(error))
+        print('Cause {}'.format(error))
 
 
 def welcome(update, context):
@@ -137,15 +146,16 @@ def portfolio(update, context):
         if type(portfolio) == Portfolio:
             formatted_message = format_portfolio_string(portfolio)
 
-        elif type(portfolio) == TotalPortfolio:
+        elif type(portfolio) == GlobalPortfolio:
             formatted_message = format_total_string(portfolio)
         update.message.reply_text(
                 formatted_message,
                 parse_mode='Markdown'
             )
-
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
     except Exception as error:
-        update.message.reply_text("You hold no positions/ Error")
         print('Cause {}'.format(error))
 
 
@@ -192,9 +202,11 @@ def open(update, context):
     try:
         result = processes.open.open(sender, message)
         update.message.reply_text(result)
-    except Exception and ValueError as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 
 def close(update, context):
@@ -203,9 +215,11 @@ def close(update, context):
     try:
         reply = processes.close.close(sender, message)
         update.message.reply_text(reply)
-    except Exception and ValueError as error:
+    except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def list_index(update, context):
     ##warning the list is hard coded for now

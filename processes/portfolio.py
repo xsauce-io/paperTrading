@@ -4,58 +4,59 @@ import math
 from helpers.utils import *
 from helpers.market_math import *
 
-
-
-
 def portfolio(sender, message):
 
     parsed_message = split_message(message)
 
-    if len(parsed_message) == 1:
-        all_positions_names = controller.get_participant_all_positions_info(sender)
-        all_portfolio =[]
-        current_participant_info = 0
+    if is_portfolio_message_format_valid(parsed_message) == False:
+        raise UserInputException('Please enter valid command. eg: /portfolio or /portfolio xci')
+
+    if is_request_global_portfolio(parsed_message) == True:
+        all_positions_index_names = controller.get_participant_all_positions_names(sender)
         current_participant_info = controller.get_participant_info(sender)
-        for index_name in all_positions_names:
+
+        all_portfolio =[]
+
+        for index_name in all_positions_index_names:
             current_index = controller.get_latest_index(index_name)
             current_position_info = controller.get_participant_position_info(sender, index_name)
-            portfolio_info = create_portfolio(current_position_info, current_participant_info, current_index)
+            portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 
             all_portfolio.append(portfolio_info)
 
-        long = 0
-        short = 0
-        for portfolio in all_portfolio:
-            long += portfolio.long
-            short += portfolio.short
+        global_portfolio = determine_global_portfolio(all_portfolio, current_participant_info)
 
-        pnl = calculate_total_profit_and_loss(current_participant_info.funds, long, short)
+        return global_portfolio
 
-        return TotalPortfolio(current_participant_info.funds, long, short,  pnl, current_participant_info.number_of_trades)
+    else:
+        index_name = extract_portfolio_message(parsed_message)
 
-
-    if len(parsed_message) > 1:
-        index_name = parsed_message[1]
-
-        if controller.find_index(index_name) == False:
-            raise ValueError("Index Not Found")
-        if controller.find_index(index_name) == False:
-            raise ValueError("Index {} Not Found".format(index_name))
-        if controller.find_participant_position(sender, index_name) == False:
-            raise ValueError('You have no positions open')
+        if controller.does_index_exist(index_name) == False:
+            raise UserInputException("Index Not Found")
+        if controller.does_participant_have_position_for_index(sender, index_name) == False:
+            raise UserInputException('You have no positions open')
 
         current_index = controller.get_latest_index(index_name)
         current_position_info = controller.get_participant_position_info(sender, index_name)
         current_participant_info = controller.get_participant_info(sender)
 
-        portfolio_info = create_portfolio(current_position_info, current_participant_info, current_index)
+        portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 
     return portfolio_info
 
 
+def determine_global_portfolio(portfolios: list[Portfolio], participant: Participant):
+    long = 0
+    short = 0
+    for portfolio in portfolios:
+            long += portfolio.long
+            short += portfolio.short
 
+    pnl = calculate_total_profit_and_loss(participant.funds, long, short)
 
-def create_portfolio(position: Position, participant: Participant, index: Index):
+    return GlobalPortfolio(participant.funds, long, short,  pnl, participant.number_of_trades)
+
+def determine_portfolio_by_index(position: Position, participant: Participant, index: Index):
     long_amount_spent = position.long_amount_spent
     short_amount_spent = position.short_amount_spent
     long_purchased = position.long_purchased
@@ -100,3 +101,17 @@ def calculate_total_profit_and_loss(funds, long, short):
     if math.isclose(pnl, 0.00):
         pnl = 0
     return pnl
+
+def extract_portfolio_message(parsed_message):
+    index_name = parsed_message[1]
+    return index_name
+
+def is_portfolio_message_format_valid(parsed_message: list):
+    if len(parsed_message) == 1 or len(parsed_message) == 2:
+       return True
+    return False
+
+def is_request_global_portfolio(parsed_message):
+    if len(parsed_message) == 1:
+        return True
+    return False

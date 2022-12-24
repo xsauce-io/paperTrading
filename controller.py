@@ -44,7 +44,7 @@ def get_latest_index(index_name):
     index = Index(name, full_name ,price, date, time)
     return index
 
-def find_index(index_name) -> bool:
+def does_index_exist(index_name) -> bool:
     index_stats = tuple(stats.find({"name": index_name}).clone())
     if (len(index_stats) > 0):
         return True
@@ -58,7 +58,7 @@ def find_participant(sender) -> bool:
     else:
         return False
 
-def find_participant_position(sender, index_name) -> bool:
+def does_participant_have_position_for_index(sender, index_name) -> bool:
     participant_position = tuple(participants.find({"username": sender, f"positions.{index_name}": {"$exists": True}}).clone())
     if (len(participant_position) > 0):
         return True
@@ -144,15 +144,20 @@ def get_participant_username(sender):
     return get_participant(sender)['username']
 
 
-def get_participant_all_positions_info(sender):
-    positions = list(get_participant(sender)['positions'])
-    all_positions = []
-    # for p in positions:
-    #     item = get_participant_position_info(sender, p)
-    #     all_positions.append({"index_name": p, "position" :item})
-    # print(all_positions)
-    return positions
+def get_participant_all_positions_names(sender):
+    positions_index_names = list(get_participant(sender)['positions'])
+    return positions_index_names
 
+def get_participant_all_positions(sender):
+    positions_index_names = list(get_participant(sender)['positions'])
+    positions = []
+    for index_name in positions_index_names:
+        index = get_latest_index(index_name)
+        position = get_participant_position_info(sender, index_name)
+        positions.append(position)
+
+
+    return positions
 def get_participant_position_info(sender, index_name):
 
     long_amount_spent = get_participant_long_amount_spent(sender, index_name)
@@ -203,3 +208,11 @@ def get_index_composition(index_name):
     index_composition = list(composition.find({"name": index_name})[0]['composition'])
     print(str(index_composition[0]))
     return index_composition
+
+def does_index_composition_exist(index_name):
+    index = list(composition.find({"name": index_name}).clone())
+    print(index)
+    if (len(index) > 0):
+        return True
+    else:
+        return False
