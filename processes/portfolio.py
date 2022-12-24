@@ -56,15 +56,28 @@ def create_portfolio(position: Position, participant: Participant, index: Index)
         long_shares, avg_buy_price_long, index.price)
     Short = calculate_short_position(
         short_shares, avg_buy_price_short, index.price)
-    pnl = round(calculate_profit_and_loss(participant.funds, Long, Short), 3)
+
+    initial_long = long_shares * avg_buy_price_long
+    initial_short = short_shares * avg_buy_price_short
+    pnl = round(calculate_profit_and_loss(initial_long, initial_short, Long, Short), 3)
 
     return Portfolio(participant.funds, short_shares, long_shares, Long, Short, avg_buy_price_long, avg_buy_price_short, pnl, participant.number_of_trades, index.name)
 
 
-def calculate_profit_and_loss(funds, long, short):
-    initial_funds = 10000
-    pnl = round((funds + short + long) - initial_funds, 3)
+
+def calculate_profit_and_loss(initial_long, initial_short, long, short):
+    pnl_short = long - initial_long
+    pnl_long = short - initial_short
+    pnl = round(pnl_short+ pnl_long, 3)
     if math.isclose(pnl, 0.00):
         pnl = 0
 
     return pnl
+
+# def calculate_profit_and_loss(funds, long, short):
+#     initial_funds = 10000
+#     pnl = round((funds + short + long) - initial_funds, 3)
+#     if math.isclose(pnl, 0.00):
+#         pnl = 0
+
+#     return pnl
