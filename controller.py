@@ -143,6 +143,16 @@ def get_participant_positions(sender):
 def get_participant_username(sender):
     return get_participant(sender)['username']
 
+
+def get_participant_all_positions_info(sender):
+    positions = list(get_participant(sender)['positions'])
+    all_positions = []
+    # for p in positions:
+    #     item = get_participant_position_info(sender, p)
+    #     all_positions.append({"index_name": p, "position" :item})
+    # print(all_positions)
+    return positions
+
 def get_participant_position_info(sender, index_name):
 
     long_amount_spent = get_participant_long_amount_spent(sender, index_name)
@@ -156,6 +166,7 @@ def get_participant_position_info(sender, index_name):
         long_amount_spent, short_amount_spent, long_purchased, short_purchased, long_shares, short_shares)
 
     return participant_position_info
+
 
 def update_participant_position(sender, index_name, position:Position, participant:Participant, trades):
     print("here")

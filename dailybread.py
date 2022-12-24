@@ -119,11 +119,15 @@ def portfolio(update, context):
     message = update.message.text
     try:
         portfolio = processes.portfolio.portfolio(sender, message)
-        formatted_message = format_portfolio_string(portfolio)
+        if type(portfolio) == Portfolio:
+            formatted_message = format_portfolio_string(portfolio)
+
+        elif type(portfolio) == TotalPortfolio:
+            formatted_message = format_total_string(portfolio)
         update.message.reply_text(
-            formatted_message,
-            parse_mode='Markdown'
-        )
+                formatted_message,
+                parse_mode='Markdown'
+            )
 
     except Exception as error:
         update.message.reply_text("You hold no positions/ Error")
@@ -149,6 +153,17 @@ def format_portfolio_string(portfolio: Portfolio):
                            portfolio.number_of_trades)
     return formatted_message
 
+def format_total_string(portfolio: Portfolio):
+    message = "*Balance:* ${}\n" \
+        "*Total(Unsettled)*: ${}\n" \
+        "*PNL*: ${}\n" \
+        "*Total Trades*: {}"
+    formatted_message = message.format(
+                           round(portfolio.funds, 3),
+                           round(portfolio.long + portfolio.short, 2),
+                           portfolio.pnl,
+                           portfolio.number_of_trades)
+    return formatted_message
 
 def instructions(update, context):
     update.message.reply_text(
