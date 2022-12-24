@@ -44,7 +44,7 @@ def get_latest_index(index_name):
     index = Index(name, full_name ,price, date, time)
     return index
 
-def find_index(index_name) -> bool:
+def does_index_exist(index_name) -> bool:
     index_stats = tuple(stats.find({"name": index_name}).clone())
     if (len(index_stats) > 0):
         return True
