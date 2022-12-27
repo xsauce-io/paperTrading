@@ -81,7 +81,6 @@ class GlobalPortfolio:
                                       self.number_of_trades)
         return message
 
-
 class TradeDetails:
     def __init__(self, direction, amount, action, index_price, index_name, date, time):
         self.direction = direction
@@ -101,6 +100,18 @@ class Participant:
 
     def __repr__(self) -> str:
         return "name: {}, funds: {}, number_of_trades: {}".format(self.name, self.funds, self.number_of_trades)
+
+
+class IndexConstituent:
+    def __init__(self, name, weight_in_decimal):
+        self.name = name
+        self.weight_in_decimals = weight_in_decimals
+
+class IndexConstituentSneaker:
+    def __init__(self, name, weight_in_decimals, sku):
+        self.name = name
+        self.weight_in_decimals = weight_in_decimals
+        self.sku = sku
 
 
 class UserInputException(Exception):
