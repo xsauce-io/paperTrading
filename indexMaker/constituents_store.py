@@ -239,7 +239,7 @@ NEW_BALANCE_INDEX_CONSTITUENTS = [
      "weight_in_decimal" : 0.02
   },
    {
-    "sku" : "MR993GL",
+    "sku" : "MR993GL", #warning return Kirth Show
      "weight_in_decimal" : 0.02
   },
     {
@@ -255,8 +255,6 @@ NEW_BALANCE_INDEX_CONSTITUENTS = [
      "weight_in_decimal" : 0.02
   }
 ]
-
-
 
 SNEAKER_SP50_INDEX_CONSTITUENTS = [
     {
