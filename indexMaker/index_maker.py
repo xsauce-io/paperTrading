@@ -1,7 +1,6 @@
 import requests
 import os
 from dotenv import load_dotenv
-from constituents_store import *
 
 load_dotenv()
 
@@ -43,22 +42,9 @@ def calculate_composite_index_price(composite_of_constituents: list) -> float:
             sub_index_price = calculate_index_price(constituents)
 
             index_price += sub_index_price * weight_in_decimal
+
             print(index_price)
+        return index_price
 
     except Exception as error:
         print(error)
-
-
-
-    except Exception as error:
-        print(error)
-
-
-def main():
-    # calculate_index_price(CULTURE_INDEX_CONSTITUENTS)
-    calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
-
-
-
-if __name__ == '__main__':
-    main()

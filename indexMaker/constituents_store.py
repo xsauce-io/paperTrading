@@ -157,7 +157,7 @@ YEEZY_INDEX_CONSTITUENTS = [
      "weight_in_decimal" : 0.02
   },
     {
-    "sku" : "AH8050-100",
+    "sku" : "EF2829",
     "weight_in_decimal" : 0.02
   },
    {
@@ -200,7 +200,7 @@ ADIDAS_INDEX_CONSTITUENTS = [
      "weight_in_decimal" : 0.02
   },
     {
-    "sku" : "AH8050-100",
+    "sku" : "FX3239",
     "weight_in_decimal" : 0.02
   },
    {
