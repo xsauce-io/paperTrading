@@ -17,8 +17,10 @@ import processes.open
 import processes.close
 import processes.manage_index
 import processes.composition
-load_dotenv()
+from indexMaker.index_maker import *
+from indexMaker.constituents_store import *
 
+load_dotenv()
 
 PASSWORD = os.environ['password']
 USERNAME = os.environ['username']
@@ -34,64 +36,24 @@ cluster = MongoClient(URL)
 
 def price_update(context):
     try:
-        skus = ["555088-063",
-                "DO9392-700",
-                "DD1391-400",
-                "GW3355",
-                "DC9533-800",
-                "BB550WT1",
-                "GX2487",
-                "GW1229",
-                "DH9792-100",
-                "DH7863-100"]
-
-        resData = []
-
-        for sku in skus:
-            sneak_url = API + sku
-            response = requests.get(sneak_url)
-            print(response.json()[
-                'results'][0]['estimatedMarketValue'])
-            resData.append(response.json()[
-                'results'][0]['estimatedMarketValue'])
-        culture = 0
-        culture += resData[0] * .125
-        culture += resData[1] * .14
-        culture += resData[2] * .150
-        culture += resData[3] * .075
-        culture += resData[4] * .011
-        culture += resData[5] * .18
-        culture += resData[6] * .08
-        culture += resData[7] * .185
-        culture += resData[8] * .017
-        culture += resData[9] * .037
+        culture = calculate_index_price(CULTURE_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
 
         processes.manage_index.add_index_statistics("xci" , "Xsauce Culture Index" ,culture)
-
-    except Exception as error:
-        print('Cause {}'.format(error))
-
-def price_update2(context):
-    try:
-        culture = 150.77
-        context.bot.send_message(CHAT,
-                                 text="New Index is ${}".format(round(culture, 2)))
-
-        processes.manage_index.add_index_statistics("nix" , "New Index" ,culture)
     except Exception as error:
         print('Cause {}'.format(error))
 
 def price_update3(context):
     try:
-        culture = 335.20
+        sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
-                                 text="Sneaker S&P 50 is ${} *temp".format(round(culture, 2)))
+                                 text="Sneaker S&P 50 is ${}".format(round(sp50_index_price, 2)))
 
-        processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P 50 (S&P50)" ,culture)
+        processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P50",sp50_index_price)
     except Exception as error:
         print('Cause {}'.format(error))
+
 
 def index_price(update, context):
     message = update.message.text
@@ -257,8 +219,6 @@ def main():
     job_queue = updater.job_queue
     job_seconds = job_queue.run_repeating(
         price_update, interval=86400, first=1)
-    job_seconds_2 = job_queue.run_repeating(
-        price_update2, interval=86400, first=1)
     job_seconds_2 = job_queue.run_repeating(
         price_update3, interval=86400, first=1)
     dispatcher = updater.dispatcher
