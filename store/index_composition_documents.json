@@ -1,0 +1,210 @@
+[
+    {
+        "_id": {
+            "$oid": "63a68adbfdc8ef6dccf8844e"
+        },
+        "name": "xci",
+        "full_name": "Xsauce Culture Index",
+        "composition": [
+            {
+                "name": "Jordan 1 Retro High Patent Bred",
+                "weight_in_percentage": {
+                    "$numberDouble": "12.5"
+                }
+            },
+            {
+                "name": "Nike Air Max 1 Travis Scott Cactus Jack Saturn Gold",
+                "weight_in_percentage": {
+                    "$numberDouble": "14.0"
+                }
+            },
+            {
+                "name": "Nike Dunk Valerian Blue",
+                "weight_in_percentage": {
+                    "$numberDouble": "15.0"
+                }
+            },
+            {
+                "name": "adidas Yeezy Foam RNNR Vermillion",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.5"
+                }
+            },
+            {
+                "name": "Jordan 4 Retro Union Guava Ice",
+                "weight_in_percentage": {
+                    "$numberDouble": "1.1"
+                }
+            },
+            {
+                "name": "New Balance 550 White Green",
+                "weight_in_percentage": {
+                    "$numberDouble": "18.0"
+                }
+            },
+            {
+                "name": "adidas NMD Hu Pharrell Human Race Triple Black Pack",
+                "weight_in_percentage": {
+                    "$numberDouble": "8.0"
+                }
+            },
+            {
+                "name": "adidas Yeezy Boost 350 V2 Beluga Reflective",
+                "weight_in_percentage": {
+                    "$numberDouble": "18.5"
+                }
+            },
+            {
+                "name": "Nike Air Max 95 Smoke Gray",
+                "weight_in_percentage_in_percentage": {
+                    "$numberDouble": "1.7"
+                }
+            },
+            {
+                "name": "Nike Blazer Low Off White University Red",
+                "weight_in_percentage": {
+                    "$numberDouble": "3.7"
+                }
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "63a69086fdc8ef6dccf88450"
+        },
+        "name": "S&P50",
+        "full_name": "Sneaker Benchmark Index (Sneaker S&P 50)",
+        "composition": [
+            {
+                "name": "Jordan",
+                "weight_in_percentage": {
+                    "$numberDouble": "20.0"
+                }
+            },
+            {
+                "name": "Yeezy",
+                "weight_in_percentage": {
+                    "$numberDouble": "20.0"
+                }
+            },
+            {
+                "name": "Nike",
+                "weight_in_percentage": {
+                    "$numberDouble": "20.0"
+                }
+            },
+            {
+                "name": "Adidas",
+                "weight_in_percentage": {
+                    "$numberDouble": "20.0"
+                }
+            },
+            {
+                "name": "New Balance",
+                "weight_in_percentage": {
+                    "$numberDouble": "20.0"
+                }
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "63ab914fa5408b4cf9ef5011"
+        },
+        "name": "hype6",
+        "full_name": "HYPE6",
+        "composition": [
+            {
+                "name": "Jordan 1 Retro Lost and Found",
+                "sku": "DZ5485-612",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 4 Retro A Ma Maniére Violet Ore",
+                "sku": "DV6773-220",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Nike SB Dunk Low Sandy Bodecker",
+                "sku": "FD8777-100",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 11 Cherry (2022)",
+                "sku": "CT8012-116",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 1 Retro Low OG SP Travis Scott",
+                "sku": "DM7866-001",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Nike LeBron 20",
+                "sku": "FJ4955-300",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Nike SB Dunk Low Concepts Orange Lobster",
+                "sku": "FD8776-800",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Nike CPFM Flea 1 Cactus Plant Flea Market Desert Moss",
+                "sku": "DM0430-700",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 5 Retro DJ Khaled We The Best Sail",
+                "sku": "DV4982-175",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 6 Retro Chrome Metallic Silver",
+                "sku": "DX2836-001",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Nike Air Max 97 OG Silver Buller (2022)",
+                "sku": "DM0028-002",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Jordan 11 Retro Midnight Navy",
+                "sku": "AR0715-441",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            },
+            {
+                "name": "Crocs Pollex Clog by Salehe Bembury Sasquatch",
+                "sku": "207393-001",
+                "weight_in_percentage": {
+                    "$numberDouble": "7.69"
+                }
+            }
+        ]
+    }
+]

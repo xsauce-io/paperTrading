@@ -2,6 +2,8 @@ import controller
 from models import *
 from datetime import datetime
 from helpers.utils import *
+from prettytable import PrettyTable
+
 
 def get_index_composition(message):
     parsed_message = split_message(message)
@@ -26,7 +28,7 @@ def get_index_composition(message):
 def format_composition_to_string(composition) -> str:
     composition_string = ""
     for item in composition:
-        composition_string += (f"*{item['name']}:* {item['weight']}%\n")
+        composition_string += (f"*{item['name']}:* {item['weight_in_percentage']}%\n")
     return composition_string
 
 def extract_composition_message(parsed_message):

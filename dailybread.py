@@ -50,7 +50,7 @@ def price_update2(context):
         context.bot.send_message(CHAT,
                                  text="HYPE6 is ${}".format(round(hype6_index_price, 2)))
 
-        processes.manage_index.add_index_statistics("HYPE6" , "HYPE6", hype6_index_price)
+        processes.manage_index.add_index_statistics("hype6" , "HYPE6", hype6_index_price)
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -58,7 +58,7 @@ def price_update3(context):
     try:
         sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
-                                 text="Sneaker S&P50 is ${}".format(round(sp50_index_price, 2)))
+                                 text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
 
         processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P50",sp50_index_price)
     except Exception as error:
@@ -196,7 +196,7 @@ def list_index(update, context):
     try:
         update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
-        "*Sneaker S&P50*: S&P50\n", parse_mode='Markdown')
+        "*Sneaker Benchmark S&P50*: S&P50\n", parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
