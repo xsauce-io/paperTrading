@@ -239,7 +239,7 @@ NEW_BALANCE_INDEX_CONSTITUENTS = [
      "weight_in_decimal" : 0.1
   },
    {
-    "sku" : "MR993GL", #warning return Kirth Show
+     "sku" : "MR993GL", #warning return Kirth Shoe
      "weight_in_decimal" : 0.1
   },
     {
@@ -282,4 +282,72 @@ SNEAKER_SP50_INDEX_CONSTITUENTS = [
         "constituent": NEW_BALANCE_INDEX_CONSTITUENTS,
         "weight_in_decimal": 0.2
     },
+]
+
+HYPE6_INDEX_CONSTITUENTS = [
+  {
+    "name": "Jordan 1 Retro Lost and Found",
+    "sku" : "DZ5485-612",
+    "weight_in_decimal" : 0.0769
+  },
+   {
+    "name": "Jordan 4 Retro A Ma Maniére Violet Ore",
+    "sku" : "DV6773-220",
+    "weight_in_decimal" : 0.0769
+  },
+   {
+    "name": "Nike SB Dunk Low Sandy Bodecker",
+    "sku" : "FD8777-100",
+    "weight_in_decimal" : 0.0769
+  },
+    {
+    "name": "Jordan 11 Cherry (2022)",
+    "sku" : "CT8012-116",
+    "weight_in_decimal" : 0.0769
+  },
+   {
+    "name": "Jordan 1 Retro Low OG SP Travis Scott",
+    "sku" : "DM7866-001",
+    "weight_in_decimal" : 0.0769
+  },
+   {
+    "name": "Nike LeBron 20",
+    "sku" : "FJ4955-300",
+    "weight_in_decimal" : 0.0769
+  },
+   {
+    "name": "Nike SB Dunk Low Concepts Orange Lobster",
+    "sku" : "FD8776-800",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+    "name": "Nike CPFM Flea 1 Cactus Plant Flea Market Desert Moss",
+    "sku" : "DM0430-700",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+   "name": "Jordan 5 Retro DJ Khaled We The Best Sail",
+    "sku" : "DV4982-175",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+    "name": "Jordan 6 Retro Chrome Metallic Silver",
+    "sku" : "DX2836-001",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+    "name": "Nike Air Max 97 OG Silver Buller (2022)",
+    "sku" : "DM0028-002",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+    "name": "Jordan 11 Retro Midnight Navy",
+    "sku" : "AR0715-441",
+    "weight_in_decimal" : 0.0769
+  },
+  {
+    "name": "Crocs Pollex Clog by Salehe Bembury Sasquatch",
+    "sku" : "207393-001",
+    "weight_in_decimal" : 0.0769
+  }
 ]
