@@ -44,6 +44,46 @@ def get_latest_index(index_name):
     index = Index(name, full_name ,price, date, time)
     return index
 
+def update_indices(): #warning: Only use once
+
+    myresults = list(stats.find({"name": {"$exists": False}}))
+
+    for x in myresults:
+        name = "xci"
+        full_name = "Xsauce Culture Index"
+        id = x['_id']
+        price = x['price']
+        date = x['date']
+        time = x['time']
+
+        stats.update_one({"_id": id}, {"$set":
+            {"name": name , "full_name" : full_name ,"price": price, "date": date, "time": time}})
+
+
+def update_outdated_user(): #warning: THis function modifies db users -> Only use once
+    all_users = list(participants.find({"positions.xci": {"$exists": False}}))
+
+    for user in all_users:
+        id = user['_id']
+        username = user['username']
+        funds = user['funds']
+        total_trades = user['trades']['total']
+        trade_details = user['trades']['tradeDetails']
+        long_amount_spent = user['position']['Long']['buyIn']['amount_spent']
+        short_amount_spent = user['position']['Short']['buyIn']['amount_spent']
+        long_purchased = user['position']['Long']['buyIn']['purchased']
+        short_purchased = user['position']['Short']['buyIn']['purchased']
+        long_shares = user['position']['Long']['shares']
+        short_shares = user['position']['Short']['shares']
+
+        print(funds)
+
+        participants.update_one({"_id": id}, {"$set":{"username": username, "funds": funds, "positions":{"xci": {"Long": {"shares": long_shares, "buyIn": {"purchased": long_purchased, "amount_spent": long_amount_spent}}, "Short": {"shares": short_shares, "buyIn": {"purchased": short_purchased, "amount_spent": short_amount_spent}}}}, "trades": {"total": total_trades, "tradeDetails": trade_details}}})  # TODO: move schema to service layer
+        participants.update_one({"_id": id}, {"$unset": {"position": ""}})  # TODO: move schema to service layer
+
+
+
+
 def does_index_exist(index_name) -> bool:
     index_stats = tuple(stats.find({"name": index_name}).clone())
     if (len(index_stats) > 0):
@@ -76,7 +116,7 @@ def get_participant(sender):
     return participants.find({"username": sender})[0]
 
 
-def get_participant_position_info(sender):
+def get_participant_position_info_sing(sender):
 
     long_amount_spent = get_participant_long_amount_spent(sender)
     short_amount_spent = get_participant_short_amount_spent(sender)
