@@ -2,7 +2,6 @@ import controller
 from models import *
 from datetime import datetime
 from helpers.utils import *
-from prettytable import PrettyTable
 
 
 def get_index_composition(message):
