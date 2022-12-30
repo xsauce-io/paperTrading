@@ -60,7 +60,7 @@ def price_update3(context):
         context.bot.send_message(CHAT,
                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
 
-        processes.manage_index.add_index_statistics("s&p50" , "Sneaker S&P50",sp50_index_price)
+        processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -196,7 +196,7 @@ def list_index(update, context):
     try:
         update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
-        "*Sneaker Benchmark S&P50*: S&P50\n", parse_mode='Markdown')
+        "*Sneaker Benchmark S&P50*: sp50\n", parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
@@ -206,12 +206,13 @@ def help(update, context):
     update.message.reply_text(
         "/instructions -> Learn how to use the Xchange\n"
         "/play -> Use this command to get $10,000 dollars to start up!\n"
-        "/list -> Show the list of available indexes\n"
+        "/list -> Show the list of index names\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
-        "/info -> Show the current price an index\n"
+        "/info index_name -> Show the current price of an index\n"
+        "/comp index_name -> Show the index composition\n"
         "/portfolio -> Show your current portfolio holdings\n"
-        "/portfolio [index_name]-> Show your current index holdings\n"
+        "/portfolio index_name-> Show your current portfolio holdings for given index\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
