@@ -103,7 +103,7 @@ class Participant:
 
 
 class IndexConstituent:
-    def __init__(self, name, weight_in_decimal):
+    def __init__(self, name, weight_in_decimals):
         self.name = name
         self.weight_in_decimals = weight_in_decimals
 
