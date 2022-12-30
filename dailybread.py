@@ -196,7 +196,7 @@ def list_index(update, context):
     try:
         update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
-        "*Sneaker Benchmark S&P50*: S&P50\n", parse_mode='Markdown')
+        "*Sneaker Benchmark S&P50*: s&p50\n", parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
