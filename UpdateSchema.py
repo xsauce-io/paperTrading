@@ -1,8 +1,10 @@
 import controller
 
 def main():
-    print("here")
-    #apples = controller.update_indices()
+    print("Updating Indices")
+    controller.update_indices()
+
+    print("Updating Users")
     controller.update_outdated_user()
 
 

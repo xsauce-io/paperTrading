@@ -60,7 +60,7 @@ def price_update3(context):
         context.bot.send_message(CHAT,
                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
 
-        processes.manage_index.add_index_statistics("S&P50" , "Sneaker S&P50",sp50_index_price)
+        processes.manage_index.add_index_statistics("s&p50" , "Sneaker S&P50",sp50_index_price)
     except Exception as error:
         print('Cause {}'.format(error))
 
