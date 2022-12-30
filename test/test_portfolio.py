@@ -24,5 +24,28 @@ class TestPortfolio(unittest.TestCase):
 
         self.assertEqual(expected, repr(portfolio_info))
 
+    def test_calculate_index_pnl(self):
+        long_shares = 5
+        short_shares = 0
+        avg_buy_price_long = 10
+        avg_buy_price_short =  10
+        index_price = 20
+
+        initial_long = long_shares * avg_buy_price_long
+        initial_short = short_shares * avg_buy_price_short
+
+        Long = portfolio.calculate_long_position(
+        long_shares, avg_buy_price_long, index_price)
+
+        Short = portfolio.calculate_short_position(
+        short_shares, avg_buy_price_short, index_price)
+
+        expected = 50
+
+        pnl = round(portfolio.calculate_profit_and_loss(initial_long, initial_short, Long, Short))
+
+        self.assertEqual(expected,pnl)
+
+
 if __name__ == '__main__':
     unittest.main()

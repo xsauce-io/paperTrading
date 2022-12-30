@@ -89,7 +89,7 @@ def determine_portfolio_by_index(position: Position, participant: Participant, i
 def calculate_profit_and_loss(initial_long, initial_short, long, short):
     pnl_short = long - initial_long
     pnl_long = short - initial_short
-    pnl = round(pnl_short+ pnl_long, 3)
+    pnl = round(pnl_short + pnl_long, 3)
     if math.isclose(pnl, 0.00):
         pnl = 0
 
