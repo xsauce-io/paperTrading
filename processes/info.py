@@ -23,7 +23,7 @@ def get_index_latest_info(message):
 
 def format_index_price(index: Index) -> Index:
     price = round(index.price, 2)
-    return Index(index.name, index.full_name, price, index.date,index.price)
+    return Index(index.name, index.full_name, price, index.date, index.time)
 
 def extract_info_message(parsed_message):
     index_name = parsed_message[1]
