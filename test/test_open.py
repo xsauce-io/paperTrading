@@ -5,17 +5,18 @@ from models import *
 
 class TestOpen(unittest.TestCase):
 
-    def test_update_position(self):
-        message = "/open long 100"
+
+
+    def test_determine_opened_position_update(self):
         position = Position(0, 0, 0, 0, 0, 0)
         participant = Participant("Tim", 10000, 0)
-        index = Index(100, "12/12/2022", "12:02:02")
+        index = Index("xci", "Xsauce Culture Index", 100, "12/12/2022", "12:02:02")
 
-        expected_position = Position(100.0, 0, 1.0, 0, 1.0,0)
-        expected_participant = Participant("Tim", 9900.0, 1)
+        expected_position = Position(100, 0, 1.0, 0, 1.0,0)
+        expected_participant = Participant("Tim", 9900, 1)
         expected_trade_detail = TradeDetails("long", 100.0, "buy", 100.0, None, None, None)
 
-        updated_position, updated_participant, new_trade = open.open_position(message, position, participant, index)
+        updated_position, updated_participant, new_trade = open.determine_opened_position_update(100, "long", position, participant, index)
 
         self.assertEqual(repr(expected_position), repr(updated_position))
         self.assertEqual(repr(expected_participant), repr(updated_participant))
@@ -23,16 +24,16 @@ class TestOpen(unittest.TestCase):
 
 
     def test_extract_open_message(self):
-        message = "/open long max"
-        expected = {"max", "long"}
-        wager, direction = open.extract_open_message(message)
+        parsed_message = ['/open' ,"xci",'long', 'max']
+        expected = {"xci", "max", "long"}
+        index_name , wager, direction = open.extract_open_message(parsed_message)
 
-        self.assertEqual(expected, {wager, direction})
+        self.assertEqual(expected, {index_name,wager, direction})
 
-    def test_is_open_message_valid(self):
-        parsed_message = ['/open' ,'table', '100']
+    def test_is_open_valid(self):
+        parsed_message = ['/open' ," long",'table', '100']
         expected = False
-        is_message_valid = open.is_open_message_valid(parsed_message)
+        is_message_valid = open.is_open_message_input_valid(parsed_message)
 
         self.assertEqual(expected, is_message_valid)
 
