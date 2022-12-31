@@ -44,7 +44,7 @@ def get_latest_index(index_name):
     index = Index(name, full_name ,price, date, time)
     return index
 
-def update_indices(): #warning: Only use once
+def update_indices(): #warning: THis function modifies db indexes -> DO NOT USE
 
     myresults = list(stats.find({"name": {"$exists": False}}))
 
@@ -60,7 +60,7 @@ def update_indices(): #warning: Only use once
             {"name": name , "full_name" : full_name ,"price": price, "date": date, "time": time}})
 
 
-def update_outdated_user(): #warning: THis function modifies db users -> Only use once
+def update_outdated_user(): #warning: THis function modifies db users -> DO NOT USE
     all_users = list(participants.find({"positions.xci": {"$exists": False}}))
 
     for user in all_users:
@@ -116,7 +116,7 @@ def get_participant(sender):
     return participants.find({"username": sender})[0]
 
 
-def get_participant_position_info_sing(sender):
+def get_participant_index_position_info(sender):
 
     long_amount_spent = get_participant_long_amount_spent(sender)
     short_amount_spent = get_participant_short_amount_spent(sender)
@@ -183,6 +183,14 @@ def get_participant_positions(sender):
 def get_participant_username(sender):
     return get_participant(sender)['username']
 
+def get_all_participants_names():
+    all_participants= list(participants.find())
+    all_participants_names = []
+
+    for participant in all_participants:
+        name = participant['username']
+        all_participants_names.append(name)
+    return all_participants_names
 
 def get_participant_all_positions_names(sender):
     positions_index_names = list(get_participant(sender)['positions'])
@@ -196,8 +204,8 @@ def get_participant_all_positions(sender):
         position = get_participant_position_info(sender, index_name)
         positions.append(position)
 
-
     return positions
+
 def get_participant_position_info(sender, index_name):
 
     long_amount_spent = get_participant_long_amount_spent(sender, index_name)
@@ -214,7 +222,7 @@ def get_participant_position_info(sender, index_name):
 
 
 def update_participant_position(sender, index_name, position:Position, participant:Participant, trades):
-    print("here")
+
     participants.update_one({"username": sender}, {"$set": {
                 f"positions.{index_name}": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": {"total": participant.number_of_trades, "tradeDetails": trades}}})
     return
