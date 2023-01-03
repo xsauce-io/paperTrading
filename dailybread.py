@@ -205,10 +205,7 @@ def leaderboard(update, context):
     message = update.message.text
     try:
         reply = processes.leaderboard.leaderboard(sender, message)
-        #update.message.reply_text(reply)
         context.bot.send_photo(CHAT,  photo=open(reply, "rb"))
-
-
 
     except UserInputException as error:
         print('Cause UserInputException: {}'.format(error))
