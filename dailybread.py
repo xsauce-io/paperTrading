@@ -1,8 +1,6 @@
-import math
 from telegram import *
 from telegram.ext import *
 import requests
-import re
 import os
 from dotenv import load_dotenv
 import requests
@@ -17,6 +15,7 @@ import processes.open
 import processes.close
 import processes.manage_index
 import processes.composition
+import processes.leaderboard
 from indexMaker.index_maker import *
 from indexMaker.constituents_store import *
 
@@ -165,7 +164,7 @@ def instructions(update, context):
         "https://docs.xsauce.io/applications/how-it-works")
 
 
-def open(update, context):
+def open_position(update, context):
     sender = update.message.from_user.username
     message = update.message.text
 
@@ -201,6 +200,22 @@ def list_index(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+def leaderboard(update, context):
+    sender = update.message.from_user.username
+    message = "he"
+    try:
+        reply = processes.leaderboard.leaderboard(sender, message)
+        #update.message.reply_text(reply)
+        context.bot.send_photo(CHAT,  photo=open("my_table_image.png", "rb"))
+
+
+
+    except UserInputException as error:
+        print('Cause UserInputException: {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause :{}'.format(error))
+
 
 def help(update, context):
     update.message.reply_text(
@@ -225,21 +240,22 @@ def website(update, context):
 def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
-    job_queue = updater.job_queue
-    job_seconds = job_queue.run_repeating(
-        price_update, interval=86400, first=1)
-    job_seconds_2 = job_queue.run_repeating(
-        price_update2, interval=86400, first=1)
-    job_seconds_3 = job_queue.run_repeating(
-        price_update3, interval=86400, first=1)
+    # job_queue = updater.job_queue
+    # job_seconds = job_queue.run_repeating(
+    #     price_update, interval=86400, first=1)
+    # job_seconds_2 = job_queue.run_repeating(
+    #     price_update2, interval=86400, first=1)
+    # job_seconds_3 = job_queue.run_repeating(
+    #     price_update3, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
+    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('list', list_index))
     dispatcher.add_handler(CommandHandler('website', website))
-    dispatcher.add_handler(CommandHandler('open', open))
+    dispatcher.add_handler(CommandHandler('open', open_position))
     dispatcher.add_handler(CommandHandler('info', index_price))
     dispatcher.add_handler(CommandHandler('comp', index_composition))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
