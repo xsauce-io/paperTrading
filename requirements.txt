@@ -28,6 +28,7 @@ fastapi==0.78.0
 fastjsonschema==2.16.2
 fonttools==4.38.0
 h11==0.14.0
+html2image==2.0.1
 httpcore==0.16.2
 httpx==0.23.1
 idna==3.3

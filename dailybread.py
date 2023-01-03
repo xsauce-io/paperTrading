@@ -202,11 +202,11 @@ def list_index(update, context):
 
 def leaderboard(update, context):
     sender = update.message.from_user.username
-    message = "he"
+    message = update.message.text
     try:
         reply = processes.leaderboard.leaderboard(sender, message)
         #update.message.reply_text(reply)
-        context.bot.send_photo(CHAT,  photo=open("my_table_image.png", "rb"))
+        context.bot.send_photo(CHAT,  photo=open(reply, "rb"))
 
 
 
