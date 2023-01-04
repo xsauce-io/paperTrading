@@ -18,6 +18,7 @@ import processes.composition
 import processes.leaderboard
 from indexMaker.index_maker import *
 from indexMaker.constituents_store import *
+from telegram.ext.dispatcher import run_async
 
 load_dotenv()
 
@@ -200,6 +201,7 @@ def list_index(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+@run_async
 def leaderboard(update, context):
     sender = update.message.from_user.username
     message = update.message.text
@@ -237,17 +239,17 @@ def website(update, context):
 def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
-    # job_queue = updater.job_queue
-    # job_seconds = job_queue.run_repeating(
-    #     price_update, interval=86400, first=1)
-    # job_seconds_2 = job_queue.run_repeating(
-    #     price_update2, interval=86400, first=1)
-    # job_seconds_3 = job_queue.run_repeating(
-    #     price_update3, interval=86400, first=1)
+    job_queue = updater.job_queue
+    job_seconds = job_queue.run_repeating(
+        price_update, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(
+        price_update2, interval=86400, first=1)
+    job_seconds_3 = job_queue.run_repeating(
+        price_update3, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
-    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
+    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard, run_async=True))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('list', list_index))
