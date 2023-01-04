@@ -52,7 +52,7 @@ def leaderboard(sender, message):
             table_image_name = "images/{}_pnl_leaderboard.png".format(leaderboard_name)
 
 
-        table_image = create_image_from_table(table, (250, 170))
+        table_image = create_image_from_table(table, (250, 160))
         table_image.save(table_image_name, "PNG")
 
 
@@ -122,10 +122,10 @@ def create_image_from_table(table_as_string: str, size):
     try:
         W, H = size
         font = ImageFont.load_default()
-        image = Image.new("RGB", size=size, color = (255, 255, 255))
+        image = Image.new("RGB", size=size, color = "black")
         draw = ImageDraw.Draw(image)
         _, _, w, h = draw.textbbox((0, 0), table_as_string, font=font)
-        draw.text(((W-w)/2, (H-h)/2), table_as_string, font=font, fill="black", spacing=5)
+        draw.text(((W-w)/2, (H-h)/2), table_as_string, font=font, fill="#ACFF00", spacing=5)
 
     except Exception as error:
         print (f"Cause create image error: {error}")

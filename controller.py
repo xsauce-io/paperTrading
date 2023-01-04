@@ -140,8 +140,8 @@ def get_participant_info(sender):
 
 def append_trade_to_participant_trades(sender, trade: TradeDetails):
     trades = list(get_participant_trades_details(sender))
-    trades.append({"direction": trade.direction, "amount": trade.amount,
-                  "date": trade.date, "time": trade.time})
+    trades.append({"action": trade.action, "direction": trade.direction, "amount": trade.amount, "index_price": trade.index_price,
+                "index_name": trade.index_name,"date": trade.date, "time": trade.time})
     return trades
 
 def update_participant_position(sender , position:Position, participant:Participant, trades):
