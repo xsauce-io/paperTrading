@@ -53,7 +53,7 @@ def leaderboard(sender, message):
 
 
         table_image = create_image_from_table(table, (250, 160))
-        table_image.save(table_image_name, "PNG")
+        table_image.save(table_image_name, format="PNG",  dpi=(300, 300),  quality=95)
 
 
     except Exception as error:

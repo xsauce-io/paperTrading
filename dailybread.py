@@ -91,8 +91,9 @@ def index_composition(update, context):
 
 def play(update, context):
     sender = update.message.from_user.username
+    id = update.message.from_user.id
     try:
-        reply = processes.play.play(sender)
+        reply = processes.play.play(sender, id)
         update.message.reply_text(reply)
     except UserInputException as error:
         print('Cause {}'.format(error))
