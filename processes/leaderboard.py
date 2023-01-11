@@ -31,7 +31,7 @@ def leaderboard(sender, message):
                 participant_leaderboard_item_pnl = {"username": participant_name ,"value": global_portfolio.pnl }
                 participants_leaderboard_items.append(participant_leaderboard_item_pnl)
 
-            pnl_leaderboard = calculate_top3_leaderboard(participants_leaderboard_items)
+            pnl_leaderboard = calculate_top5_leaderboard(participants_leaderboard_items)
             table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"])
             table_image_name = "images/global_pnl_leaderboard.png"
 

@@ -227,6 +227,8 @@ def help(update, context):
         "/comp index_name -> Show the index composition\n"
         "/portfolio -> Show your current portfolio holdings\n"
         "/portfolio index_name-> Show your current portfolio holdings for given index\n"
+        "/leaderboard pnl -> Show the current leaderboard \n"
+        "/leaderboard index_name-> Show the current leaderboard for given index\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
