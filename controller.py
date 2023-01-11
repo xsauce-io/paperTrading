@@ -256,3 +256,25 @@ def does_index_composition_exist(index_name):
         return True
     else:
         return False
+
+
+#schema update
+def update_index_time_format():
+    all_indexes_stats = list(stats.find())
+
+    for index in all_indexes_stats:
+        id = index["_id"]
+        date = index["date"]
+
+        parsed_date = date.split("/")
+        month = parsed_date[0]
+        day = parsed_date[1]
+        year = parsed_date[2]
+
+        print (parsed_date)
+
+        formatted_date = year + "-" + month + "-" + day
+
+        print(formatted_date)
+
+        stats.update_one({"_id": id}, {"$set": {"date": formatted_date}})
