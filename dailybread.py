@@ -202,7 +202,6 @@ def list_index(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
-@run_async
 def leaderboard(update, context):
     sender = update.message.from_user.username
     message = update.message.text

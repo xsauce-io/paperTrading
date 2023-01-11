@@ -47,7 +47,7 @@ def leaderboard(sender, message):
                 participant_leaderboard_item_index_pnl = {"username": participant_name ,"value": portfolio_info.pnl }
                 participants_leaderboard_items.append(participant_leaderboard_item_index_pnl)
 
-            pnl_by_index_leaderboard = calculate_top3_leaderboard(participants_leaderboard_items)
+            pnl_by_index_leaderboard = calculate_top5_leaderboard(participants_leaderboard_items)
             table = create_table_as_string(pnl_by_index_leaderboard , ["rank", "username", f"{leaderboard_name} pnl"])
             table_image_name = "images/{}_pnl_leaderboard.png".format(leaderboard_name)
 
@@ -60,11 +60,11 @@ def leaderboard(sender, message):
         print(f"Cause: leaderboard {error}")
     return table_image_name
 
-def calculate_top3_leaderboard(leaderboard_items: list):
+def calculate_top5_leaderboard(leaderboard_items: list):
     leaderboard = []
 
     for item in leaderboard_items:
-        if len(leaderboard) < 3:
+        if len(leaderboard) < 5:
             leaderboard.append(item)
             leaderboard = sorted(leaderboard, key=lambda d: d['value'])
             print (leaderboard)
@@ -122,7 +122,7 @@ def create_image_from_table(table_as_string: str, size):
     try:
         W, H = size
         font = ImageFont.load_default()
-        image = Image.new("RGB", size=size, color = "black")
+        image = Image.new("RGB", size=size, color="#0C1615")
         draw = ImageDraw.Draw(image)
         _, _, w, h = draw.textbbox((0, 0), table_as_string, font=font)
         draw.text(((W-w)/2, (H-h)/2), table_as_string, font=font, fill="#ACFF00", spacing=5)
