@@ -4,7 +4,7 @@ import re
 
 def get_current_date_time():
     now = datetime.now()
-    date = now.strftime('%m/%d/%Y')
+    date = now.strftime('%Y-%m-%d')
     time = now.strftime("%H:%M:%S")
     return date, time
 
