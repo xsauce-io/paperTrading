@@ -16,6 +16,7 @@ import processes.close
 import processes.manage_index
 import processes.composition
 import processes.leaderboard
+import processes.manage_leaderboard
 from indexMaker.index_maker import *
 from indexMaker.constituents_store import *
 from telegram.ext.dispatcher import run_async
@@ -61,6 +62,16 @@ def price_update3(context):
                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
 
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def leaderboard_update(context):
+    try:
+        processes.manage_leaderboard.update_leaderboard("pnl")
+        processes.manage_leaderboard.update_leaderboard("xci")
+        processes.manage_leaderboard.update_leaderboard("sp50")
+        processes.manage_leaderboard.update_leaderboard("hype6")
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -248,6 +259,8 @@ def main():
         price_update2, interval=86400, first=1)
     job_seconds_3 = job_queue.run_repeating(
         price_update3, interval=86400, first=1)
+    job_seconds_4 = job_queue.run_repeating(
+       leaderboard_update, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
