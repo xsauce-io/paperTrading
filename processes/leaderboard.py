@@ -1,7 +1,4 @@
 import controller
-from tabulate import tabulate
-from processes.portfolio import determine_global_portfolio, determine_portfolio_by_index
-from PIL import Image, ImageDraw, ImageFont
 from models import *
 from helpers.utils import *
 
@@ -21,7 +18,6 @@ def leaderboard(sender, message):
     try:
         if leaderboard_name == "pnl":
             table_image_name = "images/global_pnl_leaderboard.png"
-
         else:
             table_image_name = "images/{}_pnl_leaderboard.png".format(leaderboard_name)
 

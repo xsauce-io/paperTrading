@@ -3,10 +3,8 @@ from telegram.ext import *
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import pymongo
-from pymongo import MongoClient, DESCENDING, InsertOne
+from pymongo import MongoClient, DESCENDING
 from models import *
-import json
 
 load_dotenv()
 

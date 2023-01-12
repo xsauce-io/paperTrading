@@ -5,7 +5,6 @@ import os
 from dotenv import load_dotenv
 import requests
 from datetime import datetime
-import pymongo
 from pymongo import MongoClient
 from models import *
 import processes.play
