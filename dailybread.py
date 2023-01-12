@@ -1,8 +1,6 @@
-import math
 from telegram import *
 from telegram.ext import *
 import requests
-import re
 import os
 from dotenv import load_dotenv
 import requests
@@ -17,8 +15,11 @@ import processes.open
 import processes.close
 import processes.manage_index
 import processes.composition
+import processes.leaderboard
+import processes.manage_leaderboard
 from indexMaker.index_maker import *
 from indexMaker.constituents_store import *
+from telegram.ext.dispatcher import run_async
 
 load_dotenv()
 
@@ -61,6 +62,16 @@ def price_update3(context):
                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
 
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def leaderboard_update(context):
+    try:
+        processes.manage_leaderboard.update_leaderboard("pnl")
+        processes.manage_leaderboard.update_leaderboard("xci")
+        processes.manage_leaderboard.update_leaderboard("sp50")
+        processes.manage_leaderboard.update_leaderboard("hype6")
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -94,7 +105,6 @@ def play(update, context):
     id = update.message.from_user.id
     try:
         reply = processes.play.play(sender)
-
         update.message.reply_text(reply)
     except UserInputException as error:
         print('Cause {}'.format(error))
@@ -171,7 +181,7 @@ def instructions(update, context):
         "https://docs.xsauce.io/applications/how-it-works")
 
 
-def open(update, context):
+def open_position(update, context):
     sender = update.message.from_user.username
     message = update.message.text
 
@@ -207,6 +217,19 @@ def list_index(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
+def leaderboard(update, context):
+    sender = update.message.from_user.username
+    message = update.message.text
+    try:
+        reply = processes.leaderboard.leaderboard(sender, message)
+        context.bot.send_photo(CHAT,  photo=open(reply, "rb"))
+
+    except UserInputException as error:
+        print('Cause UserInputException: {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause :{}'.format(error))
+
 
 def help(update, context):
     update.message.reply_text(
@@ -219,6 +242,8 @@ def help(update, context):
         "/comp index_name -> Show the index composition\n"
         "/portfolio -> Show your current portfolio holdings\n"
         "/portfolio index_name-> Show your current portfolio holdings for given index\n"
+        "/leaderboard pnl -> Show the current leaderboard \n"
+        "/leaderboard index_name-> Show the current leaderboard for given index\n"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
@@ -238,14 +263,17 @@ def main():
         price_update2, interval=86400, first=1)
     job_seconds_3 = job_queue.run_repeating(
         price_update3, interval=86400, first=1)
+    job_seconds_4 = job_queue.run_repeating(
+       leaderboard_update, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
+    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard, run_async=True))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('list', list_index))
     dispatcher.add_handler(CommandHandler('website', website))
-    dispatcher.add_handler(CommandHandler('open', open))
+    dispatcher.add_handler(CommandHandler('open', open_position))
     dispatcher.add_handler(CommandHandler('info', index_price))
     dispatcher.add_handler(CommandHandler('comp', index_composition))
     dispatcher.add_handler(CommandHandler('instructions', instructions))

@@ -113,6 +113,5 @@ class IndexConstituentSneaker:
         self.weight_in_decimals = weight_in_decimals
         self.sku = sku
 
-
 class UserInputException(Exception):
     """ my custom exception class """

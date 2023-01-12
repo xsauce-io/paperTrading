@@ -27,7 +27,7 @@ def close(sender, message):
     current_participant_info = controller.get_participant_info(sender)
 
     updated_position, updated_participant, new_trade = determine_closed_position_update(reduction, direction, current_position_info, current_participant_info, current_index)
-    updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
+    updated_trades = controller.add_trade_to_participant_trades(sender, new_trade)
     controller.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
 
     return '{} position has been closed!'.format(new_trade.direction)
@@ -63,7 +63,7 @@ def determine_closed_position_update(reduction, direction, position:Position, pa
                 updated_position = Position(position.long_amount_spent - wager, position.short_amount_spent, position.long_purchased - reduction, position.short_purchased, position.long_shares-reduction, position.short_shares)
 
             updated_participant = Participant(participant.name, funds, number_of_trades)
-            new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=None, date=date, time=time)
+            new_trade = TradeDetails(direction, amount=reduction, action="sell", index_price=index.price, index_name=index.name, date=date, time=time)
 
     if direction == "short":
             if reduction == "max":

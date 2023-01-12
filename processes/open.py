@@ -27,8 +27,8 @@ def open(sender, message):
     current_participant_info = controller.get_participant_info(sender)
 
     updated_position, updated_participant, new_trade = determine_opened_position_update(wager, direction, current_position_info, current_participant_info, current_index)
-    updated_trades = controller.append_trade_to_participant_trades(sender, new_trade)
-    controller.update_participant_position(sender,index_name ,updated_position, updated_participant, updated_trades)
+    updated_trades = controller.add_trade_to_participant_trades(sender, new_trade)
+    controller.update_participant_position(sender, index_name ,updated_position, updated_participant, updated_trades)
 
     return '{} position has been opened!'.format(new_trade.direction)
 
@@ -61,7 +61,7 @@ def determine_opened_position_update(wager, direction, position: Position, parti
             print("updating__short_position")
             updated_position = Position(position.long_amount_spent, position.short_amount_spent + wager , position.long_purchased, position.short_purchased + purchased, position.long_shares,position.short_shares + purchased)
         updated_participant = Participant(participant.name, funds, number_of_trades)
-        new_trade = TradeDetails(direction, amount=wager, action="buy", index_price=index.price, index_name=None, date=date, time=time)
+        new_trade = TradeDetails(direction, amount=wager, action="buy", index_price=index.price, index_name=index.name, date=date, time=time)
     except Exception as error:
         raise error
 
