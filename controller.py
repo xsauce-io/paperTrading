@@ -209,40 +209,23 @@ def does_index_composition_exist(index_name):
         return False
 
 
-# Schema updates
+#schema update
+def update_index_time_format():
+    all_indexes_stats = list(stats.find())
 
-def update_indices(): #warning: THis function modifies db indexes -> DO NOT USE
+    for index in all_indexes_stats:
+        id = index["_id"]
+        date = index["date"]
 
-    myresults = list(stats.find({"name": {"$exists": False}}))
+        parsed_date = date.split("/")
+        month = parsed_date[0]
+        day = parsed_date[1]
+        year = parsed_date[2]
 
-    for x in myresults:
-        name = "xci"
-        full_name = "Xsauce Culture Index"
-        id = x['_id']
-        price = x['price']
-        date = x['date']
-        time = x['time']
+        print (parsed_date)
 
-        stats.update_one({"_id": id}, {"$set":
-            {"name": name , "full_name" : full_name ,"price": price, "date": date, "time": time}})
+        formatted_date = year + "-" + month + "-" + day
 
-def update_outdated_user(): #warning: THis function modifies db users -> DO NOT USE
-    all_users = list(participants.find({"positions.xci": {"$exists": False}}))
+        print(formatted_date)
 
-    for user in all_users:
-        id = user['_id']
-        username = user['username']
-        funds = user['funds']
-        total_trades = user['trades']['total']
-        trade_details = user['trades']['tradeDetails']
-        long_amount_spent = user['position']['Long']['buyIn']['amount_spent']
-        short_amount_spent = user['position']['Short']['buyIn']['amount_spent']
-        long_purchased = user['position']['Long']['buyIn']['purchased']
-        short_purchased = user['position']['Short']['buyIn']['purchased']
-        long_shares = user['position']['Long']['shares']
-        short_shares = user['position']['Short']['shares']
-
-        print(funds)
-
-        participants.update_one({"_id": id}, {"$set":{"username": username, "funds": funds, "positions":{"xci": {"Long": {"shares": long_shares, "buyIn": {"purchased": long_purchased, "amount_spent": long_amount_spent}}, "Short": {"shares": short_shares, "buyIn": {"purchased": short_purchased, "amount_spent": short_amount_spent}}}}, "trades": {"total": total_trades, "tradeDetails": trade_details}}})  # TODO: move schema to service layer
-        participants.update_one({"_id": id}, {"$unset": {"position": ""}})  # TODO: move schema to service layer
+        stats.update_one({"_id": id}, {"$set": {"date": formatted_date}})

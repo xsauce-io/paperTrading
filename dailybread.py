@@ -104,7 +104,7 @@ def play(update, context):
     sender = update.message.from_user.username
     id = update.message.from_user.id
     try:
-        reply = processes.play.play(sender, id)
+        reply = processes.play.play(sender)
         update.message.reply_text(reply)
     except UserInputException as error:
         print('Cause {}'.format(error))
@@ -115,9 +115,13 @@ def play(update, context):
 
 def welcome(update, context):
     new_members = update.effective_message.new_chat_members
+    username = ""
+
+    if (new_members[-1].username != None):
+        username = new_members[-1].username
 
     context.bot.send_message(CHAT,
-                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(new_members[-1].username))
+                             text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(username))
 
 
 def portfolio(update, context):
