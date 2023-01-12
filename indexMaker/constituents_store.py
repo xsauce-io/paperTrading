@@ -351,3 +351,107 @@ HYPE6_INDEX_CONSTITUENTS = [
     "weight_in_decimal" : 0.0769
   }
 ]
+
+
+JORDAN_1_INDEX_CONSTITUENTS = [
+  {
+    "name": "Jordan I Retro High UNC",
+    "sku" : "555088-117",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Lost and Found",
+    "sku" : "DZ5485-612",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High OG Patent Bred",
+    "sku" : "555088-063",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Homage To Home Chicago (non-numbered)",
+    "sku" : "861428-061",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Union Los Angeles Blue Toe",
+    "sku" : "BV1300-146",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Dior",
+    "sku" : "CN8607-002",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Clay Green",
+    "sku" : "555088-135",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro Fearless UNC Chicago",
+    "sku" : "CK5666-100",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Biohack",
+    "sku" : "555088-201",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Shattered Backboard 3.0",
+    "sku" : "555088-028",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro High Bloodline",
+    "sku" : "555088-062",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Retro Low OG SP Travis Scott",
+    "sku" : "DM7866-001",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Mid Light Smoke Grey ",
+    "sku" : "554724-092",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Mid Michigan",
+    "sku" : "554724-707",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Mid Green Toe",
+    "sku" : "554724-067",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Mid Oakland",
+    "sku" : "852542-101",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Low SE Allstar",
+    "sku" : "DD1650-001",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Low Court Purple",
+    "sku" : "553558-500",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Low Shadow (2015)",
+    "sku" : "705329-003",
+    "weight_in_decimal" : 0.05
+  },
+  {
+    "name": "Jordan 1 Low Reverse Bred",
+    "sku" : "553558-606",
+    "weight_in_decimal" : 0.05
+  }
+]
