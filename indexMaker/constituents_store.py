@@ -352,8 +352,7 @@ HYPE6_INDEX_CONSTITUENTS = [
   }
 ]
 
-
-JORDAN_1_INDEX_CONSTITUENTS = [
+JORDAN1_INDEX_CONSTITUENTS = [
   {
     "name": "Jordan I Retro High UNC",
     "sku" : "555088-117",
@@ -453,5 +452,88 @@ JORDAN_1_INDEX_CONSTITUENTS = [
     "name": "Jordan 1 Low Reverse Bred",
     "sku" : "553558-606",
     "weight_in_decimal" : 0.05
+  }
+]
+
+JORDAN4_INDEX_CONSTITUENTS = [
+  {
+    "name": "Jordan 4 Retro A Ma Maniére Violet Ore",
+    "sku" : "DV6773-220",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Pure",
+    "sku" : "308497-100",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Black Gum",
+    "sku" : "CI1184-001",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Lightning (2021)",
+    "sku" : "CT8527-700",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro University Blue",
+    "sku" : "CT8527-700",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Lightning (2021)",
+    "sku" : "CT8527-400",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Union Guava Ice",
+    "sku" : "DC9533-800",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro What The",
+    "sku" : "CI1184-146",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Cool Grey",
+    "sku" : "308497-007",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Travis Scott Cactus Jack",
+    "sku" : "308497-406",
+    "weight_in_decimal" : 0.0666
+  },
+    {
+    "name": "Jordan 4 Retro KAWS",
+    "sku" : "930155-003",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Royalty",
+    "sku" : "308497-032",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Zen Master",
+    "sku" : "DH7138-506",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Metallic Purple",
+    "sku" : "CT8527-115",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Infared",
+    "sku" : "DH6927-061",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Midnight Navy",
+    "sku" : "DH6927-140",
+    "weight_in_decimal" : 0.0666
   }
 ]

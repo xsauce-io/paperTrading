@@ -59,11 +59,31 @@ def price_update3(context):
         sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
-
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
 
     except Exception as error:
         print('Cause {}'.format(error))
+
+def price_update4(context):
+    try:
+        jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS)
+        context.bot.send_message(CHAT,
+                                 text="Jordan 1 is ${}".format(round(jordan1_index_price, 2)))
+        processes.manage_index.add_index_statistics("xj1" , "Jordan 1", jordan1_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def price_update5(context):
+    try:
+        jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS)
+        context.bot.send_message(CHAT,
+                                 text="Jordan 4 is ${}".format(round(jordan4_index_price, 2)))
+        processes.manage_index.add_index_statistics("xj4" , "Jordan 4", jordan4_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
 
 def leaderboard_update(context):
     try:
@@ -73,7 +93,6 @@ def leaderboard_update(context):
         processes.manage_leaderboard.update_leaderboard("hype6")
     except Exception as error:
         print('Cause {}'.format(error))
-
 
 def index_price(update, context):
     message = update.message.text
@@ -98,7 +117,6 @@ def index_composition(update, context):
     except Exception as error:
         print('Cause {}'.format(error))
 
-
 def play(update, context):
     sender = update.message.from_user.username
     id = update.message.from_user.id
@@ -111,7 +129,6 @@ def play(update, context):
     except Exception as error:
         print('Cause {}'.format(error))
 
-
 def welcome(update, context):
     new_members = update.effective_message.new_chat_members
     username = ""
@@ -121,7 +138,6 @@ def welcome(update, context):
 
     context.bot.send_message(CHAT,
                              text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(username))
-
 
 def portfolio(update, context):
     sender = update.message.from_user.username
@@ -142,7 +158,6 @@ def portfolio(update, context):
         update.message.reply_text('{}'.format(error))
     except Exception as error:
         print('Cause {}'.format(error))
-
 
 def format_portfolio_string(portfolio: Portfolio):
     message = "*Index:* {}\n" \
@@ -211,7 +226,9 @@ def list_index(update, context):
     try:
         update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
-        "*Sneaker Benchmark S&P50*: sp50\n", parse_mode='Markdown')
+        "*Sneaker Benchmark S&P50*: sp50\n"
+        "*Jordan 1:* xj1\n" \
+        "*Jordan 4*: xj4\n",  parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
@@ -263,6 +280,10 @@ def main():
     job_seconds_3 = job_queue.run_repeating(
         price_update3, interval=86400, first=1)
     job_seconds_4 = job_queue.run_repeating(
+        price_update4, interval=86400, first=1)
+    job_seconds_5 = job_queue.run_repeating(
+        price_update5, interval=86400, first=1)
+    job_seconds_6 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
