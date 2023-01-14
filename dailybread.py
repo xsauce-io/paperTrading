@@ -103,7 +103,7 @@ def price_update7(context):
         processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
 
     except Exception as error:
-        print('Cause {}'.format(error))
+        print('Cause price_update7 {}'.format(error))
 
 def price_update8(context):
     try:
@@ -113,7 +113,7 @@ def price_update8(context):
         processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
 
     except Exception as error:
-        print('Cause {}'.format(error))
+        print('Cause price_update8 {}'.format(error))
 
 def leaderboard_update(context):
     try:
@@ -123,18 +123,19 @@ def leaderboard_update(context):
         processes.manage_leaderboard.update_leaderboard("hype6")
 
     except Exception as error:
-        print('Cause {}'.format(error))
+        print('Cause leaderboard_update {}'.format(error))
 
-def leaderboard_update2(context):
-    try:
-        processes.manage_leaderboard.update_leaderboard("xj1")
-        processes.manage_leaderboard.update_leaderboard("xj3")
-        processes.manage_leaderboard.update_leaderboard("xj4")
-        processes.manage_leaderboard.update_leaderboard("yz350")
-        processes.manage_leaderboard.update_leaderboard("yz700")
+# def leaderboard_update2(context):
+#     try:
+#         print("xj1\n")
+#         processes.manage_leaderboard.update_leaderboard("xj1")
+#         processes.manage_leaderboard.update_leaderboard("xj3")
+#         processes.manage_leaderboard.update_leaderboard("xj4")
+#         processes.manage_leaderboard.update_leaderboard("yz350")
+#         processes.manage_leaderboard.update_leaderboard("yz700")
 
-    except Exception as error:
-        print('Cause {}'.format(error))
+#     except Exception as error:
+#         print('Cause {}'.format(error))
 
 def index_price(update, context):
     message = update.message.text
@@ -335,8 +336,8 @@ def main():
         price_update8, interval=86400, first=1)
     job_seconds_9 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
-    job_seconds_10 = job_queue.run_repeating(
-       leaderboard_update2, interval=86400, first=1)
+    # job_seconds_10 = job_queue.run_repeating(
+    #    leaderboard_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
