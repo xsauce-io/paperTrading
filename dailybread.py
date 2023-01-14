@@ -125,17 +125,17 @@ def leaderboard_update(context):
     except Exception as error:
         print('Cause leaderboard_update {}'.format(error))
 
-# def leaderboard_update2(context):
-#     try:
-#         print("xj1\n")
-#         processes.manage_leaderboard.update_leaderboard("xj1")
-#         processes.manage_leaderboard.update_leaderboard("xj3")
-#         processes.manage_leaderboard.update_leaderboard("xj4")
-#         processes.manage_leaderboard.update_leaderboard("yz350")
-#         processes.manage_leaderboard.update_leaderboard("yz700")
+def leaderboard_update2(context):
+    try:
+        print("xj1\n")
+        processes.manage_leaderboard.update_leaderboard("xj1")
+        processes.manage_leaderboard.update_leaderboard("xj3")
+        processes.manage_leaderboard.update_leaderboard("xj4")
+        processes.manage_leaderboard.update_leaderboard("yz350")
+        processes.manage_leaderboard.update_leaderboard("yz700")
 
-#     except Exception as error:
-#         print('Cause {}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
 
 def index_price(update, context):
     message = update.message.text
@@ -183,16 +183,21 @@ def welcome(update, context):
                              text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(username))
 
 def portfolio(update, context):
+
     sender = update.message.from_user.username
     message = update.message.text
     try:
         portfolio = processes.portfolio.portfolio(sender, message)
         if type(portfolio) == Portfolio:
             formatted_message = format_portfolio_string(portfolio)
+            update.message.reply_text(
+                formatted_message,
+                parse_mode='Markdown'
+            )
 
         elif type(portfolio) == GlobalPortfolio:
             formatted_message = format_total_string(portfolio)
-        update.message.reply_text(
+            update.message.reply_text(
                 formatted_message,
                 parse_mode='Markdown'
             )
@@ -336,8 +341,8 @@ def main():
         price_update8, interval=86400, first=1)
     job_seconds_9 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
-    # job_seconds_10 = job_queue.run_repeating(
-    #    leaderboard_update2, interval=86400, first=1)
+    job_seconds_10 = job_queue.run_repeating(
+       leaderboard_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
