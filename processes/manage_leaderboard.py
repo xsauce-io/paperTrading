@@ -7,7 +7,6 @@ from helpers.utils import *
 
 def update_leaderboard(leaderboard_name):
 
-
     if controller.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 

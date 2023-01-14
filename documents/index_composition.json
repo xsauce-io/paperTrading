@@ -236,13 +236,6 @@
                 }
             },
             {
-                "name": "Jordan 11 Cherry (2022)",
-                "sku": "CT8012-116",
-                "weight_in_percentage": {
-                    "$numberDouble": "7.69"
-                }
-            },
-            {
                 "name": "Jordan 1 Retro High Homage To Home Chicago (non-numbered)",
                 "sku": "861428-061",
                 "weight_in_percentage": {
@@ -721,7 +714,7 @@
             },
             {
                 "name": "Yeezy Boost 700 V3 Fade Carbon",
-                "sku": "GW181",
+                "sku": "GW1814",
                 "weight_in_percentage": {
                     "$numberDouble": "6.66"
                 }

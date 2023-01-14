@@ -97,7 +97,7 @@ def price_update6(context):
 
 def price_update7(context):
     try:
-        yeezy_boost_350_v2_index_price = calculate_index_price(Yeezy_Boost_350_V2_INDEX_CONSTITUENTS)
+        yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
                                  text="Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
         processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
@@ -107,10 +107,10 @@ def price_update7(context):
 
 def price_update8(context):
     try:
-        yeezy_boost_700_series_index_price = calculate_index_price(Yeezy_Boost_700_Series_INDEX_CONSTITUENTS)
+        yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS)
         context.bot.send_message(CHAT,
-                                 text="Yeezy Boost 700 Series (V1-V3) is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
-        processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series",yeezy_boost_700_series_index_price)
+                                 text="Yeezy Boost 700 Series is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
+        processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
 
     except Exception as error:
         print('Cause {}'.format(error))
@@ -121,6 +121,18 @@ def leaderboard_update(context):
         processes.manage_leaderboard.update_leaderboard("xci")
         processes.manage_leaderboard.update_leaderboard("sp50")
         processes.manage_leaderboard.update_leaderboard("hype6")
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def leaderboard_update2(context):
+    try:
+        processes.manage_leaderboard.update_leaderboard("xj1")
+        processes.manage_leaderboard.update_leaderboard("xj3")
+        processes.manage_leaderboard.update_leaderboard("xj4")
+        processes.manage_leaderboard.update_leaderboard("yz350")
+        processes.manage_leaderboard.update_leaderboard("yz700")
+
     except Exception as error:
         print('Cause {}'.format(error))
 
@@ -323,6 +335,8 @@ def main():
         price_update8, interval=86400, first=1)
     job_seconds_9 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
+    job_seconds_10 = job_queue.run_repeating(
+       leaderboard_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))

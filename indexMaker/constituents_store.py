@@ -611,7 +611,7 @@ JORDAN3_INDEX_CONSTITUENTS = [
   }
 ]
 
-Yeezy_Boost_350_V2_INDEX_CONSTITUENTS = [
+YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS = [
   {
     "name": "Yeezy Boost 350 V2 Zebra",
     "sku" : "CP9654",
@@ -689,7 +689,7 @@ Yeezy_Boost_350_V2_INDEX_CONSTITUENTS = [
   }
 ]
 
-Yeezy_Boost_700_Series_INDEX_CONSTITUENTS = [
+YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS = [
   {
     "name": "Yeezy Boost 700 Inertia",
     "sku" : "EG7597",
@@ -697,7 +697,7 @@ Yeezy_Boost_700_Series_INDEX_CONSTITUENTS = [
   },
   {
     "name": "Yeezy Boost 700 V3 Fade Carbon",
-    "sku" : "GW181",
+    "sku" : "GW1814",
     "weight_in_decimal" : 0.0666
   },
   {
