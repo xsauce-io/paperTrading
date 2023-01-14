@@ -85,6 +85,36 @@ def price_update5(context):
         print('Cause {}'.format(error))
 
 
+def price_update6(context):
+    try:
+        jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS)
+        context.bot.send_message(CHAT,
+                                 text="Jordan 3 is ${}".format(round(jordan3_index_price, 2)))
+        processes.manage_index.add_index_statistics("xj3" , "Jordan 3", jordan3_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def price_update7(context):
+    try:
+        yeezy_boost_350_v2_index_price = calculate_index_price(Yeezy_Boost_350_V2_INDEX_CONSTITUENTS)
+        context.bot.send_message(CHAT,
+                                 text="Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
+        processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+def price_update8(context):
+    try:
+        yeezy_boost_700_series_index_price = calculate_index_price(Yeezy_Boost_700_Series_INDEX_CONSTITUENTS)
+        context.bot.send_message(CHAT,
+                                 text="Yeezy Boost 700 Series (V1-V3) is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
+        processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series",yeezy_boost_700_series_index_price)
+
+    except Exception as error:
+        print('Cause {}'.format(error))
+
 def leaderboard_update(context):
     try:
         processes.manage_leaderboard.update_leaderboard("pnl")
@@ -194,7 +224,6 @@ def instructions(update, context):
     update.message.reply_text(
         "https://docs.xsauce.io/applications/how-it-works")
 
-
 def open_position(update, context):
     sender = update.message.from_user.username
     message = update.message.text
@@ -228,7 +257,10 @@ def list_index(update, context):
         "*HYPE6:* hype6\n" \
         "*Sneaker Benchmark S&P50*: sp50\n"
         "*Jordan 1:* xj1\n" \
-        "*Jordan 4*: xj4\n",  parse_mode='Markdown')
+        "*Jordan 3:* xj3\n" \
+        "*Jordan 4*: xj4\n"\
+        "*Yeezy Boost 350 v2*: yz350\n"
+        "*Yeezy Boost 700 Series*: yz700\n", parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
@@ -284,6 +316,12 @@ def main():
     job_seconds_5 = job_queue.run_repeating(
         price_update5, interval=86400, first=1)
     job_seconds_6 = job_queue.run_repeating(
+        price_update6, interval=86400, first=1)
+    job_seconds_7 = job_queue.run_repeating(
+        price_update7, interval=86400, first=1)
+    job_seconds_8 = job_queue.run_repeating(
+        price_update8, interval=86400, first=1)
+    job_seconds_9 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
