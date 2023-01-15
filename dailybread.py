@@ -386,7 +386,7 @@ def main():
     job_seconds_4 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
     job_seconds_10 = job_queue.run_repeating(
-       leaderboard_update2, interval=86400, first=15)
+       leaderboard_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
