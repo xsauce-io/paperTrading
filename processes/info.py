@@ -1,15 +1,14 @@
 import controller
 from models import *
-from datetime import datetime
 from helpers.utils import *
 
 def get_index_latest_info(message):
     parsed_message = split_message(message)
 
     if is_info_message_format_valid(parsed_message) == False:
-        raise UserInputException('Please enter valid command.\neg: /info xci')
+        raise UserInputException('Please enter valid command.\neg: /info')
     if is_info_message_input_valid(parsed_message) == False:
-        raise UserInputException('Please enter valid command.\neg: /info xci')
+        raise UserInputException('Please enter valid command.\neg: /info')
 
     index_name = extract_info_message(parsed_message)
 
@@ -19,6 +18,17 @@ def get_index_latest_info(message):
     index = controller.get_latest_index(index_name)
     index = format_index_price(index)
     return index
+
+def get_all_latest_index_price(index_names: list):
+
+    indexes = controller.get_all_latest_index(index_names)
+    formatted_indexes = []
+
+    for index in indexes:
+        formatted_index = format_index_price(index)
+        formatted_indexes.append(formatted_index)
+
+    return formatted_indexes
 
 
 def format_index_price(index: Index) -> Index:
@@ -35,7 +45,7 @@ def is_info_message_input_valid(parsed_message: list):
     return False
 
 def is_info_message_format_valid(parsed_message: list):
-    if len(parsed_message) == 2:
+    if len(parsed_message) == 2 :
        if type(parsed_message[1]) == str:
            return True
     return False

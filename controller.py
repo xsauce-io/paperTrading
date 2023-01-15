@@ -45,6 +45,16 @@ def get_latest_index(index_name):
     index = Index(name, full_name ,price, date, time)
     return index
 
+def get_all_latest_index(all_index_names):
+    all_indexes = []
+    for index_name in all_index_names:
+        if (does_index_exist(index_name)):
+            index = get_latest_index(index_name)
+            all_indexes.append(index)
+            print(index.name)
+
+    return all_indexes
+
 
 def does_index_exist(index_name) -> bool:
     index_stats = tuple(stats.find({"name": index_name}).clone())
