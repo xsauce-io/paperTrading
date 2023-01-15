@@ -363,6 +363,7 @@ def help(update, context):
         "/open -> Open a position\n"
         "/close -> Close a position\n"
         "/info index_name -> Show the current price of an index\n"
+        "/price -> Show current price of all indexes"
         "/comp index_name -> Show the index composition\n"
         "/portfolio -> Show your current portfolio holdings\n"
         "/portfolio index_name-> Show your current portfolio holdings for given index\n"
