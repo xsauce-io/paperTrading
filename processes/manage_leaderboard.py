@@ -7,7 +7,6 @@ from helpers.utils import *
 
 def update_leaderboard(leaderboard_name):
 
-
     if controller.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 
@@ -29,9 +28,16 @@ def update_leaderboard(leaderboard_name):
             table_image_name = "images/global_pnl_leaderboard.png"
 
         else:
+            #@TODO check participant has position
+            all_participants_names_by_index = []
             for participant_name in all_participants_names:
+                if controller.does_participant_have_position_for_index(participant_name, leaderboard_name) == True: #Warning leaderboard name is synonymous with index_name here
+                    all_participants_names_by_index.append(participant_name)
+
+            for participant_name in all_participants_names_by_index:
 
                 current_index = controller.get_latest_index(leaderboard_name)
+
                 current_position_info = controller.get_participant_position_info(participant_name, leaderboard_name)
                 current_participant_info = controller.get_participant_info(participant_name)
 

@@ -352,8 +352,7 @@ HYPE6_INDEX_CONSTITUENTS = [
   }
 ]
 
-
-JORDAN_1_INDEX_CONSTITUENTS = [
+JORDAN1_INDEX_CONSTITUENTS = [
   {
     "name": "Jordan I Retro High UNC",
     "sku" : "555088-117",
@@ -453,5 +452,317 @@ JORDAN_1_INDEX_CONSTITUENTS = [
     "name": "Jordan 1 Low Reverse Bred",
     "sku" : "553558-606",
     "weight_in_decimal" : 0.05
+  }
+]
+
+JORDAN4_INDEX_CONSTITUENTS = [
+  {
+    "name": "Jordan 4 Retro A Ma Maniére Violet Ore",
+    "sku" : "DV6773-220",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Pure",
+    "sku" : "308497-100",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Black Gum",
+    "sku" : "CI1184-001",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Lightning (2021)",
+    "sku" : "CT8527-700",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro University Blue",
+    "sku" : "CT8527-700",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Union Guava Ice",
+    "sku" : "DC9533-800",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro What The",
+    "sku" : "CI1184-146",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Cool Grey",
+    "sku" : "308497-007",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Travis Scott Cactus Jack",
+    "sku" : "308497-406",
+    "weight_in_decimal" : 0.0666
+  },
+    {
+    "name": "Jordan 4 Retro KAWS",
+    "sku" : "930155-003",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Royalty",
+    "sku" : "308497-032",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Zen Master",
+    "sku" : "DH7138-506",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Metallic Purple",
+    "sku" : "CT8527-115",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Infared",
+    "sku" : "DH6927-061",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 4 Retro Midnight Navy",
+    "sku" : "DH6927-140",
+    "weight_in_decimal" : 0.0666
+  }
+]
+
+JORDAN3_INDEX_CONSTITUENTS = [
+  {
+    "name": "Jordan 3 Retro True Blue",
+    "sku" : "854262-106",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Pine Green",
+    "sku" : "CT8532-030",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Dark Iris",
+    "sku" : "CT8532-105",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Tinker Hatfield",
+    "sku" : "AQ3835-160",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Quai 54 (2018)",
+    "sku" : "AT9195-001",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Georgetown",
+    "sku" : "CT8532-401",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Cool Grey (2021)",
+    "sku" : "CT8532-012",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Fragment",
+    "sku" : "DA3595-100",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Chorophyll",
+    "sku" : "136064-006",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro UNC (2020)",
+    "sku" : "CT8532-104",
+    "weight_in_decimal" : 0.0666
+  },
+    {
+    "name": "Jordan 3 Retro Tinker Black Cement Gold",
+    "sku" : "CK4348-007",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro SE Animal Instinct",
+    "sku" : "CK4344-002",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Desert Elephant",
+    "sku" : "CT8532-008",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Racer Blue",
+    "sku" : "CT8532-145",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Jordan 3 Retro Cardinal Red",
+    "sku" : "CT8532-126",
+    "weight_in_decimal" : 0.0666
+  }
+]
+
+YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS = [
+  {
+    "name": "Yeezy Boost 350 V2 Zebra",
+    "sku" : "CP9654",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 350 V2 Yeezrell non-reflective",
+    "sku" : "FW5191",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 350 V2 Glow",
+    "sku" : "EG5293",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Beluga 2.0",
+    "sku" : "AH2203",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Yeshaya (Reflective)",
+    "sku" : "FX4349",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Earth",
+    "sku" : "FX9033",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Black (Non-Reflective)",
+    "sku" : "FU9006",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Clay",
+    "sku" : "EG7490",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Dazzling Blue",
+    "sku" : "GY7164",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 MX Oat",
+    "sku" : "GW3773",
+    "weight_in_decimal" : 0.0666
+  },
+    {
+    "name": "Yeezy Boost V2 MX Rock",
+    "sku" : "GW3774",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Sesame",
+    "sku" : "F99710",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Butter",
+    "sku" : "F36980",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Bone",
+    "sku" : "HQ6316",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost V2 Ash",
+    "sku" : "GW0089",
+    "weight_in_decimal" : 0.0666
+  }
+]
+
+YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS = [
+  {
+    "name": "Yeezy Boost 700 Inertia",
+    "sku" : "EG7597",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V3 Fade Carbon",
+    "sku" : "GW1814",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 MNVN Orange",
+    "sku" : "FV3258",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V2 Tephra",
+    "sku" : "FU7914",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 Utility Black",
+    "sku" : "FV5304",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 Mauve",
+    "sku" : "EE9614",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V2 Mauve",
+    "sku" : "GZ0724",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V3 Dark Glow",
+    "sku" : "GX6144",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V2 Vanta",
+    "sku" : "FU6684",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 Hi Res Blue",
+    "sku" : "HP6674",
+    "weight_in_decimal" : 0.0666
+  },
+    {
+    "name": "Yeezy Boost 700 V3 Alvah",
+    "sku" : "H67799",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V3 Mono Safflower",
+    "sku" : "HP5425",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 Static",
+    "sku" : "EF2829",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 V2 Cream",
+    "sku" : "GY7924",
+    "weight_in_decimal" : 0.0666
+  },
+  {
+    "name": "Yeezy Boost 700 MNVN Triple Black",
+    "sku" : "FV4440",
+    "weight_in_decimal" : 0.0666
   }
 ]
