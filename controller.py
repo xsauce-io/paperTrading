@@ -17,6 +17,7 @@ DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
 COLLECTION_NAME3 = os.environ['collection_name3']
+COLLECTION_NAME4 = os.environ['collection_name4']
 URL = os.environ['db_url']
 
 cluster = MongoClient(URL)
@@ -24,6 +25,8 @@ db = cluster[DATABASE_NAME]
 participants = db[COLLECTION_NAME1]
 stats = db[COLLECTION_NAME2]
 composition = db[COLLECTION_NAME3]
+trackers = db[COLLECTION_NAME4]
+
 
 
 #Index
@@ -62,6 +65,13 @@ def does_index_exist(index_name) -> bool:
         return True
     else:
         return False
+
+
+#Tracker
+def add_index_tracker(index_name, operator, target_price, sender, date, time):
+    trackers.insert_one(
+            {"name": index_name, "operator": operator, "target_price": target_price, "username": sender, "date_created": date, "time_created": time, "deleted": False})
+
 
 #Participant
 

@@ -12,6 +12,7 @@ import processes.info
 import processes.portfolio
 import processes.open
 import processes.close
+import processes.track
 import processes.manage_index
 import processes.composition
 import processes.leaderboard
@@ -241,7 +242,6 @@ def welcome(update, context):
                              text="Welcome to the Xchange {}!\n\nUse the /help command to see all options".format(username))
 
 def portfolio(update, context):
-
     sender = update.message.from_user.username
     message = update.message.text
     try:
@@ -326,10 +326,24 @@ def close(update, context):
     except Exception as error:
         print('Cause {}'.format(error))
 
+def track(update, context):
+    sender = update.message.from_user.username
+    message = update.message.text
+
+    try:
+        result = processes.track.track(sender, message)
+        reply = "Ok @{}, you will be notified once when the price for index *{}* is *{}* then *{}*.".format(result.sender, result.index_name, result.operator, result.target_price)
+        update.message.reply_text(reply, parse_mode = "Markdown")
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
+
 def list_index(update, context):
     ##warning the list is hard coded for now
     try:
-        update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
+        update.message.reply_text("*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
         "*Sneaker Benchmark S&P50*: sp50\n"
         "*Jordan 1:* xj1\n" \
@@ -398,6 +412,7 @@ def main():
     dispatcher.add_handler(CommandHandler('open', open_position))
     dispatcher.add_handler(CommandHandler('info', index_price))
     dispatcher.add_handler(CommandHandler('price', all_index_price))
+    dispatcher.add_handler(CommandHandler('track', track))
     dispatcher.add_handler(CommandHandler('comp', index_composition))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
