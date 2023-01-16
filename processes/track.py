@@ -22,7 +22,25 @@ def track(sender, message):
     tracker = Tracker(index_name, operator, target_price, sender, date, time)
     return tracker
 
+def notify():
+    notifications = []
+    trackers = controller.get_all_trackers()
 
+    for tracker in trackers:
+        index = controller.get_latest_index(tracker.index_name)
+        target_price = tracker.target_price
+        operator = tracker.operator
+
+        if (operator == "lesser"):
+            if ( index.price < target_price ):
+                notifications.append("Hey @{}, the index price for {} is now lesser than {}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
+                controller.delete_index_tracker(tracker.index_name, tracker.operator, tracker.target_price, tracker.sender)
+        elif (operator == "greater"):
+            if ( index.price > target_price ):
+                notifications.append("Hey @{}, the index price for {} is now greater than {}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
+                controller.delete_index_tracker(tracker.index_name, tracker.operator, tracker.target_price, tracker.sender)
+
+    return notifications
 def extract_track_message(parsed_message):
     index_name = parsed_message[1]
     operator = parsed_message[2]

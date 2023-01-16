@@ -122,5 +122,10 @@ class Tracker:
         self.date = date
         self.time = time
 
+class TrackerNotification:
+    def __init__(self, message, receiver):
+        self.message = message
+        self.receiver = receiver
+
 class UserInputException(Exception):
     """ my custom exception class """

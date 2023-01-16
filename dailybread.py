@@ -34,86 +34,6 @@ COLLECTION_NAME2 = os.environ['collection_name2']
 URL = os.environ['db_url']
 cluster = MongoClient(URL)
 
-# def price_update(context):
-#     try:
-#         culture = calculate_index_price(CULTURE_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Xsauce Culture Index is ${}".format(round(culture, 2)))
-
-#         processes.manage_index.add_index_statistics("xci" , "Xsauce Culture Index" ,culture)
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update2(context):
-#     try:
-#         hype6_index_price = calculate_index_price(HYPE6_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="HYPE6 is ${}".format(round(hype6_index_price, 2)))
-
-#         processes.manage_index.add_index_statistics("hype6" , "HYPE6", hype6_index_price)
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update3(context):
-#     try:
-#         sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
-#         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
-
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update4(context):
-#     try:
-#         jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Jordan 1 is ${}".format(round(jordan1_index_price, 2)))
-#         processes.manage_index.add_index_statistics("xj1" , "Jordan 1", jordan1_index_price)
-
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update5(context):
-#     try:
-#         jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Jordan 4 is ${}".format(round(jordan4_index_price, 2)))
-#         processes.manage_index.add_index_statistics("xj4" , "Jordan 4", jordan4_index_price)
-
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update6(context):
-#     try:
-#         jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Jordan 3 is ${}".format(round(jordan3_index_price, 2)))
-#         processes.manage_index.add_index_statistics("xj3" , "Jordan 3", jordan3_index_price)
-
-#     except Exception as error:
-#         print('Cause {}'.format(error))
-
-# def price_update7(context):
-#     try:
-#         yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
-#         processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
-
-#     except Exception as error:
-#         print('Cause price_update7 {}'.format(error))
-
-# def price_update8(context):
-#     try:
-#         yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS)
-#         context.bot.send_message(CHAT,
-#                                  text="Yeezy Boost 700 Series is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
-#         processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
-
-#     except Exception as error:
-#         print('Cause price_update8 {}'.format(error))
-
 def price_update_all(context):
     try:
         message = "Index Price Update: \n"
@@ -164,13 +84,6 @@ def leaderboard_update(context):
         processes.manage_leaderboard.update_leaderboard("xci")
         processes.manage_leaderboard.update_leaderboard("sp50")
         processes.manage_leaderboard.update_leaderboard("hype6")
-
-    except Exception as error:
-        print('Cause leaderboard_update {}'.format(error))
-
-def leaderboard_update2(context):
-    try:
-        print("xj1\n")
         processes.manage_leaderboard.update_leaderboard("xj1")
         processes.manage_leaderboard.update_leaderboard("xj3")
         processes.manage_leaderboard.update_leaderboard("xj4")
@@ -178,7 +91,17 @@ def leaderboard_update2(context):
         processes.manage_leaderboard.update_leaderboard("yz700")
 
     except Exception as error:
-        print('Cause {}'.format(error))
+        print('Cause leaderboard_update {}'.format(error))
+
+def price_tracker_notify(context):
+    try:
+        notifications = processes.track.notify()
+        print(notifications)
+        for notification in notifications:
+            context.bot.send_message(CHAT, notification, parse_mode = "Markdown")
+
+    except Exception as error:
+        print('Cause tracker_notify {}'.format(error))
 
 def index_price(update, context):
     message = update.message.text
@@ -329,10 +252,9 @@ def close(update, context):
 def track(update, context):
     sender = update.message.from_user.username
     message = update.message.text
-
     try:
         result = processes.track.track(sender, message)
-        reply = "Ok @{}, you will be notified once when the price for index *{}* is *{}* then *{}*.".format(result.sender, result.index_name, result.operator, result.target_price)
+        reply = "Ok @{}, you will be notified once when the price for index *{}* is *{}* than *{}*.".format(result.sender, result.index_name, result.operator, result.target_price)
         update.message.reply_text(reply, parse_mode = "Markdown")
     except UserInputException as error:
         print('Cause {}'.format(error))
@@ -396,11 +318,10 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
-    job_seconds = job_queue.run_repeating( price_update_all, interval=86400, first=1)
-    job_seconds_4 = job_queue.run_repeating(
-       leaderboard_update, interval=86400, first=1)
-    job_seconds_10 = job_queue.run_repeating(
-       leaderboard_update2, interval=86400, first=1)
+    #job_seconds = job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    job_seconds_1 = job_queue.run_repeating(leaderboard_update, interval=86400, first=1)
+    job_seconds_2 = job_queue.run_repeating(price_tracker_notify, interval=86400, first=25)
+
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
