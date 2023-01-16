@@ -318,7 +318,7 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
-    #job_seconds = job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    job_seconds = job_queue.run_repeating(price_update_all, interval=86400, first=1)
     job_seconds_1 = job_queue.run_repeating(leaderboard_update, interval=86400, first=1)
     job_seconds_2 = job_queue.run_repeating(price_tracker_notify, interval=86400, first=25)
 

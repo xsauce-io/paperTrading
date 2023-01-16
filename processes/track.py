@@ -33,11 +33,11 @@ def notify():
 
         if (operator == "lesser"):
             if ( index.price < target_price ):
-                notifications.append("Hey @{}, the index price for {} is now lesser than {}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
+                notifications.append("Hey @{}, the index price for {} is now lesser than ${}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
                 controller.delete_index_tracker(tracker.index_name, tracker.operator, tracker.target_price, tracker.sender)
         elif (operator == "greater"):
             if ( index.price > target_price ):
-                notifications.append("Hey @{}, the index price for {} is now greater than {}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
+                notifications.append("Hey @{}, the index price for {} is now greater than ${}. Make a move!".format(tracker.sender, tracker.index_name, tracker.target_price))
                 controller.delete_index_tracker(tracker.index_name, tracker.operator, tracker.target_price, tracker.sender)
 
     return notifications
