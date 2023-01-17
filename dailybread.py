@@ -96,7 +96,6 @@ def leaderboard_update(context):
 def price_tracker_notify(context):
     try:
         notifications = processes.track.notify()
-        print(notifications)
         for notification in notifications:
             context.bot.send_message(CHAT, notification, parse_mode = "Markdown")
 
@@ -298,6 +297,7 @@ def help(update, context):
         "/list -> Show the list of index names\n"
         "/open -> Open a position\n"
         "/close -> Close a position\n"
+        "/track -> Set a notification for a target index price\n"
         "/info index_name -> Show the current price of an index\n"
         "/price -> Show current price of all indexes"
         "/comp index_name -> Show the index composition\n"
