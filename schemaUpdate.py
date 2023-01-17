@@ -1,4 +1,5 @@
 import controller
+
 def main():
     controller.update_index_time_format()
 
