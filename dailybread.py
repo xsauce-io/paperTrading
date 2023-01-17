@@ -129,25 +129,25 @@ def price_update_all(context):
         replies.append("Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
 
-        jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS)
-        replies.append("Jordan 1 is ${}".format(round(jordan1_index_price, 2)))
-        processes.manage_index.add_index_statistics("xj1" , "Jordan 1", jordan1_index_price)
+        # jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS)
+        # replies.append("Jordan 1 is ${}".format(round(jordan1_index_price, 2)))
+        # processes.manage_index.add_index_statistics("xj1" , "Jordan 1", jordan1_index_price)
 
-        jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS)
-        replies.append("Jordan 3 is ${}".format(round(jordan3_index_price, 2)))
-        processes.manage_index.add_index_statistics("xj3" , "Jordan 3", jordan3_index_price)
+        # jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS)
+        # replies.append("Jordan 3 is ${}".format(round(jordan3_index_price, 2)))
+        # processes.manage_index.add_index_statistics("xj3" , "Jordan 3", jordan3_index_price)
 
-        jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS)
-        replies.append("Jordan 4 is ${}".format(round(jordan4_index_price, 2)))
-        processes.manage_index.add_index_statistics("xj4" , "Jordan 4", jordan4_index_price)
+        # jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS)
+        # replies.append("Jordan 4 is ${}".format(round(jordan4_index_price, 2)))
+        # processes.manage_index.add_index_statistics("xj4" , "Jordan 4", jordan4_index_price)
 
-        yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS)
-        replies.append("Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
-        processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
+        # yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS)
+        # replies.append("Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
+        # processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
 
-        yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS)
-        replies.append("Yeezy Boost 700 Series is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
-        processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
+        # yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS)
+        # replies.append("Yeezy Boost 700 Series is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
+        # processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
 
         for reply in replies:
             message += "- "  + reply + "\n\n"
@@ -167,17 +167,16 @@ def leaderboard_update(context):
     except Exception as error:
         print('Cause leaderboard_update {}'.format(error))
 
-def leaderboard_update2(context):
-    try:
-        print("xj1\n")
-        processes.manage_leaderboard.update_leaderboard("xj1")
-        processes.manage_leaderboard.update_leaderboard("xj3")
-        processes.manage_leaderboard.update_leaderboard("xj4")
-        processes.manage_leaderboard.update_leaderboard("yz350")
-        processes.manage_leaderboard.update_leaderboard("yz700")
+# def leaderboard_update2(context):
+#     try:
+#         # processes.manage_leaderboard.update_leaderboard("xj1")
+#         # processes.manage_leaderboard.update_leaderboard("xj3")
+#         # processes.manage_leaderboard.update_leaderboard("xj4")
+#         # processes.manage_leaderboard.update_leaderboard("yz350")
+#         # processes.manage_leaderboard.update_leaderboard("yz700")
 
-    except Exception as error:
-        print('Cause {}'.format(error))
+#     except Exception as error:
+#         print('Cause {}'.format(error))
 
 def index_price(update, context):
     message = update.message.text
@@ -385,8 +384,8 @@ def main():
     job_seconds = job_queue.run_repeating( price_update_all, interval=86400, first=1)
     job_seconds_4 = job_queue.run_repeating(
        leaderboard_update, interval=86400, first=1)
-    job_seconds_10 = job_queue.run_repeating(
-       leaderboard_update2, interval=86400, first=1)
+    # job_seconds_10 = job_queue.run_repeating(
+    #    leaderboard_update2, interval=86400, first=1)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
