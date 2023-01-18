@@ -331,11 +331,12 @@ def list_index(update, context):
         update.message.reply_text( "*Xsauce Culture Index:* xci\n" \
         "*HYPE6:* hype6\n" \
         "*Sneaker Benchmark S&P50*: sp50\n"
-        "*Jordan 1:* xj1\n" \
-        "*Jordan 3:* xj3\n" \
-        "*Jordan 4*: xj4\n"\
-        "*Yeezy Boost 350 v2*: yz350\n"
-        "*Yeezy Boost 700 Series*: yz700\n", parse_mode='Markdown')
+        # "*Jordan 1:* xj1\n" \
+        # "*Jordan 3:* xj3\n" \
+        # "*Jordan 4*: xj4\n"\
+        # "*Yeezy Boost 350 v2*: yz350\n"
+        # "*Yeezy Boost 700 Series*: yz700\n"
+        , parse_mode='Markdown')
     except Exception and ValueError as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))

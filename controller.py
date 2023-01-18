@@ -27,7 +27,6 @@ composition = db[COLLECTION_NAME3]
 
 
 #Index
-
 def add_index(index: Index):
      stats.insert_one(
             {"name": index.name , "full_name" : index.full_name ,"price": index.price, "date": index.date, "time": index.time})
