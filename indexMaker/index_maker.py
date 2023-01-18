@@ -5,7 +5,6 @@ import controller
 from models import *
 from helpers.utils import *
 
-
 load_dotenv()
 
 API = os.environ['api']

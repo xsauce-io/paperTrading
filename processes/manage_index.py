@@ -1,6 +1,5 @@
 import controller
 from models import *
-import math
 from helpers.utils import *
 
 def add_index_statistics(name, full_name, price):

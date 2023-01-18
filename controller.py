@@ -2,7 +2,6 @@ from telegram import *
 from telegram.ext import *
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from models import *
 from typing import Type
