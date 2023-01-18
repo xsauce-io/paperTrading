@@ -113,5 +113,35 @@ class IndexConstituentSneaker:
         self.weight_in_decimals = weight_in_decimals
         self.sku = sku
 
+class Tracker:
+    def __init__(self, index_name, operator, target_price, sender, date, time):
+        self.index_name = index_name
+        self.operator = operator
+        self.target_price = target_price
+        self.sender = sender
+        self.date = date
+        self.time = time
+
+class TrackerNotification:
+    def __init__(self, message, receiver):
+        self.message = message
+        self.receiver = receiver
+
+
+class Asset:
+    def __init__(self, name, type,  price, date, time, used_by):
+        self.name = name
+        self.type = type
+        self.price = price
+        self.date = date
+        self.time = time
+        self.used_by = used_by
+
+class Sneaker(Asset):
+    def __init__(self, name, type, sku, price, date, time, used_by):
+        Asset.__init__(self, name, type,  price, date, time, used_by)
+        self.sku = sku
+
+
 class UserInputException(Exception):
     """ my custom exception class """

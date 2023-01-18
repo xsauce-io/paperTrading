@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from models import *
+from typing import Type
+
 
 load_dotenv()
 
@@ -17,6 +19,9 @@ DATABASE_NAME = os.environ['db_name']
 COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
 COLLECTION_NAME3 = os.environ['collection_name3']
+COLLECTION_NAME4 = os.environ['collection_name4']
+COLLECTION_NAME5 = os.environ['collection_name5']
+
 URL = os.environ['db_url']
 
 cluster = MongoClient(URL)
@@ -24,7 +29,8 @@ db = cluster[DATABASE_NAME]
 participants = db[COLLECTION_NAME1]
 stats = db[COLLECTION_NAME2]
 composition = db[COLLECTION_NAME3]
-
+trackers = db[COLLECTION_NAME4]
+asset_statistics = db[COLLECTION_NAME5]
 
 #Index
 def add_index(index: Index):
@@ -41,7 +47,7 @@ def get_latest_index(index_name):
     date = latest_index["date"]
     time = latest_index["time"]
 
-    index = Index(name, full_name ,price, date, time)
+    index = Index(name, full_name, price, date, time)
     return index
 
 def get_all_latest_index(all_index_names):
@@ -62,8 +68,33 @@ def does_index_exist(index_name) -> bool:
     else:
         return False
 
-#Participant
 
+#Tracker
+def add_index_tracker(index_name, operator, target_price, sender, date, time):
+    trackers.insert_one(
+            {"index_name": index_name, "operator": operator, "target_price": target_price, "username": sender, "date_created": date, "time_created": time, "deleted": False})
+
+def get_all_trackers():
+    result = trackers.find({"deleted": False})
+    all_trackers:Tracker = []
+
+    for tracker in result:
+        index_name = tracker["index_name"]
+        operator = tracker["operator"]
+        target_price = tracker["target_price"]
+        username = tracker["username"]
+        date = tracker["date_created"]
+        time = tracker["time_created"]
+
+        tracker = Tracker(index_name, operator, target_price, username, date, time )
+
+        all_trackers.append(tracker)
+    return all_trackers
+
+def delete_index_tracker(index_name, operator, target_price, sender):
+    trackers.update_one({"username": sender, "operator": operator, "index_name": index_name, "target_price": target_price}, {"$set": {"deleted": True}})
+
+#Participant
 def find_participant(sender) -> bool:
     participant = tuple(participants.find({"username": sender}).clone())
     if (len(participant) > 0):
@@ -215,24 +246,9 @@ def does_index_composition_exist(index_name):
     else:
         return False
 
-
-#schema update
-def update_index_time_format():
-    all_indexes_stats = list(stats.find())
-
-    for index in all_indexes_stats:
-        id = index["_id"]
-        date = index["date"]
-
-        parsed_date = date.split("/")
-        month = parsed_date[0]
-        day = parsed_date[1]
-        year = parsed_date[2]
-
-        print (parsed_date)
-
-        formatted_date = year + "-" + month + "-" + day
-
-        print(formatted_date)
-
-        stats.update_one({"_id": id}, {"$set": {"date": formatted_date}})
+# Asset_statistic
+def add_asset_statistic(asset: Type[Asset]):
+    if type(asset) == Sneaker:
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type, "sku": asset.sku , "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
+    else:
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type,  "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
