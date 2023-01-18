@@ -129,16 +129,17 @@ class TrackerNotification:
 
 
 class Asset:
-    def __init__(self, name, type,  price, date, time):
+    def __init__(self, name, type,  price, date, time, used_by):
         self.name = name
         self.type = type
         self.price = price
         self.date = date
         self.time = time
+        self.used_by = used_by
 
 class Sneaker(Asset):
-    def __init__(self, name, type, sku, price, date, time):
-        Asset.__init__(self, name, type,  price, date, time)
+    def __init__(self, name, type, sku, price, date, time, used_by):
+        Asset.__init__(self, name, type,  price, date, time, used_by)
         self.sku = sku
 
 

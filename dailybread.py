@@ -38,15 +38,15 @@ def price_update_all(context):
     try:
         message = "Index Price Update: \n"
         replies = []
-        culture = calculate_index_price(CULTURE_INDEX_CONSTITUENTS)
+        culture = calculate_index_price(CULTURE_INDEX_CONSTITUENTS , "xci")
         replies.append("Xsauce Culture Index is ${}".format(round(culture, 2)))
         processes.manage_index.add_index_statistics("xci" , "Xsauce Culture Index" ,culture)
 
-        hype6_index_price = calculate_index_price(HYPE6_INDEX_CONSTITUENTS)
+        hype6_index_price = calculate_index_price(HYPE6_INDEX_CONSTITUENTS, "hype6")
         replies.append("HYPE6 is ${}".format(round(hype6_index_price, 2)))
         processes.manage_index.add_index_statistics("hype6" , "HYPE6", hype6_index_price)
 
-        sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS)
+        sp50_index_price = calculate_composite_index_price(SNEAKER_SP50_INDEX_CONSTITUENTS, "sp50")
         replies.append("Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
 

@@ -246,10 +246,9 @@ def does_index_composition_exist(index_name):
     else:
         return False
 
-
-# asset_statistic
+# Asset_statistic
 def add_asset_statistic(asset: Type[Asset]):
     if type(asset) == Sneaker:
-        asset_statistics.insert_one({"name": asset.name , "type": asset.type, "sku": asset.sku , "price": asset.price, "date": asset.date, "time": asset.time})
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type, "sku": asset.sku , "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
     else:
-        asset_statistics.insert_one({"name": asset.name , "type": asset.type,  "price": asset.price, "date": asset.date, "time": asset.time})
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type,  "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
