@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from models import *
+from typing import Type
+
 
 load_dotenv()
 
@@ -18,6 +20,8 @@ COLLECTION_NAME1 = os.environ['collection_name1']
 COLLECTION_NAME2 = os.environ['collection_name2']
 COLLECTION_NAME3 = os.environ['collection_name3']
 COLLECTION_NAME4 = os.environ['collection_name4']
+COLLECTION_NAME5 = os.environ['collection_name5']
+
 URL = os.environ['db_url']
 
 cluster = MongoClient(URL)
@@ -26,11 +30,9 @@ participants = db[COLLECTION_NAME1]
 stats = db[COLLECTION_NAME2]
 composition = db[COLLECTION_NAME3]
 trackers = db[COLLECTION_NAME4]
-
-
+asset_statistics = db[COLLECTION_NAME5]
 
 #Index
-
 def add_index(index: Index):
      stats.insert_one(
             {"name": index.name , "full_name" : index.full_name ,"price": index.price, "date": index.date, "time": index.time})
@@ -45,7 +47,7 @@ def get_latest_index(index_name):
     date = latest_index["date"]
     time = latest_index["time"]
 
-    index = Index(name, full_name ,price, date, time)
+    index = Index(name, full_name, price, date, time)
     return index
 
 def get_all_latest_index(all_index_names):
@@ -245,23 +247,9 @@ def does_index_composition_exist(index_name):
         return False
 
 
-#schema update
-def update_index_time_format():
-    all_indexes_stats = list(stats.find())
-
-    for index in all_indexes_stats:
-        id = index["_id"]
-        date = index["date"]
-
-        parsed_date = date.split("/")
-        month = parsed_date[0]
-        day = parsed_date[1]
-        year = parsed_date[2]
-
-        print (parsed_date)
-
-        formatted_date = year + "-" + month + "-" + day
-
-        print(formatted_date)
-
-        stats.update_one({"_id": id}, {"$set": {"date": formatted_date}})
+# asset_statistic
+def add_asset_statistic(asset: Type[Asset]):
+    if type(asset) == Sneaker:
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type, "sku": asset.sku , "price": asset.price, "date": asset.date, "time": asset.time})
+    else:
+        asset_statistics.insert_one({"name": asset.name , "type": asset.type,  "price": asset.price, "date": asset.date, "time": asset.time})
