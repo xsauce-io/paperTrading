@@ -155,7 +155,7 @@ def price_update_all(context):
         context.bot.send_message(CHAT,message, parse_mode='Markdown')
 
     except Exception as error:
-        print('Cause price_update8 {}'.format(error))
+        print('Cause price_update_all {}'.format(error))
 
 def leaderboard_update(context):
     try:

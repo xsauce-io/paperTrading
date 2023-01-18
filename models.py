@@ -113,5 +113,20 @@ class IndexConstituentSneaker:
         self.weight_in_decimals = weight_in_decimals
         self.sku = sku
 
+
+class Asset:
+    def __init__(self, name, type,  price, date, time):
+        self.name = name
+        self.type = type
+        self.price = price
+        self.date = date
+        self.time = time
+
+class Sneaker(Asset):
+    def __init__(self, name, type, sku, price, date, time):
+        Asset.__init__(self, name, type,  price, date, time)
+        self.sku = sku
+
+
 class UserInputException(Exception):
     """ my custom exception class """
