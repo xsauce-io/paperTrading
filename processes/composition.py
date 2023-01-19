@@ -1,4 +1,4 @@
-import controller.controller as controller
+import controller
 from models import *
 from helpers.utils import *
 
@@ -13,12 +13,12 @@ def get_index_composition(message):
 
     index_name = extract_composition_message(parsed_message)
 
-    if controller.does_index_exist(index_name) == False:
+    if controller.index_statistics.does_index_exist(index_name) == False:
        raise UserInputException("Index Not Found")
-    if controller.does_index_composition_exist(index_name) == False:
+    if controller.index_composition.does_index_composition_exist(index_name) == False:
        raise UserInputException("Composition Not Found")
 
-    composition_items = controller.get_index_composition(index_name)
+    composition_items = controller.index_composition.get_index_composition(index_name)
     composition_string = format_composition_to_string(composition_items)
 
     return composition_string

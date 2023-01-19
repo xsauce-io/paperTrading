@@ -1,4 +1,4 @@
-import controller.controller as controller
+import controller
 from tabulate import tabulate
 from processes.portfolio import determine_global_portfolio, determine_portfolio_by_index
 from PIL import Image, ImageDraw, ImageFont
@@ -7,14 +7,14 @@ from helpers.utils import *
 
 def update_leaderboard(leaderboard_name):
 
-    if controller.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
+    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 
     try:
 
         participants_leaderboard_items = []
         table_image_name = ""
-        all_participants_names = controller.get_all_participants_names()
+        all_participants_names = controller.participants.get_all_participants_names()
 
         if leaderboard_name == "pnl":
             for participant_name in all_participants_names:
@@ -31,15 +31,15 @@ def update_leaderboard(leaderboard_name):
             #@TODO check participant has position
             all_participants_names_by_index = []
             for participant_name in all_participants_names:
-                if controller.does_participant_have_position_for_index(participant_name, leaderboard_name) == True: #Warning leaderboard name is synonymous with index_name here
+                if controller.participants.does_participant_have_position_for_index(participant_name, leaderboard_name) == True: #Warning leaderboard name is synonymous with index_name here
                     all_participants_names_by_index.append(participant_name)
 
             for participant_name in all_participants_names_by_index:
 
-                current_index = controller.get_latest_index(leaderboard_name)
+                current_index = controller.index_statistics.get_latest_index(leaderboard_name)
 
-                current_position_info = controller.get_participant_position_info(participant_name, leaderboard_name)
-                current_participant_info = controller.get_participant_info(participant_name)
+                current_position_info = controller.participants.get_participant_position_info(participant_name, leaderboard_name)
+                current_participant_info = controller.participants.get_participant_info(participant_name)
 
                 portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 
@@ -80,14 +80,14 @@ def calculate_top5_leaderboard(leaderboard_items: list):
 
 
 def calculate_global_portfolio(participant_name):
-    all_positions_index_names = controller.get_participant_all_positions_names(participant_name)
-    current_participant_info = controller.get_participant_info(participant_name)
+    all_positions_index_names = controller.participants.get_participant_all_positions_names(participant_name)
+    current_participant_info = controller.participants.get_participant_info(participant_name)
 
     all_portfolio =[]
 
     for index_name in all_positions_index_names:
-        current_index = controller.get_latest_index(index_name)
-        current_position_info = controller.get_participant_position_info(participant_name, index_name)
+        current_index = controller.index_statistics.get_latest_index(index_name)
+        current_position_info = controller.participants.get_participant_position_info(participant_name, index_name)
         portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 
         all_portfolio.append(portfolio_info)

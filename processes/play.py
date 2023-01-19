@@ -1,4 +1,4 @@
-import controller.controller  as controller
+import controller
 from models import *
 
 
@@ -17,12 +17,12 @@ def play(sender):
 
 
 def find_participant(sender):
-    return controller.find_participant(sender)
+    return controller.participants.find_participant(sender)
 
 
 def create_participant(sender):
     print(id)
     init_funds = 10000
     participant = Participant(sender, init_funds, number_of_trades=0)
-    controller.add_participant(participant.name, participant.funds)
+    controller.participants.add_participant(participant.name, participant.funds)
     return participant

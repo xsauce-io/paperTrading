@@ -1,4 +1,4 @@
-import controller.controller as controller
+import controller
 from models import *
 import math
 from helpers import *
@@ -11,14 +11,14 @@ def portfolio(sender, message):
         raise UserInputException('Please enter valid command. eg: /portfolio or /portfolio xci')
 
     if is_request_global_portfolio(parsed_message) == True:
-        all_positions_index_names = controller.get_participant_all_positions_names(sender)
-        current_participant_info = controller.get_participant_info(sender)
+        all_positions_index_names = controller.participants.get_participant_all_positions_names(sender)
+        current_participant_info = controller.participants.get_participant_info(sender)
 
         all_portfolio =[]
 
         for index_name in all_positions_index_names:
-            current_index = controller.get_latest_index(index_name)
-            current_position_info = controller.get_participant_position_info(sender, index_name)
+            current_index = controller.index_statistics.get_latest_index(index_name)
+            current_position_info = controller.participants.get_participant_position_info(sender, index_name)
             portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 
             all_portfolio.append(portfolio_info)
@@ -30,14 +30,14 @@ def portfolio(sender, message):
     else:
         index_name = extract_portfolio_message(parsed_message)
 
-        if controller.does_index_exist(index_name) == False:
+        if controller.index_statistics.does_index_exist(index_name) == False:
             raise UserInputException("Index Not Found")
-        if controller.does_participant_have_position_for_index(sender, index_name) == False:
+        if controller.participants.does_participant_have_position_for_index(sender, index_name) == False:
             raise UserInputException('You have no positions open')
 
-        current_index = controller.get_latest_index(index_name)
-        current_position_info = controller.get_participant_position_info(sender, index_name)
-        current_participant_info = controller.get_participant_info(sender)
+        current_index = controller.index_statistics.get_latest_index(index_name)
+        current_position_info = controller.participants.get_participant_position_info(sender, index_name)
+        current_participant_info = controller.participants.get_participant_info(sender)
 
         portfolio_info = determine_portfolio_by_index(current_position_info, current_participant_info, current_index)
 

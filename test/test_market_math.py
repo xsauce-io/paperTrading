@@ -1,5 +1,5 @@
 import unittest
-from controller.controller import *
+from processes import *
 from helpers import *
 from models import *
 

@@ -1,97 +1,6 @@
-from telegram import *
-from telegram.ext import *
-import os
-from dotenv import load_dotenv
-from pymongo import MongoClient, DESCENDING
 from models import *
-from typing import Type
-
-
-load_dotenv()
-
-PASSWORD = os.environ['password']
-USERNAME = os.environ['username']
-BOT_TOKEN = os.environ['bot_token']
-API = os.environ['api']
-CHAT = os.environ['chat']
-DATABASE_NAME = os.environ['db_name']
-COLLECTION_NAME1 = os.environ['collection_name1']
-COLLECTION_NAME2 = os.environ['collection_name2']
-COLLECTION_NAME3 = os.environ['collection_name3']
-COLLECTION_NAME4 = os.environ['collection_name4']
-COLLECTION_NAME5 = os.environ['collection_name5']
-
-URL = os.environ['db_url']
-
-cluster = MongoClient(URL)
-db = cluster[DATABASE_NAME]
-participants = db[COLLECTION_NAME1]
-stats = db[COLLECTION_NAME2]
-composition = db[COLLECTION_NAME3]
-trackers = db[COLLECTION_NAME4]
-asset_statistics = db[COLLECTION_NAME5]
-
-#Index
-def add_index(index: Index):
-     stats.insert_one(
-            {"name": index.name , "full_name" : index.full_name ,"price": index.price, "date": index.date, "time": index.time})
-
-def get_latest_index(index_name):
-    # WARNING: This is hardcoded to get first element
-    latest_index = stats.find({"name": index_name}).sort("_id", DESCENDING)[0]
-
-    name = latest_index["name"]
-    full_name = latest_index["full_name"]
-    price = latest_index["price"]
-    date = latest_index["date"]
-    time = latest_index["time"]
-
-    index = Index(name, full_name, price, date, time)
-    return index
-
-def get_all_latest_index(all_index_names):
-    all_indexes = []
-    for index_name in all_index_names:
-        if (does_index_exist(index_name)):
-            index = get_latest_index(index_name)
-            all_indexes.append(index)
-            print(index.name)
-
-    return all_indexes
-
-
-def does_index_exist(index_name) -> bool:
-    index_stats = tuple(stats.find({"name": index_name}).clone())
-    if (len(index_stats) > 0):
-        return True
-    else:
-        return False
-
-
-#Tracker
-def add_index_tracker(index_name, operator, target_price, sender, date, time):
-    trackers.insert_one(
-            {"index_name": index_name, "operator": operator, "target_price": target_price, "username": sender, "date_created": date, "time_created": time, "deleted": False})
-
-def get_all_trackers():
-    result = trackers.find({"deleted": False})
-    all_trackers:Tracker = []
-
-    for tracker in result:
-        index_name = tracker["index_name"]
-        operator = tracker["operator"]
-        target_price = tracker["target_price"]
-        username = tracker["username"]
-        date = tracker["date_created"]
-        time = tracker["time_created"]
-
-        tracker = Tracker(index_name, operator, target_price, username, date, time )
-
-        all_trackers.append(tracker)
-    return all_trackers
-
-def delete_index_tracker(index_name, operator, target_price, sender):
-    trackers.update_one({"username": sender, "operator": operator, "index_name": index_name, "target_price": target_price}, {"$set": {"deleted": True}})
+from .database import *
+import controller
 
 #Participant
 def find_participant(sender) -> bool:
@@ -177,7 +86,7 @@ def get_participant_all_positions(sender):
     positions_index_names = list(get_participant(sender)['positions'])
     positions = []
     for index_name in positions_index_names:
-        index = get_latest_index(index_name)
+        index = controller.index_statistics.get_latest_index(index_name)
         position = get_participant_position_info(sender, index_name)
         positions.append(position)
 
@@ -229,25 +138,3 @@ def get_participant_positions(sender):
 
 def get_participant_username(sender):
     return get_participant(sender)['username']
-
-#Composition
-
-def get_index_composition(index_name):
-    index_composition = list(composition.find({"name": index_name})[0]['composition'])
-    print(str(index_composition[0]))
-    return index_composition
-
-def does_index_composition_exist(index_name):
-    index = list(composition.find({"name": index_name}).clone())
-    print(index)
-    if (len(index) > 0):
-        return True
-    else:
-        return False
-
-# Asset_statistic
-def add_asset_statistic(asset: Type[Asset]):
-    if type(asset) == Sneaker:
-        asset_statistics.insert_one({"name": asset.name , "type": asset.type, "sku": asset.sku , "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
-    else:
-        asset_statistics.insert_one({"name": asset.name , "type": asset.type,  "price": asset.price, "date": asset.date, "time": asset.time, "used_by": asset.used_by})
