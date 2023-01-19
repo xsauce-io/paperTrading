@@ -1,7 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
-import controller
+import controller.controller as controller
 from models import *
 from helpers.utils import *
 

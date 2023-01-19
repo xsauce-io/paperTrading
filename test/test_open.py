@@ -1,5 +1,5 @@
 import unittest
-from controller import *
+from controller.controller import *
 import processes.open as open
 from models import *
 

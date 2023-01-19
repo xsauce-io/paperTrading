@@ -1,4 +1,4 @@
-import controller
+import controller.controller as controller
 from tabulate import tabulate
 from processes.portfolio import determine_global_portfolio, determine_portfolio_by_index
 from PIL import Image, ImageDraw, ImageFont

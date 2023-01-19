@@ -1,5 +1,5 @@
 import unittest
-from controller import *
+from controller.controller import *
 import processes.portfolio as portfolio
 from models import *
 
