@@ -4,7 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 import requests
-from datetime import datetime
+from datetime import datetime, time
 from pymongo import MongoClient
 from models import *
 import processes.play
@@ -320,8 +320,8 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
-    job_queue.run_daily(price_update_all, datetime.time(12,0,0))
-    job_queue.run_daily(leaderboard_update, datetime.time(12,0,0))
+    job_queue.run_daily(price_update_all, time(12,0,0))
+    job_queue.run_daily(leaderboard_update, time(12,0,0))
     # job_queue.run_repeating(price_tracker_notify, interval=86400, first=25)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
