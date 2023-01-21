@@ -320,8 +320,8 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
-    job_queue.run_repeating(price_update_all, interval=86400, first=0.0)
-    job_queue.run_repeating(leaderboard_update, interval=86400, first=0.0)
+    job_queue.run_daily(price_update_all, datetime.time(12,0,0))
+    job_queue.run_daily(leaderboard_update, datetime.time(12,0,0))
     # job_queue.run_repeating(price_tracker_notify, interval=86400, first=25)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
