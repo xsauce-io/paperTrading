@@ -45,7 +45,7 @@ def portfolio(sender, message):
     return portfolio_info
 
 
-def determine_global_portfolio(portfolios: list[Portfolio], participant: Participant):
+def determine_global_portfolio(portfolios: "list[Portfolio]", participant: Participant):
     long = 0
     short = 0
     for portfolio in portfolios:
