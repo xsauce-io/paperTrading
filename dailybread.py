@@ -1,38 +1,18 @@
 from telegram import *
 from telegram.ext import *
-import requests
 import os
 from dotenv import load_dotenv
-import requests
-from datetime import datetime, time
-from pymongo import MongoClient
+from datetime import time
 from models import *
-import processes.play
-import processes.info
-import processes.portfolio
-import processes.open
-import processes.close
-import processes.track
-import processes.manage_index
-import processes.composition
-import processes.leaderboard
-import processes.manage_leaderboard
-from indexMaker.index_maker import *
-from indexMaker.constituents_store import *
-from telegram.ext.dispatcher import run_async
+import processes
+from indexMaker import *
 
 load_dotenv()
 
-PASSWORD = os.environ['password']
-USERNAME = os.environ['username']
 BOT_TOKEN = os.environ['bot_token']
 API = os.environ['api']
 CHAT = os.environ['chat']
-DATABASE_NAME = os.environ['db_name']
-COLLECTION_NAME1 = os.environ['collection_name1']
-COLLECTION_NAME2 = os.environ['collection_name2']
-URL = os.environ['db_url']
-cluster = MongoClient(URL)
+
 
 def price_update_all(context):
     try:
@@ -321,9 +301,15 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
+
     job_queue.run_daily(price_update_all,time(16,11,0))
-    job_queue.run_daily(leaderboard_update, time(16,11,0))
-    job_queue.run_daily(price_tracker_notify, time(16,11,0))
+    job_queue.run_daily(leaderboard_update, time(16,11,10))
+    job_queue.run_daily(price_tracker_notify, time(16,11,25))
+
+    # job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    # job_queue.run_repeating(leaderboard_update, interval=86400, first=1)
+    # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
+
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))

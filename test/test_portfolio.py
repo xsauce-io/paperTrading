@@ -1,6 +1,5 @@
 import unittest
-from controller import *
-import processes.portfolio as portfolio
+from processes import *
 from models import *
 
 class TestPortfolio(unittest.TestCase):

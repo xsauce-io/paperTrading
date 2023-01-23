@@ -1,6 +1,5 @@
 import unittest
-from controller import *
-import processes.open as open
+from processes import *
 from models import *
 
 class TestOpen(unittest.TestCase):

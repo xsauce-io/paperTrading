@@ -12,7 +12,7 @@ def leaderboard(sender, message):
 
     leaderboard_name = extract_leaderboard_message(parsed_message)
 
-    if controller.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
+    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 
     try:

@@ -1,6 +1,5 @@
 import unittest
-from controller import *
-import processes.close as close
+from processes import *
 from models import *
 
 

@@ -1,8 +1,5 @@
 import unittest
-from controller import *
-import processes.open as open
-import processes.close as close
-import processes.portfolio as portfolio
+from processes import *
 from models import *
 
 class TestOpenClose(unittest.TestCase):

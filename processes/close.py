@@ -1,10 +1,7 @@
 import controller
 from models import *
 import math
-import re
-from datetime import datetime
-from helpers.market_math import *
-from helpers.utils import *
+from helpers import *
 
 
 def close(sender, message):
@@ -17,18 +14,18 @@ def close(sender, message):
 
     index_name, reduction, direction = extract_close_message(parsed_message)
 
-    if controller.does_index_exist(index_name) == False:
+    if controller.index_statistics.does_index_exist(index_name) == False:
        raise UserInputException("Index {} Not Found".format(index_name))
-    if controller.does_participant_have_position_for_index(sender, index_name) == False:
+    if controller.participants.does_participant_have_position_for_index(sender, index_name) == False:
         raise UserInputException('You have no positions open')
 
-    current_index=controller.get_latest_index(index_name)
-    current_position_info = controller.get_participant_position_info(sender, index_name)
-    current_participant_info = controller.get_participant_info(sender)
+    current_index=controller.index_statistics.get_latest_index(index_name)
+    current_position_info = controller.participants.get_participant_position_info(sender, index_name)
+    current_participant_info = controller.participants.get_participant_info(sender)
 
     updated_position, updated_participant, new_trade = determine_closed_position_update(reduction, direction, current_position_info, current_participant_info, current_index)
-    updated_trades = controller.add_trade_to_participant_trades(sender, new_trade)
-    controller.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
+    updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
+    controller.participants.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
 
     return '{} position has been closed!'.format(new_trade.direction)
 

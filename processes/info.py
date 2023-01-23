@@ -12,16 +12,16 @@ def get_index_latest_info(message):
 
     index_name = extract_info_message(parsed_message)
 
-    if controller.does_index_exist(index_name) == False:
+    if controller.index_statistics.does_index_exist(index_name) == False:
        raise UserInputException("Index Not Found")
 
-    index = controller.get_latest_index(index_name)
+    index = controller.index_statistics.get_latest_index(index_name)
     index = format_index_price(index)
     return index
 
 def get_all_latest_index_price(index_names: list):
 
-    indexes = controller.get_all_latest_index(index_names)
+    indexes = controller.index_statistics.get_all_latest_index(index_names)
     formatted_indexes = []
 
     for index in indexes:

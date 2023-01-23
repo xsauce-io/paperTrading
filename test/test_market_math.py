@@ -1,6 +1,6 @@
 import unittest
-from controller import *
-from helpers.market_math import *
+from processes import *
+from helpers import *
 from models import *
 
 class TestMarketMath(unittest.TestCase):

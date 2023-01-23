@@ -1,6 +1,6 @@
 import unittest
-from controller import *
-import helpers.utils as utils
+from processes import *
+from helpers import *
 from models import *
 
 class TestUtils(unittest.TestCase):
