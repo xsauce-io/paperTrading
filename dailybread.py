@@ -301,9 +301,15 @@ def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
     job_queue = updater.job_queue
+
     job_queue.run_daily(price_update_all,time(16,11,0))
-    job_queue.run_daily(leaderboard_update, time(16,11,0))
-    job_queue.run_daily(price_tracker_notify, time(16,11,0))
+    job_queue.run_daily(leaderboard_update, time(16,11,10))
+    job_queue.run_daily(price_tracker_notify, time(16,11,25))
+
+    # job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    # job_queue.run_repeating(leaderboard_update, interval=86400, first=1)
+    # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
+
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
