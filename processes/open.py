@@ -28,6 +28,13 @@ def open(sender, message):
     updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
     controller.participants.update_participant_position(sender, index_name ,updated_position, updated_participant, updated_trades)
 
+    #Reward Handling
+    date, time = get_current_date_time()
+    current_asaux_balance = controller.participants.get_participant_asaux_balance(sender)
+    updated_asaux_balance = current_asaux_balance + 100
+    asaux_transaction = Transaction(100, "xsauce", sender, RewardReason.OPENED_POSITiON, date, time)
+    controller.participants.add_asaux_to_participant(sender, updated_asaux_balance, asaux_transaction )
+
     return '{} position has been opened!'.format(new_trade.direction)
 
 
