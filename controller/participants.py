@@ -42,9 +42,16 @@ def add_trade_to_participant_trades(sender, trade: TradeDetails):
                 "index_name": trade.index_name,"date": trade.date, "time": trade.time})
     return trades
 
+def add_asaux_to_participant(sender, balance, transaction: Transaction):
+    transactions = list(get_participant_asaux_transactions(sender))
+    transactions.append({"amount": transaction.amount, "from": transaction._from, "to": transaction._to,
+                "reason": transaction.reason ,"date": transaction.date, "time": transaction.time})
+
+    participants.update_one({"username": sender}, {"$set" :{"aSAUX": {"balance": balance, "transactions": transactions}}})
+    return
+
 def get_participant(sender):
     return participants.find({"username": sender})[0]
-
 
 def get_participant_index_position_info(sender):
 
@@ -67,7 +74,6 @@ def get_participant_info(sender):
 
     participant = Participant(username, funds, number_of_trades)
     return participant
-
 
 def get_all_participants_names():
     all_participants= list(participants.find())
@@ -109,6 +115,9 @@ def get_participant_position_info(sender, index_name):
 def get_participant_asaux_balance(sender):
     return get_participant(sender)['aSAUX']['balance']
 
+def get_participant_asaux_transactions(sender):
+    return get_participant(sender)['aSAUX']['transactions']
+
 def get_participant_long_amount_spent(sender, index_name):
     return get_participant(sender)['positions'][index_name]['Long']['buyIn']['amount_spent']
 
@@ -147,6 +156,3 @@ def get_participant_username(sender):
 
 def add_asaux_to_participants():
     participants.update_many({}, {"$set" :{"aSAUX": {"balance": 0, "transactions": []}}},upsert=False)
-
-
-#Transaction will include : amount, direction, reason, date and time,

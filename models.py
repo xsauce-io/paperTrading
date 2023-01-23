@@ -1,3 +1,5 @@
+from enum import Enum
+
 class Index:
     def __init__(self,name, full_name, price, date, time):
         self.name = name
@@ -141,6 +143,19 @@ class Sneaker(Asset):
     def __init__(self, name, type, sku, price, date, time, used_by):
         Asset.__init__(self, name, type,  price, date, time, used_by)
         self.sku = sku
+
+class RewardReason:
+        OPENED_POSITiON = "opened_position"
+
+class Transaction:
+    def __init__(self, amount, _from, _to, reason: RewardReason, date , time):
+        self.amount = amount
+        self._from = _from
+        self._to = _to
+        self.reason = reason
+        self.date = date
+        self.time = time
+
 
 
 class UserInputException(Exception):
