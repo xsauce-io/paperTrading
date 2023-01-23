@@ -1,4 +1,5 @@
 from . import (play,
+               info,
     portfolio,
     open,
     close,
