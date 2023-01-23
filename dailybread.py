@@ -125,7 +125,6 @@ def index_composition(update, context):
 
 def play(update, context):
     sender = update.message.from_user.username
-    id = update.message.from_user.id
     try:
         reply = processes.play.play(sender)
         update.message.reply_text(reply)
@@ -209,8 +208,8 @@ def open_position(update, context):
     message = update.message.text
 
     try:
-        result = processes.open.open(sender, message)
-        update.message.reply_text(result)
+        reply = processes.open.open(sender, message)
+        update.message.reply_text(reply)
     except UserInputException as error:
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
@@ -263,8 +262,8 @@ def leaderboard(update, context):
     sender = update.message.from_user.username
     message = update.message.text
     try:
-        reply = processes.leaderboard.leaderboard(sender, message)
-        context.bot.send_photo(CHAT,  photo=open(reply, "rb"))
+        img_url = processes.leaderboard.leaderboard(sender, message)
+        context.bot.send_photo(CHAT,  photo=open(img_url, "rb"))
 
     except UserInputException as error:
         print('Cause UserInputException: {}'.format(error))
@@ -295,6 +294,19 @@ def help(update, context):
         "/website -> Learn about Xsauce and cultural assets"
     )
 
+def asaux(update, context):
+    sender = update.message.from_user.username
+    message = update.message.text
+    try:
+        balance = processes.asaux.asaux(sender, message)
+        update.message.reply_text("Hey @{}, You've earned a total of {} aSAUX".format(sender, balance))
+    except UserInputException as error:
+        print('Cause {}'.format(error))
+        update.message.reply_text('{}'.format(error))
+    except Exception as error:
+        print('Cause {}'.format(error))
+
+
 def website(update, context):
     update.message.reply_text(
         "Check out our website to see what Xsauce is all about: https://xsauce.io/ ")
@@ -316,6 +328,7 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
+    dispatcher.add_handler(CommandHandler('asaux', asaux))
     dispatcher.add_handler(CommandHandler('leaderboard', leaderboard, run_async=True))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))

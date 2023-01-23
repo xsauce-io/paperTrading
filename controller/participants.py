@@ -106,6 +106,9 @@ def get_participant_position_info(sender, index_name):
 
     return participant_position_info
 
+def get_participant_asaux_balance(sender):
+    return get_participant(sender)['aSAUX']['balance']
+
 def get_participant_long_amount_spent(sender, index_name):
     return get_participant(sender)['positions'][index_name]['Long']['buyIn']['amount_spent']
 
