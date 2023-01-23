@@ -29,7 +29,7 @@ def calculate_index_price(constituents: list, index_name) -> float:
 
             date,time = get_current_date_time()
 
-            asset = Sneaker(name, "skeaker", sku, estimates_market_value, date, time, index_name)
+            asset = Sneaker(name, "sneaker", sku, estimates_market_value, date, time, index_name)
             controller.asset_statistics.add_asset_statistic(asset)
 
         return index_price
