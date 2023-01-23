@@ -234,7 +234,7 @@ def track(update, context):
     message = update.message.text
     try:
         result = processes.track.track(sender, message)
-        reply = "Ok @{}, you will be notified once when the price for index *{}* is *{}* than *{}*.".format(result.sender, result.index_name, result.operator, result.target_price)
+        reply = "Ok @{}, you will be notified once, when the price for index *{}* is *{}* than *{}*.".format(result.sender, result.index_name, result.operator, result.target_price)
         update.message.reply_text(reply, parse_mode = "Markdown")
     except UserInputException as error:
         print('Cause {}'.format(error))
