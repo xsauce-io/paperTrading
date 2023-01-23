@@ -271,7 +271,7 @@ def leaderboard(update, context):
         update.message.reply_text('{}'.format(error))
     except FileNotFoundError as error:
         print('Cause FileNotFoundException: {}'.format(error))
-        update.message.reply_text('Ooops our bad...There is currently no leaderboard available. Try again later.')
+        update.message.reply_text('Damn our bad...There is currently no leaderboard available. Try again later.')
     except Exception as error:
         print('Cause :{}'.format(error))
 
