@@ -3,7 +3,7 @@ from .database import *
 import controller
 
 #Participant
-def find_participant(sender) -> bool:
+def does_participant_exist(sender) -> bool:
     participant = tuple(participants.find({"username": sender}).clone())
     if (len(participant) > 0):
         return True

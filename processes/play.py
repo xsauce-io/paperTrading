@@ -7,7 +7,7 @@ from models import *
 def play(sender):
     if (sender == None):
         return("You cannot play without a username. Please add a username to your telegram account")
-    if find_participant(sender):
+    if does_participant_exist(sender):
         return("Nice try! No such thing as free")
     else:
         participant = create_participant(sender)
@@ -16,8 +16,8 @@ def play(sender):
         return("Welcome {},\nThis is v0 of Daily Bread. Your account has been funded with $10,000".format(participant.name))
 
 
-def find_participant(sender):
-    return controller.participants.find_participant(sender)
+def does_participant_exist(sender):
+    return controller.participants.does_participant_exist(sender)
 
 
 def create_participant(sender):

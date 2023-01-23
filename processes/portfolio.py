@@ -7,6 +7,10 @@ def portfolio(sender, message):
 
     parsed_message = split_message(message)
 
+    if controller.participants.does_participant_exist(sender) == False:
+        raise UserInputException('You have no account yet. To start playing type /play')
+
+
     if is_portfolio_message_format_valid(parsed_message) == False:
         raise UserInputException('Please enter valid command. eg: /portfolio or /portfolio xci')
 
