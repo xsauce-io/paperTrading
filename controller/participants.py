@@ -138,3 +138,12 @@ def get_participant_positions(sender):
 
 def get_participant_username(sender):
     return get_participant(sender)['username']
+
+
+#Schema Update : Add aSAUX
+
+def add_asaux_to_participants():
+    participants.update_many({}, {"$set" :{"aSAUX": {"balance": 0, "transactions": []}}},upsert=False)
+
+
+#Transaction will include : amount, direction, reason, date and time,
