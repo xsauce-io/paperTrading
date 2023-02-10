@@ -311,8 +311,8 @@ def main():
 
     job_queue.run_once(leaderboard_update, when=1)
     #Warning the following are purely for rapid testing
-    job_queue.run_repeating(price_update_all, interval=86400, first=1)
-    job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
+    # job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
