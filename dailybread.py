@@ -30,23 +30,23 @@ def price_update_all(context):
         replies.append("Sneaker Benchmark S&P50 is ${}".format(round(sp50_index_price, 2)))
         processes.manage_index.add_index_statistics("sp50" , "Sneaker S&P50", sp50_index_price)
 
-        jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS)
+        jordan1_index_price = calculate_index_price(JORDAN1_INDEX_CONSTITUENTS, "xj1")
         replies.append("Jordan 1 is ${}".format(round(jordan1_index_price, 2)))
         processes.manage_index.add_index_statistics("xj1" , "Jordan 1", jordan1_index_price)
 
-        jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS)
+        jordan3_index_price = calculate_index_price(JORDAN3_INDEX_CONSTITUENTS, "xj3")
         replies.append("Jordan 3 is ${}".format(round(jordan3_index_price, 2)))
         processes.manage_index.add_index_statistics("xj3" , "Jordan 3", jordan3_index_price)
 
-        jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS)
+        jordan4_index_price = calculate_index_price(JORDAN4_INDEX_CONSTITUENTS, "xj4")
         replies.append("Jordan 4 is ${}".format(round(jordan4_index_price, 2)))
         processes.manage_index.add_index_statistics("xj4" , "Jordan 4", jordan4_index_price)
 
-        # yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS)
+        # yeezy_boost_350_v2_index_price = calculate_index_price(YEEZY_BOOST_350_V2_INDEX_CONSTITUENTS, "yz350")
         # replies.append("Yeezy Boost 350 v2 is ${}".format(round(yeezy_boost_350_v2_index_price, 2)))
         # processes.manage_index.add_index_statistics("yz350" , "Yeezy Boost 350 v2", yeezy_boost_350_v2_index_price)
 
-        # yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS)
+        # yeezy_boost_700_series_index_price = calculate_index_price(YEEZY_BOOST_700_SERIES_INDEX_CONSTITUENTS, "yz700")
         # replies.append("Yeezy Boost 700 Series is ${}".format(round(yeezy_boost_700_series_index_price, 2)))
         # processes.manage_index.add_index_statistics("yz700" , "Yeezy Boost 700 Series", yeezy_boost_700_series_index_price)
 
@@ -259,7 +259,7 @@ def list_index(update, context):
         print('Cause {}'.format(error))
         update.message.reply_text('{}'.format(error))
 
-def leaderboard(update, context):
+def leaderboard(update, context: CallbackContext):
     sender = update.message.from_user.username
     message = update.message.text
     try:
@@ -311,14 +311,13 @@ def main():
 
     job_queue.run_once(leaderboard_update, when=1)
     #Warning the following are purely for rapid testing
-    # job_queue.run_repeating(price_update_all, interval=86400, first=1)
-    # job_queue.run_repeating(leaderboard_update, interval=86400, first=1)
-    # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
+    job_queue.run_repeating(price_update_all, interval=86400, first=1)
+    job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('close', close))
-    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard, run_async=True))
+    dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
     dispatcher.add_handler(CommandHandler('portfolio', portfolio))
     dispatcher.add_handler(CommandHandler('play', play))
     dispatcher.add_handler(CommandHandler('list', list_index))
