@@ -15,6 +15,8 @@ def update_leaderboard(leaderboard_name):
         participants_leaderboard_items = []
         table_image_name = ""
         all_participants_names = controller.participants.get_all_participants_names()
+        background = "#0C1615"
+        text= "#ACFF00"
 
         if leaderboard_name == "pnl":
             for participant_name in all_participants_names:
@@ -24,7 +26,7 @@ def update_leaderboard(leaderboard_name):
                 participants_leaderboard_items.append(participant_leaderboard_item_pnl)
 
             pnl_leaderboard = calculate_top5_leaderboard(participants_leaderboard_items)
-            table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"])
+            table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"],  "Global PNL Leaderboard")
             table_image_name = "images/global_pnl_leaderboard.png"
 
         elif leaderboard_name == "comp":
@@ -37,8 +39,11 @@ def update_leaderboard(leaderboard_name):
                     participants_leaderboard_items.append(participant_leaderboard_item_pnl)
 
             pnl_leaderboard = calculate_competition_leaderboard(participants_leaderboard_items)
-            table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"])
+            table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"],  "Competition Leaderboard")
             table_image_name = "images/competition_pnl_leaderboard.png"
+            background = "#E7E8DE"
+            text= "#04020C"
+
 
         else:
             #@TODO check participant has position
@@ -60,11 +65,11 @@ def update_leaderboard(leaderboard_name):
                 participants_leaderboard_items.append(participant_leaderboard_item_index_pnl)
 
             pnl_by_index_leaderboard = calculate_top5_leaderboard(participants_leaderboard_items)
-            table = create_table_as_string(pnl_by_index_leaderboard , ["rank", "username", f"{leaderboard_name} pnl"])
+            table = create_table_as_string(pnl_by_index_leaderboard , ["rank", "username", f"{leaderboard_name} pnl"], f"{leaderboard_name} PNL Leaderboard")
             table_image_name = "images/{}_pnl_leaderboard.png".format(leaderboard_name)
 
 
-        table_image = create_image_from_table(table, (250, 160))
+        table_image = create_image_from_table(table, (250, 160), text, background )
         table_image.save(table_image_name, format="PNG",  dpi=(300, 300),  quality=95)
 
 
@@ -123,7 +128,7 @@ def calculate_global_portfolio(participant_name):
     return global_portfolio
 
 
-def create_table_as_string(leaderboard: list, headers: list) -> str:
+def create_table_as_string(leaderboard: list, headers: list, title: str) -> str:
     try :
         data = []
         count= 1
@@ -135,22 +140,22 @@ def create_table_as_string(leaderboard: list, headers: list) -> str:
             data.append(leaderboard_item)
             count += 1
 
-        table_to_string = tabulate(data, headers, tablefmt='orgtbl')
+        table_to_string = title + "\n\n" + tabulate(data, headers, tablefmt='orgtbl')
 
     except Exception as error:
          print (error)
          print("format_leaderboard")
     return table_to_string
 
-def create_image_from_table(table_as_string: str, size):
+def create_image_from_table(table_as_string: str, size, text: str, background:str):
     image = ""
     try:
         W, H = size
         font = ImageFont.load_default()
-        image = Image.new("RGB", size=size, color="#0C1615")
+        image = Image.new("RGB", size=size, color=background)
         draw = ImageDraw.Draw(image)
         _, _, w, h = draw.textbbox((0, 0), table_as_string, font=font)
-        draw.text(((W-w)/2, (H-h)/2), table_as_string, font=font, fill="#ACFF00", spacing=5)
+        draw.text(((W-w)/2, (H-h)/2), table_as_string, font=font, fill=text, spacing=5)
 
     except Exception as error:
         print (f"Cause create image error: {error}")
