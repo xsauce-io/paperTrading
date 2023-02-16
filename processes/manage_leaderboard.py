@@ -7,7 +7,7 @@ from helpers.utils import *
 
 def update_leaderboard(leaderboard_name):
 
-    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
+    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl" and leaderboard_name != "comp": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 
     try:
@@ -26,6 +26,19 @@ def update_leaderboard(leaderboard_name):
             pnl_leaderboard = calculate_top5_leaderboard(participants_leaderboard_items)
             table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"])
             table_image_name = "images/global_pnl_leaderboard.png"
+
+        elif leaderboard_name == "comp":
+            competition_participant_names = ["el_malchemist", "idiss1", "zmill28", "Herman TFO", "John TFO", "Lex N", "SammyT", "OxTariq", "FC", "Blacc Catt", "Carl", "Atwonbrown", "Maxi Max", "fef feww"]
+
+            for participant_name in competition_participant_names :
+                if controller.participants.does_participant_exist(participant_name):
+                    global_portfolio = calculate_global_portfolio(participant_name)
+                    participant_leaderboard_item_pnl = {"username": participant_name ,"value": global_portfolio.pnl }
+                    participants_leaderboard_items.append(participant_leaderboard_item_pnl)
+
+            pnl_leaderboard = calculate_competition_leaderboard(participants_leaderboard_items)
+            table = create_table_as_string(pnl_leaderboard , ["rank", "username", "pnl"])
+            table_image_name = "images/competition_pnl_leaderboard.png"
 
         else:
             #@TODO check participant has position
@@ -74,9 +87,22 @@ def calculate_top5_leaderboard(leaderboard_items: list):
                 leaderboard.append(item)
                 leaderboard = sorted(leaderboard, key=lambda d: d['value'])
 
-    leaderboard_sorted_top3 = sorted(leaderboard, key=lambda d: d['value'], reverse=True)
+    leaderboard_sorted_top5 = sorted(leaderboard, key=lambda d: d['value'], reverse=True)
 
-    return leaderboard_sorted_top3
+    return leaderboard_sorted_top5
+
+
+def calculate_competition_leaderboard(leaderboard_items: list):
+    leaderboard = []
+
+    for item in leaderboard_items:
+        leaderboard.append(item)
+        leaderboard = sorted(leaderboard, key=lambda d: d['value'])
+        print (leaderboard)
+
+    leaderboard_sorted = sorted(leaderboard, key=lambda d: d['value'], reverse=True)
+
+    return leaderboard_sorted
 
 
 def calculate_global_portfolio(participant_name):

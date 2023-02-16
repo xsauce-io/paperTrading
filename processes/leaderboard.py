@@ -12,12 +12,15 @@ def leaderboard(sender, message):
 
     leaderboard_name = extract_leaderboard_message(parsed_message)
 
-    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl": #TODO: Currently checking the index collection not a leaderboard collection
+    if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl" and leaderboard_name != "comp": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
 
     try:
         if leaderboard_name == "pnl":
             table_image_name = "images/global_pnl_leaderboard.png"
+
+        elif leaderboard_name == "comp":
+            table_image_name = "images/competition_pnl_leaderboard.png"
         else:
             table_image_name = "images/{}_pnl_leaderboard.png".format(leaderboard_name)
 

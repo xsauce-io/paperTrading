@@ -62,6 +62,7 @@ def price_update_all(context):
 def leaderboard_update(context):
     try:
         processes.manage_leaderboard.update_leaderboard("pnl")
+        processes.manage_leaderboard.update_leaderboard("comp")
         processes.manage_leaderboard.update_leaderboard("xci")
         processes.manage_leaderboard.update_leaderboard("sp50")
         processes.manage_leaderboard.update_leaderboard("hype6")
