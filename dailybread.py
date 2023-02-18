@@ -6,6 +6,7 @@ from datetime import time
 from models import *
 import processes
 from indexMaker import *
+import pytz
 
 load_dotenv()
 
@@ -300,6 +301,10 @@ def website(update, context):
     update.message.reply_text(
         "Check out our website to see what Xsauce is all about: https://xsauce.io/ ")
 
+def competition_announcement(context):
+    context.bot.send_message(CHAT,
+                             text="Competition Starting Message Test")
+
 
 def main():
     updater = Updater(
@@ -311,6 +316,8 @@ def main():
     job_queue.run_daily(price_tracker_notify, time(16,11,25))
 
     job_queue.run_once(leaderboard_update, when=1)
+
+    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 18, 16, 10, 00, tzinfo=pytz.UTC))
     #Warning the following are purely for rapid testing
     #job_queue.run_repeating(price_update_all, interval=86400, first=1)
     # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
