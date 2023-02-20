@@ -290,9 +290,10 @@ def help(update, context):
         "/price -> Show current price of all indexes"
         "/comp index_name -> Show the index composition\n"
         "/portfolio -> Show your current portfolio holdings\n"
-        "/portfolio index_name-> Show your current portfolio holdings for given index\n"
+        "/portfolio index_name -> Show your current portfolio holdings for given index\n"
         "/leaderboard pnl -> Show the current leaderboard \n"
-        "/leaderboard index_name-> Show the current leaderboard for given index\n"
+        "/leaderboard index_name -> Show the current leaderboard for given index\n"
+        "/competition -> Show competition information"
         "/help -> Shows this message\n"
         "/website -> Learn about Xsauce and cultural assets"
     )
@@ -303,7 +304,35 @@ def website(update, context):
 
 def competition_announcement(context):
     context.bot.send_message(CHAT,
-                             text="Competition Starting Message Test")
+                             text="The time is here! The Xsauce trading competition has officially begun! 1st place grabs $50 and bragging rights for the year.\n\n FYI - Your old trading balance will be saved and you will start with fresh funds, good luck! \n\n"
+                             "Winner Eligibility:\n"
+            "Must make at least 1 trade\n"
+            "You have a web3 address to receive the prize\n"
+            "Invite at least 1 friend to the Xchange beta \n"
+            "**Tiebreak - fewest trades then time of first trade.", parse_mode='Markdown')
+
+
+def competition_announcement_reminder(context):
+    context.bot.send_message(CHAT,
+                             text="Just a reminder that the trading competition is live! \n\n"
+                            "Overview:\n"
+                            "Prize - $50 for 1st place \n"
+                            "Duration - Feb 24 - March 24 \n"
+                            "**For updates on the leaderboard, use the command:  /leaderboard comp", parse_mode="Markdown")
+
+def competition_information(update, context):
+    update.message.reply_text(
+        "The trading competition is live. \n\n"
+        "Overview: \n"
+        "Prize - $50 for 1st place \n"
+        "Duration - Feb 24 - March 24 \n"
+        "**For updates on the leaderboard, use the command  /leaderboard comp \n\n"
+        "Winner Eligibility: \n"
+        "Must make at least 1 trade \n"
+        "You have a web3 address to receive the prize \n"
+        "Invite at least 1 friend to the Xchange beta \n"
+        "**Tiebreak - fewest trades then time of first trade.\n"
+        )
 
 
 def main():
@@ -317,7 +346,9 @@ def main():
 
     job_queue.run_once(leaderboard_update, when=1)
 
-    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 18, 16, 10, 00, tzinfo=pytz.UTC))
+    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 24, 5, 00, 00, tzinfo=pytz.UTC))
+    job_queue.run_once(competition_announcement_reminder, when=datetime(2023, 2, 24, 15, 00, 00, tzinfo=pytz.UTC))
+
     #Warning the following are purely for rapid testing
     #job_queue.run_repeating(price_update_all, interval=86400, first=1)
     # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
@@ -335,6 +366,7 @@ def main():
     dispatcher.add_handler(CommandHandler('price', all_index_price))
     dispatcher.add_handler(CommandHandler('track', track))
     dispatcher.add_handler(CommandHandler('comp', index_composition))
+    dispatcher.add_handler(CommandHandler('competition', competition_information))
     dispatcher.add_handler(CommandHandler('instructions', instructions))
     dispatcher.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
