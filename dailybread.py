@@ -350,8 +350,8 @@ def main():
     job_queue.run_once(competition_announcement_reminder, when=datetime(2023, 2, 24, 15, 00, 00, tzinfo=pytz.UTC))
 
     #Warning the following are purely for rapid testing
-    #job_queue.run_repeating(price_update_all, interval=86400, first=1)
-    # job_queue.run_repeating(price_tracker_notify, interval=86400, first=1)
+    # job_queue.run_once(price_update_all, when=1)
+    # job_queue.run_once(price_tracker_notify, when=1)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
