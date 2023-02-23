@@ -30,7 +30,7 @@ def update_leaderboard(leaderboard_name):
             table_image_name = "images/global_pnl_leaderboard.png"
 
         elif leaderboard_name == "comp":
-            competition_participant_names = ["el_malchemist", "idiss1", "zmill28", "Herman TFO", "John TFO", "Lex N", "SammyT", "OxTariq", "FC", "Blacc Catt", "Carl", "Atwonbrown", "Maxi Max", "fef feww"]
+            competition_participant_names = ["el_malchemist", "idiss1", "zmill28", "wenherman", "Mickypogi", "AlexNwawulu", "DrealSammyT", "veTariq", "cisccc", "Blacc_Catt", "Jackabat", "atownbrown", "maxi465", "ddd465"]
 
             for participant_name in competition_participant_names :
                 if controller.participants.does_participant_exist(participant_name):
