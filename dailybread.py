@@ -346,8 +346,8 @@ def main():
 
     job_queue.run_once(leaderboard_update, when=1)
 
-    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 24, 5, 00, 00, tzinfo=pytz.UTC))
-    job_queue.run_once(competition_announcement_reminder, when=datetime(2023, 2, 24, 15, 00, 00, tzinfo=pytz.UTC))
+    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 24, 16, 00, 00, tzinfo=pytz.UTC))
+    job_queue.run_once(competition_announcement_reminder, when=datetime(2023, 2, 24, 18, 00, 00, tzinfo=pytz.UTC))
 
     #Warning the following are purely for rapid testing
     # job_queue.run_once(price_update_all, when=1)
