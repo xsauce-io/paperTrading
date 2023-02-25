@@ -15,6 +15,8 @@ def get_index_composition(message):
 
     if controller.index_statistics.does_index_exist(index_name) == False:
        raise UserInputException("Index Not Found")
+    if index_name == "xj1" or index_name == "xj3" or index_name =="xj4":
+       raise UserInputException("Oops index is not available yet. Stay tuned.")
     if controller.index_composition.does_index_composition_exist(index_name) == False:
        raise UserInputException("Composition Not Found")
 

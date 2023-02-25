@@ -100,7 +100,7 @@ def index_price(update, context):
 
 def all_index_price(update, context):
     try:
-        all_index_info = processes.info.get_all_latest_index_price(["xci", "hype6", "sp50", "xj1", "xj3", "xj4", "yz350", "yz700"])
+        all_index_info = processes.info.get_all_latest_index_price(["xci", "hype6", "sp50", "yz350", "yz700"]) #, "xj1", "xj3", "xj4",
         reply = ''
         for index in all_index_info:
             reply += "- {} is ${}. \nUpdated on {} at {} UTC \n\n".format(
@@ -346,8 +346,6 @@ def main():
 
     job_queue.run_once(leaderboard_update, when=1)
 
-    job_queue.run_once(competition_announcement, when=datetime(2023, 2, 24, 16, 00, 00, tzinfo=pytz.UTC))
-    job_queue.run_once(competition_announcement_reminder, when=datetime(2023, 2, 24, 18, 00, 00, tzinfo=pytz.UTC))
 
     #Warning the following are purely for rapid testing
     # job_queue.run_once(price_update_all, when=1)

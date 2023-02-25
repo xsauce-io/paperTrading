@@ -15,6 +15,8 @@ def open(sender, message):
 
     if controller.index_statistics.does_index_exist(index_name) == False:
        raise UserInputException("Index {} Not Found".format(index_name))
+    if index_name == "xj1" or index_name == "xj3" or index_name =="xj4":
+       raise UserInputException("Oops index is not available yet. Stay tuned.")
 
     if controller.participants.does_participant_have_position_for_index(sender, index_name) == False:
         controller.participants.add_index_to_participant_positions(sender, index_name)

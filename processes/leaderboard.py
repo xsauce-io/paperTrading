@@ -10,10 +10,13 @@ def leaderboard(sender, message):
     if is_leaderboard_message_input_valid(parsed_message) == False:
         raise UserInputException('Please enter valid command.\neg: /leaderboard xci')
 
+
     leaderboard_name = extract_leaderboard_message(parsed_message)
 
     if controller.index_statistics.does_index_exist(leaderboard_name) == False and leaderboard_name != "pnl" and leaderboard_name != "comp": #TODO: Currently checking the index collection not a leaderboard collection
        raise UserInputException("Leaderboard Not Found")
+    if leaderboard_name == "xj1" or leaderboard_name == "xj3" or leaderboard_name =="xj4":
+       raise UserInputException("Oops index is not available yet. Stay tuned.")
 
     try:
         if leaderboard_name == "pnl":
