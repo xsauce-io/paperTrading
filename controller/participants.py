@@ -36,11 +36,11 @@ def add_index_to_participant_positions(sender, index_name):
 
     return
 
-def add_trade_to_participant_trades(sender, trade: TradeDetails):
-    trades = list(get_participant_trades_details(sender))
-    trades.append({"action": trade.action, "direction": trade.direction, "amount": trade.amount, "index_price": trade.index_price,
-                "index_name": trade.index_name,"date": trade.date, "time": trade.time})
-    return trades
+# def add_trade_to_participant_trades(sender, trade: TradeDetails):
+#     trades = list(get_participant_trades_details(sender))
+#     trades.append({"action": trade.action, "direction": trade.direction, "amount": trade.amount, "index_price": trade.index_price,
+#                 "index_name": trade.index_name,"date": trade.date, "time": trade.time})
+#     return trades
 
 def get_participant(sender):
     return participants.find({"username": sender})[0]
@@ -128,10 +128,10 @@ def get_participant_funds(sender):
     return get_participant(sender)['funds']
 
 def get_participants_trades_total(sender):
-    return get_participant(sender)['trades']['total']
+    return get_participant(sender)['number_of_trades']
 
-def get_participant_trades_details(sender):
-    return get_participant(sender)['trades']['tradeDetails']
+# def get_participant_trades_details(sender):
+#     return get_participant(sender)['trades']['tradeDetails']
 
 def get_participant_positions(sender):
     return get_participant(sender)['positions']

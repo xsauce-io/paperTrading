@@ -27,7 +27,7 @@ def open(sender, message):
     current_participant_info = controller.participants.get_participant_info(sender)
 
     updated_position, updated_participant, new_trade = determine_opened_position_update(wager, direction, current_position_info, current_participant_info, current_index)
-    updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
+    # updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
     controller.participants.update_participant_position(sender, index_name ,updated_position, updated_participant, updated_trades)
 
     return '{} position has been opened!'.format(new_trade.direction)

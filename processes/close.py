@@ -24,7 +24,7 @@ def close(sender, message):
     current_participant_info = controller.participants.get_participant_info(sender)
 
     updated_position, updated_participant, new_trade = determine_closed_position_update(reduction, direction, current_position_info, current_participant_info, current_index)
-    updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
+    # updated_trades = controller.participants.add_trade_to_participant_trades(sender, new_trade)
     controller.participants.update_participant_position(sender, index_name, updated_position, updated_participant, updated_trades)
 
     return '{} position has been closed!'.format(new_trade.direction)

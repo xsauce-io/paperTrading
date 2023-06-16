@@ -348,8 +348,8 @@ def main():
 
 
     #Warning the following are purely for rapid testing
-    # job_queue.run_once(price_update_all, when=1)
-    # job_queue.run_once(price_tracker_notify, when=1)
+    job_queue.run_once(price_update_all, when=1)
+    job_queue.run_once(price_tracker_notify, when=1)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
