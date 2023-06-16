@@ -24,10 +24,10 @@ def add_participant(name, funds):
         print('Cause{}'.format(error))
 
 
-def update_participant_position(sender, index_name, position:Position, participant:Participant, trades):
+def update_participant_position(sender, index_name, position:Position, participant:Participant):
 
     participants.update_one({"username": sender}, {"$set": {
-                f"positions.{index_name}": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": {"total": participant.number_of_trades, "tradeDetails": trades}}})
+                f"positions.{index_name}": {"Short": {"shares": position.short_shares, "buyIn": {"purchased": position.short_shares, "amount_spent": position.short_amount_spent}}, "Long": {"shares": position.long_shares, "buyIn": {"purchased": position.long_shares, "amount_spent": position.long_amount_spent}}}, "funds": participant.funds, "trades": participant.number_of_trades}})
     return
 
 def add_index_to_participant_positions(sender, index_name):
