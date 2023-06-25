@@ -338,18 +338,7 @@ def competition_information(update, context):
 def main():
     updater = Updater(
         BOT_TOKEN, use_context=True)
-    job_queue = updater.job_queue
 
-    job_queue.run_daily(price_update_all,time(16,11,0))
-    job_queue.run_daily(leaderboard_update, time(16,11,10))
-    job_queue.run_daily(price_tracker_notify, time(16,11,25))
-
-    job_queue.run_once(leaderboard_update, when=1)
-
-
-    #Warning the following are purely for rapid testing
-    job_queue.run_once(price_update_all, when=1)
-    job_queue.run_once(price_tracker_notify, when=1)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('help', help))
